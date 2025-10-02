@@ -1,0 +1,9 @@
+.wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.wrapperDashboard {
+  width: 100%;
+  gap: 20px;
+}

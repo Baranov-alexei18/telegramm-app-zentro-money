@@ -1,0 +1,15 @@
+.wrapper {
+  background-color: var(--color-indigo);
+  height: 100vh;
+  display: flex;
+  align-items: center;
+}
+
+.formWrapper {
+  background-color: aliceblue;
+  width: 700px;
+  height: 500px;
+  margin: auto;
+  border-radius: 32px;
+  padding: 0 20px;
+}
