@@ -8,10 +8,11 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     const userId = sessionStorage.getItem('userId');
+
     if (!userId) {
       navigate(ROUTE_PATHS.auth);
     }
   }, [navigate]);
 
-  return <>{children}</>;
+  return <div>{children}</div>;
 };
