@@ -1,4 +1,5 @@
 {
+  "repositoryUrl": "https://github.com/Baranov-alexei18/telegramm-app-zentro-money.git",
   "branches": ["master"],
   "plugins": [
     "@semantic-release/commit-analyzer",
