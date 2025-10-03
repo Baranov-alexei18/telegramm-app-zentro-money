@@ -1,12 +1,6 @@
 import { create } from 'zustand';
 
-export const AVATAR_IDS = [
-  'cm9zcuhsvlffr07lrmnm7531v',
-  'cm9zcuht9lffw07lrrjvexvfz',
-  'cm9zcuho7bpx507mwamx1vae5',
-  'cm9zcuh2tlffh07lr243uwdvu',
-  'cm9zcuh2rlfff07lrcyctpbf6',
-];
+export const AVATAR_IDS = ['cm9zcuhsvlffr07lrmnm7531v', 'cm9zcuht9lffw07lrrjvexvfz'];
 
 export type AvatarType = {
   id: string;
