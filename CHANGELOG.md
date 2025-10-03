@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/compare/v1.1.0...v1.2.0) (2025-10-03)
+
+
+### Features
+
+* check pr remove unused avatars ids ([f92fb4f](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/commit/f92fb4f029c36d131abd82c6b28e8366457c8180))
+
 # [1.1.0](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/compare/v1.0.0...v1.1.0) (2025-10-03)
 
 
