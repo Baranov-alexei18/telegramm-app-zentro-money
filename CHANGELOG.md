@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/compare/v1.0.0...v1.1.0) (2025-10-03)
+
+
+### Features
+
+* add new lib for github actions ([2b59ae2](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/commit/2b59ae29cc3038cff52c38804f7905a9b3d29d30))
+
 # 1.0.0 (2025-10-03)
 
 
