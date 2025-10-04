@@ -7,6 +7,8 @@ export const AuthPage = () => {
   return (
     <div className={styles.wrapper}>
       <span>AuthPage</span>
+      <p>WINDOW</p>
+      <p>{JSON.stringify(window, null, 2)}</p>
       <p>{JSON.stringify(tg, null, 2)}</p>
       <p>{JSON.stringify(user, null, 2)}</p>
       <p>{user?.id}</p>
