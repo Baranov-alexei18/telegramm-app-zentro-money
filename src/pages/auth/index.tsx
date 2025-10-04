@@ -1,29 +1,25 @@
 import { useEffect, useState } from 'react';
+import { stringify } from 'flatted';
 
 import styles from './styles.module.css';
 
 export const AuthPage = () => {
-  const [tgData, setTgData] = useState<any>(null);
+  const [windowStr, setWindowStr] = useState<string>('');
+  const [windowTelegramm, setWindowTelegramm] = useState<string>('');
 
   useEffect(() => {
-    const tg = (window as any).Telegram?.WebApp;
-    if (tg) {
-      const data = {
-        version: tg.version,
-        initData: tg.initData,
-        initDataUnsafe: tg.initDataUnsafe,
-        viewportHeight: tg.viewportHeight,
-        viewportStableHeight: tg.viewportStableHeight,
-        themeParams: tg.themeParams,
-      };
-      setTgData(data);
-    }
+    const str = stringify(window);
+    setWindowStr(str);
+
+    const str2 = stringify((window as any)?.Telegram);
+    setWindowTelegramm(str2);
   }, []);
 
   return (
     <div className={styles.wrapper}>
       <h2>AuthPage</h2>
-      {tgData ? <pre>{JSON.stringify(tgData, null, 2)}</pre> : <p>Telegram WebApp не найден</p>}
+      <pre>{windowStr.slice(0, 10000)}</pre>
+      <pre>{windowTelegramm.slice(0, 1000)}</pre>
     </div>
   );
 };
