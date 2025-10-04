@@ -7,7 +7,7 @@ export const MENU_ITEMS = [
     key: 'home',
     icon: <div />,
     label: (
-      <NavLink to={ROUTE_PATHS.home} end>
+      <NavLink to={ROUTE_PATHS.rooms} end>
         Главная
       </NavLink>
     ),
@@ -16,17 +16,8 @@ export const MENU_ITEMS = [
     key: 'income',
     icon: <div />,
     label: (
-      <NavLink to={ROUTE_PATHS.income} end>
+      <NavLink to={ROUTE_PATHS.rooms} end>
         Доходы
-      </NavLink>
-    ),
-  },
-  {
-    key: 'expense',
-    icon: <div />,
-    label: (
-      <NavLink to={ROUTE_PATHS.expense} end>
-        Расходы
       </NavLink>
     ),
   },
@@ -34,7 +25,7 @@ export const MENU_ITEMS = [
     key: 'goals',
     icon: <div />,
     label: (
-      <NavLink to={ROUTE_PATHS.goals} end>
+      <NavLink to={ROUTE_PATHS.main} end>
         Цели
       </NavLink>
     ),

@@ -1,8 +1,7 @@
 import { createBrowserRouter } from 'react-router';
 
-import { ProtectedRoute } from '@/components/protected-route';
+import { ProtectedLayout } from '@/components/protected-layout';
 import { EditPage } from '@/pages/edit';
-import { GoalsPage } from '@/pages/goals';
 
 import { LayoutApp } from '../components/base-layout';
 import { AuthPage } from '../pages/auth';
@@ -16,52 +15,15 @@ export const router = createBrowserRouter([
   {
     path: ROUTE_PATHS.main,
     element: (
-      <ProtectedRoute>
+      <ProtectedLayout>
         <LayoutApp />
-      </ProtectedRoute>
+      </ProtectedLayout>
     ),
     children: [
-      {
-        index: true,
-        path: ROUTE_PATHS.home,
-        element: (
-          <ProtectedRoute>
-            <HomePage />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: ROUTE_PATHS.income,
-        element: (
-          <ProtectedRoute>
-            <IncomePage />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: ROUTE_PATHS.expense,
-        element: (
-          <ProtectedRoute>
-            <ExpensePage />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: ROUTE_PATHS.edit,
-        element: (
-          <ProtectedRoute>
-            <EditPage />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: ROUTE_PATHS.goals,
-        element: (
-          <ProtectedRoute>
-            <GoalsPage />
-          </ProtectedRoute>
-        ),
-      },
+      { index: true, path: `${ROUTE_PATHS.room}/:id`, element: <HomePage /> },
+      { path: ROUTE_PATHS.rooms, element: <IncomePage /> },
+      { path: ROUTE_PATHS.statistics, element: <ExpensePage /> },
+      { path: ROUTE_PATHS.profile, element: <EditPage /> },
     ],
   },
   { path: ROUTE_PATHS.auth, element: <AuthPage /> },
