@@ -9,7 +9,7 @@ export const AuthPage = () => {
       <span>AuthPage</span>
       <p>{JSON.stringify(tg, null, 2)}</p>
       <p>{JSON.stringify(user, null, 2)}</p>
-      <p>{user.id}</p>
+      <p>{user?.id}</p>
     </div>
   );
 };
