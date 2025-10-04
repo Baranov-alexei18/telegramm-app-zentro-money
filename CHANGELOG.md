@@ -1,3 +1,12 @@
+# [1.3.0](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/compare/v1.2.0...v1.3.0) (2025-10-04)
+
+
+### Features
+
+* add firebase ([1693adb](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/commit/1693adb6d3de4ba2ec7fe8977cd20eaea9a38c21))
+* add telegramId for user ([4dfc692](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/commit/4dfc6923c4a7162df3fdc0e23ca4422c48be1632))
+* resolve build errors ([020f24a](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/commit/020f24aa0290e49b7cf55d8df709e4cabf94f201))
+
 # [1.2.0](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/compare/v1.1.0...v1.2.0) (2025-10-03)
 
 
