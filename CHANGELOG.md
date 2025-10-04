@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/compare/v1.3.0...v1.4.0) (2025-10-04)
+
+
+### Features
+
+* check works app with telegramm ([4779c31](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/commit/4779c31a19cfa9aab7b8c54f94d6cec0e8fd573d))
+
 # [1.3.0](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/compare/v1.2.0...v1.3.0) (2025-10-04)
 
 
