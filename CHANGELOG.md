@@ -1,3 +1,10 @@
+# [1.5.0](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/compare/v1.4.0...v1.5.0) (2025-10-04)
+
+
+### Features
+
+* add global error boundary ([e0eaf75](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/commit/e0eaf75400cf9f33520ea872e75ce4128af0a71b))
+
 # [1.4.0](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/compare/v1.3.0...v1.4.0) (2025-10-04)
 
 
