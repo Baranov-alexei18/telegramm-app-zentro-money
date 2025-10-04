@@ -17,4 +17,5 @@ export type TelegramUser = {
   firstName: string;
   lastName: string;
   username?: string;
+  telegramId?: string;
 };
