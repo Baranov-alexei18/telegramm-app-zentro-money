@@ -13,11 +13,12 @@
     "prepare": "husky"
   },
   "dependencies": {
+    "@headlessui/react": "^2.2.9",
     "@typescript-eslint/eslint-plugin": "^8.45.0",
     "@typescript-eslint/parser": "^8.45.0",
     "bcryptjs": "^3.0.2",
+    "classnames": "^2.5.1",
     "firebase": "^12.3.0",
-    "flatted": "^3.3.3",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-hook-form": "^7.55.0",

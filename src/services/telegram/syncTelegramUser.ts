@@ -1,4 +1,3 @@
-// src/services/firebaseUsers.ts
 import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore';
 
 import { COLLECTION_USER } from '@/constants/db';
@@ -12,6 +11,7 @@ export const syncTelegramUser = async (user: TelegramUser) => {
 
   if (!docSnap.exists()) {
     await setDoc(userDocRef, {
+      id: user.id,
       telegramId: user.id,
       firstName: user.firstName,
       lastName: user.lastName,

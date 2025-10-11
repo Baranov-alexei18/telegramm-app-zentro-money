@@ -1,5 +1,9 @@
+import { useUserStore } from '@/store/userStore';
+
 import styles from './styles.module.css';
 
 export const HomePage = () => {
-  return <div className={styles.wrapper}>HomePage</div>;
+  const { user } = useUserStore();
+
+  return <div className={styles.wrapper}>HomePage {user?.username}</div>;
 };

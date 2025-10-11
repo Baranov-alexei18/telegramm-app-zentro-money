@@ -1,0 +1,49 @@
+import { StrictMode, useEffect } from 'react';
+import { RouterProvider } from 'react-router';
+
+import { ErrorBoundary } from './components/error-boundary';
+import { router } from './constants/routes';
+import { getDataUserById } from './services/firebase/getDataUserById';
+import { getTelegramUser } from './services/telegram/getTelegramUser';
+import { syncTelegramUser } from './services/telegram/syncTelegramUser';
+import { useUserStore } from './store/userStore';
+
+export const App = () => {
+  const { setLoading, setUser } = useUserStore();
+
+  useEffect(() => {
+    const auth = async () => {
+      setLoading(true);
+
+      const telegramUser = getTelegramUser();
+
+      if (!telegramUser) {
+        setLoading(false);
+
+        return;
+      }
+
+      try {
+        const syncedUser = await syncTelegramUser(telegramUser);
+
+        const userData = await getDataUserById(syncedUser.id);
+
+        setUser(userData);
+      } catch (err: any) {
+        alert(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    auth();
+  }, []);
+
+  return (
+    <StrictMode>
+      <ErrorBoundary>
+        <RouterProvider router={router} />
+      </ErrorBoundary>
+    </StrictMode>
+  );
+};
