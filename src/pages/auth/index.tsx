@@ -1,25 +1,41 @@
-import { useEffect, useState } from 'react';
-import { stringify } from 'flatted';
+import { useNavigate } from 'react-router';
+
+import { AuthForm } from '@/components/forms/auth-form';
+import { ROUTE_PATHS } from '@/constants/route-path';
+import { getDataUserById } from '@/services/firebase/getDataUserById';
+import { loginUser } from '@/services/firebase/loginUser';
+import { useUserStore } from '@/store/userStore';
 
 import styles from './styles.module.css';
 
 export const AuthPage = () => {
-  const [windowStr, setWindowStr] = useState<string>('');
-  const [windowTelegramm, setWindowTelegramm] = useState<string>('');
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    const str = stringify(window);
-    setWindowStr(str);
+  const { user } = useUserStore();
 
-    const str2 = stringify((window as any)?.Telegram);
-    setWindowTelegramm(str2);
-  }, []);
+  if (user?.id) {
+    navigate(ROUTE_PATHS.main);
+  }
+
+  const handleAuth = async (data: { login: string; password: string }) => {
+    try {
+      const user = await loginUser(data);
+
+      const userData = await getDataUserById(user.uid);
+
+      useUserStore.setState({ user: userData, error: null });
+
+      navigate(ROUTE_PATHS.main);
+    } catch (err: any) {
+      alert(err.message);
+    }
+  };
 
   return (
     <div className={styles.wrapper}>
-      <h2>AuthPage</h2>
-      <pre>{windowStr.slice(0, 10000)}</pre>
-      <pre>{windowTelegramm.slice(0, 1000)}</pre>
+      <div className={styles.wrapperContent}>
+        <AuthForm onSubmit={handleAuth} />
+      </div>
     </div>
   );
 };

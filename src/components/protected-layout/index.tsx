@@ -2,18 +2,18 @@ import { FC, ReactNode } from 'react';
 import { Navigate, Outlet } from 'react-router';
 
 import { ROUTE_PATHS } from '@/constants/route-path';
-import { useAuth } from '@/hooks/useAuth';
+import { useUserStore } from '@/store/userStore';
 
 type Props = {
   children: ReactNode;
 };
 
 export const ProtectedLayout: FC<Props> = () => {
-  const { telegramUser, loading } = useAuth();
+  const { user, loading } = useUserStore();
 
   if (loading) return <div>Загрузка...</div>;
 
-  if (!telegramUser) return <Navigate to={ROUTE_PATHS.auth} replace />;
+  if (!user) return <Navigate to={ROUTE_PATHS.auth} replace />;
 
   return <Outlet />;
 };

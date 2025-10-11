@@ -5,4 +5,5 @@ export const ROUTE_PATHS = {
   statistics: '/statistics',
   profile: '/profile',
   auth: '/auth',
+  register: '/register',
 };

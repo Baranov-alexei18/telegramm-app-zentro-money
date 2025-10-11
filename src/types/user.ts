@@ -1,15 +1,11 @@
-import { CategoryType } from './category';
-import { GoalType } from './goal';
-
 export type UserType = {
   id: string;
   email: string;
-  password: string;
-  name: string;
-  avatar: any;
-  categories: CategoryType[];
-  goals: GoalType[];
-  rooms: any[];
+  firstName: string;
+  lastName: string;
+  telegramId: string | null;
+  username?: string;
+  rooms?: any[];
 };
 
 export type TelegramUser = {

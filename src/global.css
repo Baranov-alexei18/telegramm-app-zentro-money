@@ -12,22 +12,40 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  --color-bg: #ffffff;
+  /* === Base Colors === */
+  --color-bg: #f7f9fc;
+  --color-surface: #ffffff;
+  --color-surface-dark: #1a1d1f;
+  --color-bg-dark: #0c0e10;
+
   --color-text: #121212;
-  --color-indigo: #7596d9; /* Indigo 600 */
-  --color-indigo-secondary: #6366f1; /* Indigo 500 */
-  --color-accent: #22c55e; /* Green 500 */
-  --color-muted: #b9b9b9; /* Gray-100 */
+  --color-text-dark: #f1f5f9;
+
+  /* === Accent (Primary Blue) === */
+  --color-primary: #3b82f6;
+  --color-primary-hover: #2563eb;
+  --color-primary-dark: #60a5fa;
+
+  /* === Secondary Indigo (Brand Depth) === */
+  --color-indigo: #7596d9;
+  --color-indigo-secondary: #6366f1;
+
+  /* === Positive / Negative === */
+  --color-success: #22c55e;
+  --color-success-dark: #4ade80;
+
+  --color-danger: #ef4444;
+  --color-danger-dark: #f87171;
+
+  /* === Neutral / UI === */
+  --color-muted: #b9b9b9;
+  --color-muted-dark: #6b7280;
+
   --color-border: #e5e7eb;
   --color-border-dark: #26282c;
-}
 
-a {
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
+  --color-card: #f7f9fc;
+  --color-card-dark: #1a1d1f;
 }
 
 body {
