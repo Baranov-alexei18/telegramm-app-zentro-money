@@ -1,3 +1,10 @@
+# [1.10.0](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/compare/v1.9.0...v1.10.0) (2025-10-11)
+
+
+### Features
+
+* add auth and register service and page ([8fd1c6c](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/commit/8fd1c6c31bc7282d89c613a6961ac1cae4dfa6c1))
+
 # [1.9.0](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/compare/v1.8.0...v1.9.0) (2025-10-04)
 
 
