@@ -1,5 +1,11 @@
 import { ChangeEvent } from 'react';
-import { Fieldset, Input as HeadlessInput, Label } from '@headlessui/react';
+import {
+  FieldError,
+  Input as HeadlessInput,
+  Label,
+  TextField,
+  TextFieldProps,
+} from 'react-aria-components';
 import cn from 'classnames';
 
 import styles from './styles.module.css';
@@ -11,13 +17,23 @@ type Props = {
   placeholder?: string;
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
   error?: string;
+  required?: boolean;
+  validate?: TextFieldProps['validate'];
 };
 
-export const Input = ({ label, type = 'text', value, placeholder, onChange, error }: Props) => {
+export const Input = ({
+  label,
+  type = 'text',
+  value,
+  placeholder,
+  onChange,
+  required = false,
+  validate,
+}: Props) => {
   const inputId = `input-${label?.replace(/\s+/g, '-') || Math.random()}`;
 
   return (
-    <Fieldset className={styles.container}>
+    <TextField className={styles.container} isRequired={required} validate={validate}>
       {label && (
         <Label className={styles.label} htmlFor={inputId}>
           {label}
@@ -25,15 +41,13 @@ export const Input = ({ label, type = 'text', value, placeholder, onChange, erro
       )}
       <HeadlessInput
         id={inputId}
-        className={cn(styles.input, {
-          [styles.inputError]: !!error,
-        })}
+        className={cn(styles.input)}
         type={type}
         value={value}
         placeholder={placeholder}
         onChange={onChange}
       />
-      {error && <div className={styles.error}>{error}</div>}
-    </Fieldset>
+      <FieldError className={styles.error} />
+    </TextField>
   );
 };

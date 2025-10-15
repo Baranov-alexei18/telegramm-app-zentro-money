@@ -2,6 +2,8 @@ import { StrictMode, useEffect } from 'react';
 import { RouterProvider } from 'react-router';
 
 import { ErrorBoundary } from './components/error-boundary';
+import { Toasts } from './components/shared/toast';
+import { notificationManager } from './components/shared/toast/utils';
 import { router } from './constants/routes';
 import { getDataUserById } from './services/firebase/getDataUserById';
 import { getTelegramUser } from './services/telegram/getTelegramUser';
@@ -30,7 +32,13 @@ export const App = () => {
 
         setUser(userData);
       } catch (err: any) {
-        alert(err);
+        notificationManager.add(
+          {
+            title: err.message,
+            type: 'error',
+          },
+          { timeout: 2000 }
+        );
       } finally {
         setLoading(false);
       }
@@ -43,6 +51,8 @@ export const App = () => {
     <StrictMode>
       <ErrorBoundary>
         <RouterProvider router={router} />
+
+        <Toasts />
       </ErrorBoundary>
     </StrictMode>
   );

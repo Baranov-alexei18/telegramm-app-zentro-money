@@ -25,12 +25,18 @@ export const AuthForm = ({ onSubmit }: AuthFormProps) => {
     <form className={styles.form} onSubmit={handleSubmit}>
       <img src={Logo} alt="Logo" className={styles.logoWrapper} />
       <h2 className={styles.title}>Авторизация</h2>
-      <Input label="Email" value={login} onChange={(e) => setLogin(e.target.value)} />
+      <Input
+        label="Email"
+        value={login}
+        onChange={(e) => setLogin(e.target.value)}
+        required={true}
+      />
       <Input
         label="Пароль"
         type="password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
+        required={true}
       />
 
       <Button type="submit" className={styles.formButton}>

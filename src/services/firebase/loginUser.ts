@@ -13,12 +13,14 @@ export const loginUser = async ({ login, password }: LoginData) => {
 
     return userCredential.user;
   } catch (error: any) {
-    let message = 'Ошибка авторизации';
+    let message = 'Неверно введен email или пароль';
+
     if (error.code === 'auth/wrong-password') {
       message = 'Неверный пароль';
     } else if (error.code === 'auth/user-not-found') {
       message = 'Пользователь не найден';
     }
+
     throw new Error(message);
   }
 };

@@ -1,4 +1,4 @@
-import { Button as HeadlessButton } from '@headlessui/react';
+import { Button as HeadlessButton } from 'react-aria-components';
 import cn from 'classnames';
 
 import styles from './styles.module.css';
