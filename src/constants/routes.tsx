@@ -21,7 +21,7 @@ export const router = createBrowserRouter([
       </ProtectedLayout>
     ),
     children: [
-      { index: true, path: ROUTE_PATHS.main, element: <HomePage /> },
+      { path: ROUTE_PATHS.main, element: <HomePage /> },
       { path: `${ROUTE_PATHS.room}/:id`, element: <HomePage /> },
       { path: ROUTE_PATHS.rooms, element: <IncomePage /> },
       { path: ROUTE_PATHS.statistics, element: <ExpensePage /> },
