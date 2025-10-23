@@ -7,9 +7,9 @@
   display: flex;
   justify-content: space-around;
   align-items: center;
-  background-color: vacr(--color-bg);
+  background-color: var(--color-bg);
   border-top: 1px solid var(--color-indigo);
-  z-index: 100;
+  z-index: 2;
   box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
 }
 

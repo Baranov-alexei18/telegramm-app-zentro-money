@@ -2,6 +2,7 @@
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
+  box-sizing: border-box;
 
   color-scheme: light dark;
   color: var(--color-text);
@@ -49,6 +50,10 @@
 
   --color-card: #f7f9fc;
   --color-card-dark: #1a1d1f;
+}
+
+* {
+  box-sizing: border-box;
 }
 
 body {
