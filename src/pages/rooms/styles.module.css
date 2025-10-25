@@ -20,7 +20,10 @@
   font-weight: 600;
 }
 
-.createButton {
+.create {
+  background-color: var(--color-indigo);
+  color: var(--color-text-dark);
+  padding: 12px;
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.2s ease-in-out;

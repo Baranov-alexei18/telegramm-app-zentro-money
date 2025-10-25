@@ -5,7 +5,7 @@ export type UserType = {
   lastName: string;
   telegramId: string | null;
   username?: string;
-  rooms?: any[];
+  rooms?: string[];
 };
 
 export type TelegramUser = {

@@ -1,7 +1,7 @@
-'use client';
-
 import { ReactNode, useState } from 'react';
 import { animate, AnimatePresence, motion, useMotionValue, useTransform } from 'framer-motion';
+
+import { useAppStore } from '@/store/appStore';
 
 import styles from './styles.module.css';
 
@@ -11,7 +11,8 @@ type Props = {
 };
 
 export const BottonSheet = ({ triggerComponent, children }: Props) => {
-  const [isOpen, setOpen] = useState(false);
+  const { bottonSheetOpen, setBottonSheetOpen } = useAppStore();
+
   const sheetHeight = window.innerHeight - 100;
   const y = useMotionValue(sheetHeight);
 
@@ -20,7 +21,7 @@ export const BottonSheet = ({ triggerComponent, children }: Props) => {
   const handleDragEnd = (_: any, info: { offset: { y: number }; velocity: { y: number } }) => {
     const threshold = sheetHeight * 0.25;
     if (info.offset.y > threshold || info.velocity.y > 500) {
-      setOpen(false);
+      setBottonSheetOpen(false);
     } else {
       animate(y, 0, { type: 'spring', stiffness: 300, damping: 30 });
     }
@@ -28,12 +29,12 @@ export const BottonSheet = ({ triggerComponent, children }: Props) => {
 
   return (
     <>
-      <div className={styles.triggerContent} onClick={() => setOpen(true)}>
+      <div className={styles.triggerContent} onClick={() => setBottonSheetOpen(true)}>
         {triggerComponent}
       </div>
 
       <AnimatePresence>
-        {isOpen && (
+        {bottonSheetOpen && (
           <>
             <motion.div
               className={styles.overlay}
@@ -41,7 +42,7 @@ export const BottonSheet = ({ triggerComponent, children }: Props) => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 0.5 }}
               exit={{ opacity: 0 }}
-              onClick={() => setOpen(false)}
+              onClick={() => setBottonSheetOpen(false)}
             />
 
             <motion.div
