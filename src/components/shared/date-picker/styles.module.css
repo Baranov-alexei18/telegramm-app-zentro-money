@@ -1,0 +1,123 @@
+.datePicker {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-size: 14px;
+  color: var(--color-card);
+}
+
+.group {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  padding: 8px 10px;
+  width: 100%;
+}
+
+.dateInput {
+  display: flex;
+  flex: 1;
+  color: var(--color-text);
+  font-size: 15px;
+}
+
+.dateSegment {
+  padding: 0 2px;
+  color: var(--color-text);
+  min-width: 1ch;
+  text-align: center;
+}
+
+.openButton {
+  background: transparent;
+  border: none;
+  color: var(--color-text);
+  cursor: pointer;
+  font-size: 15px;
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+.openButton:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.popover {
+  margin-top: 6px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  z-index: 20;
+  overflow: hidden;
+}
+
+.dialog {
+  padding: 8px 10px;
+}
+
+.calendar {
+  width: 100%;
+}
+
+.calendarHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.calendarHeading {
+  color: var(--color-text);
+  font-size: 15px;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.navButton {
+  background: transparent;
+  color: var(--color-text);
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+.navButton:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.calendarGrid {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.calendarCell {
+  width: 36px;
+  height: 36px;
+  text-align: center;
+  border-radius: 6px;
+  color: var(--color-text);
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.calendarCell:hover,
+.calendarCell[data-focused],
+.calendarCell[data-selected] {
+  background: rgba(117, 150, 217, 0.15);
+}
+
+.calendarCell[data-selected] {
+  background: var(--color-indigo);
+  color: white;
+}

@@ -1,4 +1,4 @@
-import { TransitionType } from './transition';
+import { TransactionProps } from './transaction';
 import { UserType } from './user';
 
 export type GoalType = {
@@ -9,5 +9,5 @@ export type GoalType = {
   start_date: Date;
   end_date: Date;
   authUser?: UserType;
-  transitions?: TransitionType[];
+  transitions?: TransactionProps[];
 };

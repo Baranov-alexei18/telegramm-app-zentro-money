@@ -14,7 +14,7 @@ import styles from './styles.module.css';
 type Props = InputProps & {
   label?: string;
   type?: string;
-  value: string;
+  value: string | number;
   placeholder?: string;
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
   error?: string;

@@ -1,5 +1,6 @@
 .container {
-  width: 100%;
+  max-width: 100%;
+  box-sizing: content-box;
   display: flex;
   flex-direction: column;
   border: none;
@@ -13,7 +14,8 @@
 }
 
 .input {
-  padding: 14px 10px;
+  width: 100%;
+  padding: 8px 10px;
   border: 1px solid var(--color-border);
   border-radius: 6px;
   background: var(--color-bg);
@@ -75,4 +77,33 @@
   100% {
     transform: translateX(0);
   }
+}
+
+.listbox {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  margin-top: 4px;
+  padding: 4px 0;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 10;
+}
+
+.option {
+  padding: 8px 10px;
+  cursor: pointer;
+  color: var(--color-text);
+  transition: background 0.2s ease;
+}
+
+.option:hover,
+.option[data-focused] {
+  background: rgba(117, 150, 217, 0.1);
+}
+
+.popover {
+  max-width: 100%;
+  width: 100%;
 }

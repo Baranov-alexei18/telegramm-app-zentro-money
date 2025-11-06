@@ -15,9 +15,9 @@ type CreateRoomFormValues = {
 };
 
 export const CreateRoomForm = () => {
-  const { setBottonSheetOpen } = useAppStore();
+  const { closeTopBottomSheet } = useAppStore();
 
-  const { control, handleSubmit, reset } = useForm<CreateRoomFormValues>({
+  const { control, handleSubmit } = useForm<CreateRoomFormValues>({
     defaultValues: {
       name: '',
       description: '',
@@ -38,7 +38,7 @@ export const CreateRoomForm = () => {
       });
 
       setUser({ ...user, rooms: [...(user?.rooms || []), roomId] });
-      setBottonSheetOpen(false);
+      closeTopBottomSheet();
     } catch (error) {
       console.error('Ошибка при создании комнаты:', error);
       alert('Произошла ошибка при создании комнаты ❌');

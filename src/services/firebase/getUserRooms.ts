@@ -1,7 +1,7 @@
 import { collection, doc, getDoc, getDocs, query, where } from 'firebase/firestore';
 
 import { COLLECTION_ROOM, COLLECTION_USER } from '@/constants/db';
-import { RoomType } from '@/pages/rooms';
+import { RoomType } from '@/types/room';
 
 import { db } from './config';
 

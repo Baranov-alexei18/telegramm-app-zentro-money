@@ -1,5 +1,6 @@
 import { addDoc, arrayUnion, collection, doc, updateDoc } from 'firebase/firestore';
 
+import { BASE_CATEGORIES } from '@/constants/category';
 import { COLLECTION_ROOM, COLLECTION_USER } from '@/constants/db';
 import { RoomUserRole } from '@/constants/room-roles';
 
@@ -17,13 +18,13 @@ export const createRoom = async ({ userId, name, description }: CreateRoomParams
       name,
       description: description || '',
       createdAt: new Date(),
+      categories: BASE_CATEGORIES,
       members: {
         [userId]: {
           role: RoomUserRole.ADMIN,
           joinedAt: new Date(),
         },
       },
-      categories: [],
       transactions: [],
     });
 

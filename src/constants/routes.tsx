@@ -3,6 +3,7 @@ import { createBrowserRouter } from 'react-router';
 import { ProtectedLayout } from '@/components/protected-layout';
 import { EditPage } from '@/pages/edit';
 import { RegisterPage } from '@/pages/register';
+import { RoomPage } from '@/pages/room';
 
 import { LayoutApp } from '../components/base-layout';
 import { AuthPage } from '../pages/auth';
@@ -22,7 +23,7 @@ export const router = createBrowserRouter([
     ),
     children: [
       { path: ROUTE_PATHS.main, element: <HomePage /> },
-      { path: `${ROUTE_PATHS.room}/:id`, element: <HomePage /> },
+      { path: `${ROUTE_PATHS.room}/:id`, element: <RoomPage /> },
       { path: ROUTE_PATHS.rooms, element: <RoomsPage /> },
       { path: ROUTE_PATHS.statistics, element: <ExpensePage /> },
       { path: ROUTE_PATHS.profile, element: <EditPage /> },

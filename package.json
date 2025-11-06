@@ -13,6 +13,7 @@
     "prepare": "husky"
   },
   "dependencies": {
+    "@internationalized/date": "^3.10.0",
     "@typescript-eslint/eslint-plugin": "^8.45.0",
     "@typescript-eslint/parser": "^8.45.0",
     "bcryptjs": "^3.0.2",

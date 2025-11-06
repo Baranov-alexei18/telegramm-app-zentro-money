@@ -1,0 +1,93 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 24px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.header {
+  text-align: center;
+}
+
+.title {
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.description {
+  color: #777;
+  font-size: 16px;
+}
+
+.card {
+  background: #f7f7f7;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.cardText {
+  color: #555;
+  font-size: 14px;
+}
+
+.transactions {
+  margin-top: 24px;
+}
+
+.subTitle {
+  font-size: 18px;
+  font-weight: 500;
+  margin-bottom: 12px;
+}
+
+.transactionsList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.transactionItem {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: #fff;
+  border-radius: 8px;
+  border: 1px solid #eee;
+}
+
+.transactionType {
+  font-weight: 600;
+}
+
+.income {
+  color: #1abc9c;
+}
+
+.expense {
+  color: #e74c3c;
+}
+
+.empty {
+  text-align: center;
+  color: #999;
+}
+
+.sheetContent {
+  padding: 16px;
+}
+
+.loader {
+  text-align: center;
+  padding: 50px;
+}
