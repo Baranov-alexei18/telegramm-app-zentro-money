@@ -19,6 +19,7 @@ type Props = {
 
 export const useUserStore = create<Props>((set, get) => ({
   //DONT SAVE
+
   user: {
     email: 'test@mail.ru',
     id: 'pghQMDZNj3XRo5cXFbuuEouv2W62',
@@ -33,81 +34,4 @@ export const useUserStore = create<Props>((set, get) => ({
   error: null,
   setUser: (user: UserType | null) => set({ user }),
   setLoading: (data: boolean) => set({ loading: data }),
-
-  // user transitions
-
-  //   addNewTransaction: (transition: TransitionType) => {
-  //     const { user } = get();
-
-  //     if (!user) {
-  //       return;
-  //     }
-
-  //     set({
-  //       user: {
-  //         ...user,
-  //         goals: transition.goal
-  //           ? user.goals.map((goal) =>
-  //               goal.id === transition.goal?.id
-  //                 ? { ...goal, transitions: [...(goal.transitions || []), transition] }
-  //                 : goal
-  //             )
-  //           : user.goals,
-  //       },
-  //     });
-  //   },
-
-  //   // user categories
-  //   getCategoriesByType: (type) => {
-  //     const { user } = get();
-  //     if (!user || !user?.categories) {
-  //       return [];
-  //     }
-  //     return user.categories.filter((category: CategoryType) => category.type === type);
-  //   },
-  //   addNewCategory: (category: CategoryType) => {
-  //     const { user } = get();
-
-  //     if (!user) {
-  //       return;
-  //     }
-
-  //     set({ user: { ...user, categories: [...user.categories, category] } });
-  //   },
-
-  //   updateCategoryById: (id: string, updatedFields: Partial<CategoryType>) => {
-  //     const { user } = get();
-
-  //     if (!user) {
-  //       return;
-  //     }
-
-  //     const updatedCategories = user.categories.map((category) =>
-  //       category.id === id ? { ...category, ...updatedFields } : category
-  //     );
-
-  //     set({ user: { ...user, categories: updatedCategories } });
-  //   },
-
-  //   deleteCategoryById: (id: string) => {
-  //     const { user } = get();
-
-  //     if (!user) {
-  //       return;
-  //     }
-
-  //     const updatedCategories = user.categories.filter((category) => category.id !== id);
-
-  //     set({ user: { ...user, categories: updatedCategories } });
-  //   },
-
-  //   // user goals
-  //   addNewGoal: (goal: GoalType) => {
-  //     const { user } = get();
-
-  //     if (!user) {
-  //       return;
-  //     }
-
-  //     set({ user: { ...user, goals: [...user.goals, goal] } });
 }));

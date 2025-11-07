@@ -9,6 +9,7 @@ import { DatePicker } from '@/components/shared/date-picker';
 import { Input } from '@/components/shared/input';
 import { TRANSACTION_TYPE } from '@/constants/transaction-type';
 import { useAppStore } from '@/store/appStore';
+import { useRoomStore } from '@/store/roomStore';
 import { CategoryType } from '@/types/category';
 import { TransactionFormValues } from '@/types/transaction';
 import { dateValueToDate } from '@/utils/dateValueToDate';
@@ -23,6 +24,7 @@ type TransactionFormProps = {
 
 export const TransactionForm = ({ type, categories, onSubmit }: TransactionFormProps) => {
   const { closeTopBottomSheet } = useAppStore();
+  const { addCategory, updateCategory, deleteCategory, room } = useRoomStore();
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -50,6 +52,33 @@ export const TransactionForm = ({ type, categories, onSubmit }: TransactionFormP
     }
   };
 
+  const handleAddCategory = (name: string) => {
+    const data = {
+      name,
+      type,
+    };
+
+    addCategory(data);
+  };
+
+  const handleUpdateCategory = (id: string, value: string) => {
+    const category = room?.categories.find((cat) => cat.id === id);
+
+    if (!category) {
+      return;
+    }
+
+    const data = {
+      ...category,
+      name: value,
+    };
+
+    updateCategory(data);
+  };
+
+  const handleDeleteCategory = (categoryId: string) => {
+    deleteCategory(categoryId);
+  };
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)} className={styles.formWrapper}>
       <Controller
@@ -97,7 +126,9 @@ export const TransactionForm = ({ type, categories, onSubmit }: TransactionFormP
 
                 closeTopBottomSheet();
               }}
-              onAddCategory={() => alert('Добавить категорию')}
+              onEditCategory={handleUpdateCategory}
+              onDeleteCategory={handleDeleteCategory}
+              onAddCategory={handleAddCategory}
             />
           </BottomSheet>
         )}
