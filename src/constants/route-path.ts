@@ -4,6 +4,7 @@ export const ROUTE_PATHS = {
   room: '/room',
   rooms: '/rooms',
   statistics: '/statistics',
+  transactions: '/transactions',
   profile: '/profile',
   auth: '/auth',
   register: '/register',

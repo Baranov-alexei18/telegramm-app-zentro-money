@@ -71,7 +71,11 @@ export const CategoryPicker: React.FC<Props> = ({
                   }}
                   className={styles.editInput}
                 />
-                <Button onClick={() => handleEditSave(category.id)} className={styles.saveButton}>
+                <Button
+                  onClick={() => handleEditSave(category.id)}
+                  className={styles.saveButton}
+                  type="button"
+                >
                   💾
                 </Button>
               </div>
@@ -86,7 +90,7 @@ export const CategoryPicker: React.FC<Props> = ({
                 />
 
                 <MenuTrigger>
-                  <Button aria-label="Меню" className={styles.menuButton}>
+                  <Button aria-label="Меню" className={styles.menuButton} type="button">
                     ⋮
                   </Button>
                   <Popover className={styles.popover}>
@@ -119,7 +123,7 @@ export const CategoryPicker: React.FC<Props> = ({
           placeholder="Новая категория"
           className={styles.addInput}
         />
-        <Button className={styles.addButton} onClick={handleAddNewCategory}>
+        <Button className={styles.addButton} onClick={handleAddNewCategory} type="button">
           ➕
         </Button>
       </div>

@@ -3,7 +3,11 @@ import { TRANSACTION_TYPE } from '@/constants/transaction-type';
 import { CategoryType } from './category';
 
 export type TransactionFormValues = {
-  date: Date;
+  date: Date &
+    Partial<{
+      seconds: number;
+      nanoseconds: number;
+    }>;
   category: CategoryType;
   amount: number;
   description: string;

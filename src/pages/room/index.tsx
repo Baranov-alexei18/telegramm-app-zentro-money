@@ -1,15 +1,15 @@
-import { useEffect, useState } from 'react';
-import { useParams } from 'react-router';
+import { useEffect } from 'react';
+import { useLocation, useNavigate, useParams } from 'react-router';
 
 import { TransactionForm } from '@/components/forms/transaction-form';
 import { BottomSheet } from '@/components/shared/bottom-sheet';
+import { Button } from '@/components/shared/button';
+import { ROUTE_PATHS } from '@/constants/route-path';
 import { TRANSACTION_TYPE } from '@/constants/transaction-type';
-import { createTransaction } from '@/services/firebase/createTransaction';
 import { getUserRooms } from '@/services/firebase/getUserRooms';
 import { useAppStore } from '@/store/appStore';
 import { useRoomStore } from '@/store/roomStore';
 import { useUserStore } from '@/store/userStore';
-import { RoomType } from '@/types/room';
 import { TransactionFormValues } from '@/types/transaction';
 
 import styles from './styles.module.css';
@@ -19,6 +19,8 @@ export const RoomPage = () => {
   const { room, setRoom, fetchTransactions, addTransaction } = useRoomStore();
   const { closeTopBottomSheet } = useAppStore();
   const { id } = useParams<{ id: string }>();
+  const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchRoom = async () => {
@@ -66,6 +68,10 @@ export const RoomPage = () => {
     closeTopBottomSheet();
   };
 
+  const handleGoToTransitionsPage = (type: TRANSACTION_TYPE) => {
+    navigate(`${location.pathname}${ROUTE_PATHS.transactions}`, { state: { type } });
+  };
+
   const lastTransactions = room.transactions?.slice(-5).reverse() || [];
 
   return (
@@ -96,6 +102,9 @@ export const RoomPage = () => {
           </BottomSheet>
         </div>
         <p className={styles.cardText}>Добавьте запись о поступлении денег</p>
+        <Button onClick={() => handleGoToTransitionsPage(TRANSACTION_TYPE.INCOME)}>
+          Все поступления
+        </Button>
       </div>
 
       <div className={styles.card}>
@@ -119,6 +128,9 @@ export const RoomPage = () => {
           </BottomSheet>
         </div>
         <p className={styles.cardText}>Добавьте запись о трате</p>
+        <Button onClick={() => handleGoToTransitionsPage(TRANSACTION_TYPE.EXPENSE)}>
+          Все траты
+        </Button>
       </div>
 
       <div className={styles.transactions}>

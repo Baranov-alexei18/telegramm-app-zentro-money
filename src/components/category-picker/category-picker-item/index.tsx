@@ -1,5 +1,7 @@
 import cn from 'classnames';
 
+import { Button } from '@/components/shared/button';
+
 import styles from './styles.module.css';
 
 type Props = {
@@ -15,6 +17,7 @@ export const CategoryPickerItem = ({ name, color, active = false, onClick }: Pro
       className={cn(styles.wrapper, { [styles.active]: active })}
       style={{ borderColor: color }}
       onClick={onClick}
+      type="button"
     >
       <span className={styles.name}>{name}</span>
 

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
 import { CategoryPicker } from '@/components/category-picker';
@@ -11,7 +11,7 @@ import { TRANSACTION_TYPE } from '@/constants/transaction-type';
 import { useAppStore } from '@/store/appStore';
 import { useRoomStore } from '@/store/roomStore';
 import { CategoryType } from '@/types/category';
-import { TransactionFormValues } from '@/types/transaction';
+import { TransactionFormValues, TransactionProps } from '@/types/transaction';
 import { dateValueToDate } from '@/utils/dateValueToDate';
 
 import styles from './styles.module.css';
@@ -20,21 +20,28 @@ type TransactionFormProps = {
   type: TRANSACTION_TYPE.INCOME | TRANSACTION_TYPE.EXPENSE;
   categories?: CategoryType[];
   onSubmit: (data: TransactionFormValues) => Promise<void> | void;
+  values?: TransactionProps;
 };
 
-export const TransactionForm = ({ type, categories, onSubmit }: TransactionFormProps) => {
+export const TransactionForm = ({ type, categories, onSubmit, values }: TransactionFormProps) => {
   const { closeTopBottomSheet } = useAppStore();
   const { addCategory, updateCategory, deleteCategory, room } = useRoomStore();
 
   const [isLoading, setIsLoading] = useState(false);
 
+  const valuesForm = useMemo(
+    () =>
+      values || {
+        date: new Date(),
+        category: categories?.[0],
+        amount: undefined,
+        description: '',
+      },
+    [categories, values]
+  );
+
   const { control, handleSubmit, reset } = useForm<TransactionFormValues>({
-    defaultValues: {
-      date: new Date(),
-      category: categories?.[0],
-      amount: undefined,
-      description: '',
-    },
+    defaultValues: valuesForm,
   });
 
   const handleFormSubmit = async (data: TransactionFormValues) => {
@@ -116,7 +123,7 @@ export const TransactionForm = ({ type, categories, onSubmit }: TransactionFormP
                 active={true}
               />
             }
-            id="choose-category"
+            id={`choose-category`}
           >
             <CategoryPicker
               categories={categories!}
@@ -129,6 +136,7 @@ export const TransactionForm = ({ type, categories, onSubmit }: TransactionFormP
               onEditCategory={handleUpdateCategory}
               onDeleteCategory={handleDeleteCategory}
               onAddCategory={handleAddCategory}
+              key={`category-${values?.transactionId}`}
             />
           </BottomSheet>
         )}

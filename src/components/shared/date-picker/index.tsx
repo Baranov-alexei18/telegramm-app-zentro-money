@@ -17,6 +17,8 @@ import {
 import { CalendarDate, fromDate } from '@internationalized/date';
 import cn from 'classnames';
 
+import { convertToDate } from '@/utils/convertToDate';
+
 import styles from './styles.module.css';
 
 type Props = {
@@ -38,7 +40,13 @@ export const DatePicker = ({
   error,
   className,
 }: Props) => {
-  const dateValue = new CalendarDate(value!.getFullYear(), value!.getMonth() + 1, value!.getDate());
+  console.log(value);
+
+  const dateValue = new CalendarDate(
+    convertToDate(value!).getFullYear(),
+    convertToDate(value!).getMonth() + 1,
+    convertToDate(value!).getDate()
+  );
 
   const handleClick = (e: {
     currentTarget: { querySelector: (arg0: string) => HTMLButtonElement };

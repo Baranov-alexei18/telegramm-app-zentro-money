@@ -7,7 +7,9 @@ import { db } from '@/services/firebase/config';
 import { createCategory } from '@/services/firebase/createCategory';
 import { createTransaction } from '@/services/firebase/createTransaction';
 import { deleteCategoryById } from '@/services/firebase/deleteCategoryById';
+import { deleteTransactionById } from '@/services/firebase/deleteTransactionById';
 import { updateCategory } from '@/services/firebase/updateCategory';
+import { updateTransaction } from '@/services/firebase/updateTransaction';
 import { CategoryType } from '@/types/category';
 import { RoomType } from '@/types/room';
 import { TransactionProps } from '@/types/transaction';
@@ -26,6 +28,8 @@ type RoomStoreState = {
   addCategory: (category: { name: string; type: TRANSACTION_TYPE }) => Promise<void>;
   updateCategory: (data: CategoryType) => Promise<void>;
   deleteCategory: (categoryId: string) => Promise<void>;
+  updateTransaction: (data: TransactionProps) => Promise<void>;
+  deleteTransaction: (transactionId: string) => Promise<void>;
 };
 
 export const useRoomStore = create<RoomStoreState>((set, get) => ({
@@ -124,6 +128,57 @@ export const useRoomStore = create<RoomStoreState>((set, get) => ({
       }));
     } catch (err: any) {
       console.error('Ошибка при удалении категории:', err);
+    }
+  },
+
+  updateTransaction: async (data: TransactionProps) => {
+    const { room } = get();
+
+    const roomId = room?.id;
+
+    if (!roomId) throw new Error('roomId не найден');
+
+    try {
+      await updateTransaction(roomId, data.transactionId, data);
+
+      set((prev) => ({
+        room: prev.room
+          ? {
+              ...prev.room,
+              transactions:
+                prev.room.transactions?.map((t) =>
+                  t.transactionId === data.transactionId ? data : t
+                ) || [],
+            }
+          : prev.room,
+      }));
+    } catch (err: any) {
+      console.error('Ошибка при обновлении категории:', err);
+    }
+  },
+
+  deleteTransaction: async (transactionId: string) => {
+    const { room } = get();
+
+    const roomId = room?.id;
+
+    if (!roomId) throw new Error('roomId не найден');
+
+    try {
+      await deleteTransactionById(roomId, transactionId);
+
+      set((prev) => ({
+        room: prev.room
+          ? {
+              ...prev.room,
+              transactions: prev.room.transactions?.filter(
+                (t) => t.transactionId !== transactionId
+              ),
+            }
+          : prev.room,
+      }));
+    } catch (err: any) {
+      console.error('Ошибка при удалении транзакции:', err);
     }
   },
 }));
