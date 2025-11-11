@@ -1,10 +1,8 @@
-import { TransitionEnum } from './transition';
-import { UserType } from './user';
+import { TRANSACTION_TYPE } from '@/constants/transaction-type';
 
 export type CategoryType = {
   id: string;
+  type: TRANSACTION_TYPE;
   name: string;
-  chartColor: string;
-  type: TransitionEnum;
-  authUser?: UserType;
+  color: string;
 };

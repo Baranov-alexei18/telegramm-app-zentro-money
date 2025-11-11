@@ -3,13 +3,15 @@ import { createBrowserRouter } from 'react-router';
 import { ProtectedLayout } from '@/components/protected-layout';
 import { EditPage } from '@/pages/edit';
 import { RegisterPage } from '@/pages/register';
+import { RoomPage } from '@/pages/room';
+import { TransactionsPage } from '@/pages/transactions';
 
 import { LayoutApp } from '../components/base-layout';
 import { AuthPage } from '../pages/auth';
 import { ExpensePage } from '../pages/expense';
 import { HomePage } from '../pages/home';
-import { IncomePage } from '../pages/income';
 import { NotFoundPage } from '../pages/not-found';
+import { RoomsPage } from '../pages/rooms';
 import { ROUTE_PATHS } from './route-path';
 
 export const router = createBrowserRouter([
@@ -21,9 +23,10 @@ export const router = createBrowserRouter([
       </ProtectedLayout>
     ),
     children: [
-      { index: true, path: ROUTE_PATHS.main, element: <HomePage /> },
-      { path: `${ROUTE_PATHS.room}/:id`, element: <HomePage /> },
-      { path: ROUTE_PATHS.rooms, element: <IncomePage /> },
+      { path: ROUTE_PATHS.main, element: <HomePage /> },
+      { path: `${ROUTE_PATHS.room}/:id`, element: <RoomPage /> },
+      { path: `${ROUTE_PATHS.room}/:id${ROUTE_PATHS.transactions}`, element: <TransactionsPage /> },
+      { path: ROUTE_PATHS.rooms, element: <RoomsPage /> },
       { path: ROUTE_PATHS.statistics, element: <ExpensePage /> },
       { path: ROUTE_PATHS.profile, element: <EditPage /> },
     ],

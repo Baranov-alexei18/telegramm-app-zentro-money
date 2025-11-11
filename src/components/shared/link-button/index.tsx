@@ -1,4 +1,4 @@
-import { Link } from 'react-router';
+import { NavLink } from 'react-router';
 import cn from 'classnames';
 
 import styles from './styles.module.css';
@@ -11,8 +11,8 @@ type LinkButtonProps = {
 
 export const LinkButton = ({ href, children, className }: LinkButtonProps) => {
   return (
-    <Link className={cn(styles.link, className)} to={href}>
+    <NavLink className={cn(styles.link, className)} to={href}>
       {children}
-    </Link>
+    </NavLink>
   );
 };

@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router';
 
 import { AuthForm } from '@/components/forms/auth-form';
+import { notificationManager } from '@/components/shared/toast/utils';
 import { ROUTE_PATHS } from '@/constants/route-path';
 import { getDataUserById } from '@/services/firebase/getDataUserById';
 import { loginUser } from '@/services/firebase/loginUser';
@@ -27,7 +28,13 @@ export const AuthPage = () => {
 
       navigate(ROUTE_PATHS.main);
     } catch (err: any) {
-      alert(err.message);
+      notificationManager.add(
+        {
+          title: err.message,
+          type: 'error',
+        },
+        { timeout: 2000 }
+      );
     }
   };
 

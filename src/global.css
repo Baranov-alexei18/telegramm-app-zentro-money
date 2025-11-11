@@ -2,10 +2,11 @@
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
+  box-sizing: border-box;
 
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  color: var(--color-text);
+  background-color: var(--color-bg);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -37,6 +38,9 @@
   --color-danger: #ef4444;
   --color-danger-dark: #f87171;
 
+  --color-warning: #efd544;
+  --color-warning-dark: #e4c86d;
+
   /* === Neutral / UI === */
   --color-muted: #b9b9b9;
   --color-muted-dark: #6b7280;
@@ -46,6 +50,10 @@
 
   --color-card: #f7f9fc;
   --color-card-dark: #1a1d1f;
+}
+
+* {
+  box-sizing: border-box;
 }
 
 body {

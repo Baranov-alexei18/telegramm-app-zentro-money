@@ -13,6 +13,7 @@
 
 .title {
   text-align: center;
+  color: var(--color-text-dark);
 }
 
 .formButton {
@@ -24,6 +25,7 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  color: var(--color-text-dark);
   gap: 6px;
   font-size: 14px;
   margin-top: 4px;

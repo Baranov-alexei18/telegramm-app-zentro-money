@@ -6,6 +6,8 @@ import Logo from '@/assets/images/logo.png';
 import { Button } from '@/components/shared/button';
 import { Input } from '@/components/shared/input';
 import { LinkButton } from '@/components/shared/link-button';
+import { notificationManager } from '@/components/shared/toast/utils';
+import { ROUTE_PATHS } from '@/constants/route-path';
 
 import styles from './styles.module.css';
 
@@ -51,21 +53,30 @@ export const RegisterForm = ({ onSubmit }: RegisterFormProps) => {
       <img src={Logo} alt="Logo" className={styles.logoWrapper} />
       <h2 className={styles.title}>Регистрация</h2>
 
-      <Input label="Логин" value={form.login} onChange={handleChange('login')} />
-      <Input label="Email" type="email" value={form.email} onChange={handleChange('email')} />
+      <Input label="Логин" value={form.login} onChange={handleChange('login')} required={true} />
+      <Input
+        label="Email"
+        type="email"
+        value={form.email}
+        onChange={handleChange('email')}
+        required={true}
+      />
       <Input
         label="Пароль"
         type="password"
         value={form.password}
         error={error}
         onChange={handleChange('password')}
+        required={true}
       />
       <Input
         label="Подтвердите пароль"
         type="password"
         value={form.confirmPassword}
         error={error}
+        validate={(value) => (value !== form.password ? 'Пароли не совпадают!' : null)}
         onChange={handleChange('confirmPassword')}
+        required={true}
       />
 
       <Button type="submit" className={styles.formButton}>
@@ -74,7 +85,7 @@ export const RegisterForm = ({ onSubmit }: RegisterFormProps) => {
 
       <div className={styles.footer}>
         <span>Уже есть аккаунт?</span>
-        <LinkButton href="/auth" className={styles.footerLink}>
+        <LinkButton href={ROUTE_PATHS.auth} className={styles.footerLink}>
           Войти
         </LinkButton>
       </div>

@@ -1,0 +1,45 @@
+.wrapper {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border: 2px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-bg);
+  cursor: pointer;
+  transition:
+    border-color 0.25s ease,
+    background 0.25s ease,
+    transform 0.15s ease;
+}
+
+.wrapper:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.active {
+  background: rgba(117, 150, 217, 0.05);
+}
+
+.name {
+  font-size: 15px;
+  color: var(--color-text);
+  text-align: left;
+}
+
+.indicator {
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--color-border);
+  border-radius: 50%;
+  flex-shrink: 0;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.indicatorActive {
+  border-color: currentColor;
+  background: currentColor;
+}

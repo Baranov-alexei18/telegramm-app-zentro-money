@@ -1,0 +1,112 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.categoryRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.menuButton {
+  background: transparent;
+  color: black;
+  font-size: 18px;
+  padding: 4px 8px;
+  border-radius: 8px;
+  transition: background 0.2s ease;
+}
+
+.menuButton:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.popover {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: var(--color-bg);
+  border-radius: 10px;
+  padding: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.menu {
+  display: flex;
+  flex-direction: column;
+  color: black;
+  gap: 6px;
+}
+
+.menuItem {
+  display: flex;
+  gap: 4px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.menuItemDelete {
+  color: #ff6b6b;
+  font-size: 14px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.menuItemDelete:hover {
+  background: rgba(255, 0, 0, 0.15);
+}
+
+.editWrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.editInput {
+  flex: 1;
+  background: var(--color-bg);
+  border: 1px solid black;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.saveButton {
+  font-size: 14px;
+  padding: 10px 8px;
+  background-color: unset;
+  border: 1px solid black;
+}
+
+.addCategoryRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.addInput {
+  border-radius: 8px;
+  padding: 12px 12px;
+  max-height: 40px;
+}
+
+.addButton {
+  background-color: unset;
+  border: 1px solid var(--color-border);
+  max-height: 40px;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}

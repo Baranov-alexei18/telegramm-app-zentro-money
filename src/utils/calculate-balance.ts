@@ -1,10 +1,11 @@
-import { TransitionEnum, TransitionType } from '@/types/transition';
+import { TRANSACTION_TYPE } from '@/constants/transaction-type';
+import { TransactionProps } from '@/types/transaction';
 
-export const calculateBalance = (transitions: TransitionType[]) => {
+export const calculateBalance = (transitions: TransactionProps[]) => {
   return transitions.reduce((acc, curr) => {
-    if (curr.type === TransitionEnum.INCOME) {
+    if (curr.type === TRANSACTION_TYPE.INCOME) {
       return acc + curr.amount;
-    } else if (curr.type === TransitionEnum.EXPENSE) {
+    } else if (curr.type === TRANSACTION_TYPE.EXPENSE) {
       return acc - curr.amount;
     }
     return acc;

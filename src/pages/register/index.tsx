@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router';
 
 import { RegisterForm } from '@/components/forms/register-form';
+import { notificationManager } from '@/components/shared/toast/utils';
 import { ROUTE_PATHS } from '@/constants/route-path';
 import { registerUser } from '@/services/firebase/registerUser';
 import { useUserStore } from '@/store/userStore';
@@ -22,8 +23,13 @@ export const RegisterPage = () => {
 
       navigate(ROUTE_PATHS.auth);
     } catch (err: any) {
-      // TODO: заменить alert на notification
-      alert(err.message);
+      notificationManager.add(
+        {
+          title: err.message,
+          type: 'error',
+        },
+        { timeout: 2000 }
+      );
     }
   };
 
