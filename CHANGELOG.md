@@ -1,3 +1,15 @@
+# [1.11.0](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/compare/v1.10.0...v1.11.0) (2025-11-11)
+
+
+### Features
+
+* add actions for category ([5515f26](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/commit/5515f26c426c7596e04f6e37893676a7cd070232))
+* add functional with edit/delete transactions ([39ad920](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/commit/39ad9202408f3132ffacdc35b88bc61fdf5bae88))
+* add navigation menu ([7a5cfa6](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/commit/7a5cfa6a0a609c0eefc910c315aa8236fc0942e0))
+* add new components and pages ([65485d8](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/commit/65485d8505a55881ef0d95b70bd2f28bc5ea4e1c))
+* add rooms in firebase ([4a4d6ff](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/commit/4a4d6ff53458c79786d6cae9e945f47354004f96))
+* update ui library ([3a6e296](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/commit/3a6e296858bfd598996a301c2d172c2ed38dc377))
+
 # [1.10.0](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/compare/v1.9.0...v1.10.0) (2025-10-11)
 
 
