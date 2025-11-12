@@ -1,3 +1,10 @@
+# [1.13.0](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/compare/v1.12.0...v1.13.0) (2025-11-12)
+
+
+### Features
+
+* add notification for send to join team ([7329211](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/commit/7329211aaeb4c7bf103d1c5ecf189b056855fa57))
+
 # [1.12.0](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/compare/v1.11.0...v1.12.0) (2025-11-12)
 
 
