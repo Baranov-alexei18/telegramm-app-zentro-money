@@ -1,10 +1,11 @@
+import { ReactNode } from 'react';
 import { Button as HeadlessButton, ButtonProps } from 'react-aria-components';
 import cn from 'classnames';
 
 import styles from './styles.module.css';
 
 type ButtonType = ButtonProps & {
-  children: string;
+  children: ReactNode;
   onClick?: () => void;
   type?: 'button' | 'submit';
   className?: string;

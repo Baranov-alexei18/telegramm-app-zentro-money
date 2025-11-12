@@ -7,6 +7,7 @@
   gap: 8px;
   border-radius: 8px;
   outline: none;
+  z-index: 1000;
 
   &[data-focus-visible] {
     outline: 2px solid slateblue;

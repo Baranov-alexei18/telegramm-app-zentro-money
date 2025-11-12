@@ -1,18 +1,21 @@
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, doc, getDocs } from 'firebase/firestore';
 import { create } from 'zustand';
 
-import { COLLECTION_ROOM, SUB_COLLECTION_TRANSACTIONS } from '@/constants/db';
+import { COLLECTION_ROOM, COLLECTION_USER, SUB_COLLECTION_TRANSACTIONS } from '@/constants/db';
 import { TRANSACTION_TYPE } from '@/constants/transaction-type';
 import { db } from '@/services/firebase/config';
 import { createCategory } from '@/services/firebase/createCategory';
 import { createTransaction } from '@/services/firebase/createTransaction';
 import { deleteCategoryById } from '@/services/firebase/deleteCategoryById';
 import { deleteTransactionById } from '@/services/firebase/deleteTransactionById';
+import { joinUserToRoom } from '@/services/firebase/joinUserToRoom';
+import { removeNotificationRoom } from '@/services/firebase/removeNotificationRoom';
 import { updateCategory } from '@/services/firebase/updateCategory';
 import { updateTransaction } from '@/services/firebase/updateTransaction';
 import { CategoryType } from '@/types/category';
-import { RoomType } from '@/types/room';
+import { RolesRoom, RoomType } from '@/types/room';
 import { TransactionProps } from '@/types/transaction';
+import { UserType } from '@/types/user';
 
 type RoomStoreState = {
   room: RoomType | null;
@@ -30,6 +33,8 @@ type RoomStoreState = {
   deleteCategory: (categoryId: string) => Promise<void>;
   updateTransaction: (data: TransactionProps) => Promise<void>;
   deleteTransaction: (transactionId: string) => Promise<void>;
+  addUserToRoom: (userId: string) => Promise<void>;
+  removeNotification: (userId: string) => Promise<void>;
 };
 
 export const useRoomStore = create<RoomStoreState>((set, get) => ({
@@ -179,6 +184,41 @@ export const useRoomStore = create<RoomStoreState>((set, get) => ({
       }));
     } catch (err: any) {
       console.error('Ошибка при удалении транзакции:', err);
+    }
+  },
+
+  addUserToRoom: async (userId) => {
+    const { room } = get();
+
+    if (!room) throw new Error('Комната не найдена');
+
+    try {
+      const data = await joinUserToRoom(userId, room);
+
+      set({
+        room: {
+          ...room,
+          members: data?.members || room.members,
+          notifications: data?.notifications,
+        },
+      });
+    } catch (err: any) {
+      console.error('Ошибка при добавлении пользователя в комнату:', err);
+    }
+  },
+
+  removeNotification: async (userId) => {
+    const { room } = get();
+    if (!room) throw new Error('Комната не найдена');
+
+    try {
+      const notifications = await removeNotificationRoom(userId, room);
+
+      set({
+        room: { ...room, notifications: notifications },
+      });
+    } catch (err: any) {
+      console.error('Ошибка при удалении уведомления:', err);
     }
   },
 }));

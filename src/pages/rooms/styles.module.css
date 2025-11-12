@@ -105,3 +105,10 @@
   background-color: #fff;
   color: #000;
 }
+
+.connectRoom {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+}

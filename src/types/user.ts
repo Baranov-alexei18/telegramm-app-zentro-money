@@ -1,3 +1,5 @@
+import { RolesRoom } from './room';
+
 export type UserType = {
   id: string;
   email: string;
@@ -14,4 +16,8 @@ export type TelegramUser = {
   lastName: string;
   username?: string;
   telegramId?: string;
+};
+
+export type UserWithRoleRoom = UserType & {
+  role: RolesRoom;
 };
