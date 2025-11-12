@@ -123,3 +123,7 @@
   justify-content: center;
   gap: 6px;
 }
+
+.categorySum {
+  color: inherit;
+}

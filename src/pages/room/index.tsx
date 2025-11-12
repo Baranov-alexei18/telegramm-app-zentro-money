@@ -1,16 +1,22 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router';
 
 import { TransactionForm } from '@/components/forms/transaction-form';
 import { BottomSheet } from '@/components/shared/bottom-sheet';
 import { Button } from '@/components/shared/button';
+import { notificationManager } from '@/components/shared/toast/utils';
 import { ROUTE_PATHS } from '@/constants/route-path';
 import { TRANSACTION_TYPE } from '@/constants/transaction-type';
+import { getRoomUsers } from '@/services/firebase/getRoomUsers';
 import { getUserRooms } from '@/services/firebase/getUserRooms';
 import { useAppStore } from '@/store/appStore';
 import { useRoomStore } from '@/store/roomStore';
 import { useUserStore } from '@/store/userStore';
+import { RolesRoom } from '@/types/room';
 import { TransactionFormValues } from '@/types/transaction';
+import { UserWithRoleRoom } from '@/types/user';
+
+import { NotificationPanel } from './notification-panel';
 
 import styles from './styles.module.css';
 
@@ -22,28 +28,40 @@ export const RoomPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
+  const [membersInfo, setMembersInfo] = useState<UserWithRoleRoom[]>([]);
+
   useEffect(() => {
     const fetchRoom = async () => {
       if (!user) return;
+
+      let currentRoom = room;
+
       try {
-        const rooms = await getUserRooms(user.id);
-
-        const currentRoom = rooms.find((r) => r.id === id);
-
         if (!currentRoom?.id) {
-          return;
+          const rooms = await getUserRooms(user.id);
+
+          currentRoom = rooms.find((r) => r.id === id) || null;
         }
 
-        fetchTransactions(currentRoom?.id);
+        if (!currentRoom?.id) return;
 
-        setRoom(currentRoom || null);
+        setRoom(currentRoom);
+
+        const [_, users] = await Promise.all([
+          fetchTransactions(currentRoom.id),
+          getRoomUsers(currentRoom),
+        ]);
+
+        setMembersInfo(users);
+
+        setMembersInfo(users);
       } catch (e) {
-        console.error(e);
+        console.error('Ошибка при загрузке комнаты или участников:', e);
       }
     };
 
     fetchRoom();
-  }, [user, id, fetchTransactions, setRoom]);
+  }, [user, id, fetchTransactions, setRoom, room]);
 
   if (!room) {
     return <div className={styles.loader}>Загрузка...</div>;
@@ -72,6 +90,27 @@ export const RoomPage = () => {
     navigate(`${location.pathname}${ROUTE_PATHS.transactions}`, { state: { type } });
   };
 
+  const handleCopyIdRoom = async () => {
+    try {
+      await navigator.clipboard.writeText(room.id);
+    } catch (err) {
+      const textarea = document.createElement('textarea');
+      textarea.value = room.id;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+    }
+
+    notificationManager.add(
+      {
+        title: 'Ссылка скопирована',
+        type: 'ok',
+      },
+      { timeout: 1000 }
+    );
+  };
+
   const lastTransactions = room.transactions?.slice(-5).reverse() || [];
 
   return (
@@ -79,7 +118,40 @@ export const RoomPage = () => {
       <header className={styles.header}>
         <h1 className={styles.title}>{room.name}</h1>
         <p className={styles.description}>{room.description}</p>
+
+        {membersInfo.length > 0 && (
+          <BottomSheet
+            id="room-members"
+            triggerComponent={
+              <div className={styles.membersTrigger}>
+                👥 {membersInfo.length} участник{membersInfo.length > 1 ? 'ов' : ''}
+              </div>
+            }
+          >
+            <div className={styles.membersList}>
+              <h3 className={styles.membersTitle}>Участники комнаты ({membersInfo.length} из 5)</h3>
+              <Button onClick={handleCopyIdRoom}>Добавить нового участника</Button>
+              <ul className={styles.membersListWrapper}>
+                {membersInfo.map((member) => (
+                  <li key={member.id} className={styles.memberItem}>
+                    <div className={styles.memberAvatar}>{member.firstName}</div>
+                    <div className={styles.memberInfo}>
+                      <p className={styles.memberName}>
+                        {member.firstName || member.email}{' '}
+                        {member.role === RolesRoom.ADMIN && (
+                          <span className={styles.adminBadge}>Админ</span>
+                        )}
+                      </p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </BottomSheet>
+        )}
       </header>
+
+      <NotificationPanel notifications={room.notifications} />
 
       <div className={styles.card}>
         <div className={styles.cardHeader}>
@@ -106,7 +178,6 @@ export const RoomPage = () => {
           Все поступления
         </Button>
       </div>
-
       <div className={styles.card}>
         <div className={styles.cardHeader}>
           <h2>Расход</h2>
@@ -132,7 +203,6 @@ export const RoomPage = () => {
           Все траты
         </Button>
       </div>
-
       <div className={styles.transactions}>
         <h3 className={styles.subTitle}>Последние транзакции</h3>
         {lastTransactions.length ? (

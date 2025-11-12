@@ -113,6 +113,8 @@ export const TransactionsPage = () => {
             return null;
           }
 
+          const categoryTotal = transactions.reduce((sum, t) => sum + Number(t.amount || 0), 0);
+
           return (
             <div key={category.id} className={styles.categoryCard}>
               <div
@@ -130,6 +132,10 @@ export const TransactionsPage = () => {
                     }}
                   />
                   <span className={styles.categoryName}>{category.name}</span>
+                  <span className={styles.categorySum}>
+                    {viewType === TRANSACTION_TYPE.EXPENSE ? '-' : '+'}
+                    {categoryTotal} у.е.
+                  </span>
                 </div>
                 <span className={styles.arrow}>{isOpen ? <ArrowUpIcon /> : <ArrowDownIcon />}</span>
               </div>
