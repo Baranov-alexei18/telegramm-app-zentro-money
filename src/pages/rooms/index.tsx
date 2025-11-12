@@ -62,6 +62,14 @@ export const RoomsPage = () => {
 
     await sendJoinRoomRequest(roomId, user);
 
+    notificationManager.add(
+      {
+        title: 'Заявка в комнату отправлена, ожидайте...',
+        type: 'ok',
+      },
+      { timeout: 2000 }
+    );
+
     setRoomId('');
   };
 
