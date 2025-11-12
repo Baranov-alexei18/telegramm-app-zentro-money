@@ -13,9 +13,9 @@ export const syncTelegramUser = async (user: TelegramUser) => {
     await setDoc(userDocRef, {
       id: user.id,
       telegramId: user.id,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      username: user.username,
+      firstName: user?.firstName || '',
+      lastName: user?.lastName || '',
+      username: user?.username || '',
       createdAt: serverTimestamp(),
     });
   }
