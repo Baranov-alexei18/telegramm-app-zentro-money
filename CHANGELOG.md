@@ -1,3 +1,10 @@
+# [1.12.0](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/compare/v1.11.0...v1.12.0) (2025-11-12)
+
+
+### Features
+
+* add opportunity user to room ([a879dad](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/commit/a879dad78fcd72bac041fdb219babf27be6a163b))
+
 # [1.11.0](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/compare/v1.10.0...v1.11.0) (2025-11-11)
 
 
