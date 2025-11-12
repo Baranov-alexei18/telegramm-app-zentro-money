@@ -26,6 +26,7 @@ export const createRoom = async ({ userId, name, description }: CreateRoomParams
         },
       },
       transactions: [],
+      notifications: [],
     });
 
     await updateDoc(roomRef, {
