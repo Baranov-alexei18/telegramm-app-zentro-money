@@ -1,4 +1,4 @@
-import { StrictMode, useLayoutEffect } from 'react';
+import { StrictMode, useEffect } from 'react';
 import { RouterProvider } from 'react-router';
 
 import { AppLoader } from './components/app-loader';
@@ -14,7 +14,7 @@ import { useUserStore } from './store/userStore';
 export const App = () => {
   const { loading, setLoading, setUser } = useUserStore();
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const auth = async () => {
       setLoading(true);
 

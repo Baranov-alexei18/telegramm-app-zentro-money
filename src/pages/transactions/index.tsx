@@ -31,18 +31,18 @@ export const TransactionsPage = () => {
 
   useEffect(() => {
     const fetchRoom = async () => {
-      if (!user || room?.id === params.id) return;
+      if (!user || room?.roomId === params.id) return;
 
       try {
         const rooms = await getUserRooms(user.id);
 
-        const currentRoom = rooms.find((r) => r.id === params.id);
+        const currentRoom = rooms.find((r) => r.roomId === params.id);
 
-        if (!currentRoom?.id) {
+        if (!currentRoom?.roomId) {
           return;
         }
 
-        fetchTransactions(currentRoom?.id);
+        fetchTransactions(currentRoom?.roomId);
 
         setRoom(currentRoom || null);
       } catch (e) {
@@ -51,7 +51,7 @@ export const TransactionsPage = () => {
     };
 
     fetchRoom();
-  }, [user, setRoom, room?.id, params.id, fetchTransactions]);
+  }, [user, setRoom, room?.roomId, params.id, fetchTransactions]);
 
   const handleToggleCategory = (categoryId: string) => {
     setExpandedCategory((prev) => (prev === categoryId ? null : categoryId));

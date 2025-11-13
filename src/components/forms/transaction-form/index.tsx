@@ -86,6 +86,7 @@ export const TransactionForm = ({ type, categories, onSubmit, values }: Transact
   const handleDeleteCategory = (categoryId: string) => {
     deleteCategory(categoryId);
   };
+
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)} className={styles.formWrapper}>
       <Controller

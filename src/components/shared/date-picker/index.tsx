@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import {
   Button,
   Calendar,
@@ -14,7 +15,7 @@ import {
   Label,
   Popover,
 } from 'react-aria-components';
-import { CalendarDate, fromDate } from '@internationalized/date';
+import { CalendarDate } from '@internationalized/date';
 import cn from 'classnames';
 
 import { convertToDate } from '@/utils/convertToDate';
@@ -40,13 +41,11 @@ export const DatePicker = ({
   error,
   className,
 }: Props) => {
-  console.log(value);
-
-  const dateValue = new CalendarDate(
-    convertToDate(value!).getFullYear(),
-    convertToDate(value!).getMonth() + 1,
-    convertToDate(value!).getDate()
-  );
+  const dateValue = useMemo(() => {
+    if (!value) return null;
+    const date = convertToDate(value);
+    return new CalendarDate(date.getFullYear(), date.getMonth() + 1, date.getDate());
+  }, [value]);
 
   const handleClick = (e: {
     currentTarget: { querySelector: (arg0: string) => HTMLButtonElement };
