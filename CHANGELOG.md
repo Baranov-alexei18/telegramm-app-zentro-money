@@ -1,3 +1,10 @@
+# [1.15.0](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/compare/v1.14.0...v1.15.0) (2025-11-13)
+
+
+### Features
+
+* add app start loader ([c490845](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/commit/c490845c6af8f89b9e3a20385acd9936548fd637))
+
 # [1.14.0](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/compare/v1.13.0...v1.14.0) (2025-11-12)
 
 
