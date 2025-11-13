@@ -1,6 +1,7 @@
-import { StrictMode, useEffect } from 'react';
+import { StrictMode, useLayoutEffect } from 'react';
 import { RouterProvider } from 'react-router';
 
+import { AppLoader } from './components/app-loader';
 import { ErrorBoundary } from './components/error-boundary';
 import { Toasts } from './components/shared/toast';
 import { notificationManager } from './components/shared/toast/utils';
@@ -11,9 +12,9 @@ import { syncTelegramUser } from './services/telegram/syncTelegramUser';
 import { useUserStore } from './store/userStore';
 
 export const App = () => {
-  const { setLoading, setUser } = useUserStore();
+  const { loading, setLoading, setUser } = useUserStore();
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const auth = async () => {
       setLoading(true);
 
@@ -46,6 +47,10 @@ export const App = () => {
 
     auth();
   }, []);
+
+  if (loading) {
+    return <AppLoader />;
+  }
 
   return (
     <StrictMode>

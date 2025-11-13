@@ -9,9 +9,7 @@ type Props = {
 };
 
 export const ProtectedLayout: FC<Props> = ({ children }) => {
-  const { user, loading } = useUserStore();
-
-  if (loading) return <div>Загрузка...</div>;
+  const { user } = useUserStore();
 
   if (!user) return <Navigate to={ROUTE_PATHS.auth} replace />;
 

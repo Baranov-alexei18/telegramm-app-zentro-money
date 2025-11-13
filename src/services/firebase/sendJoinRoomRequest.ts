@@ -33,7 +33,7 @@ export const sendJoinRoomRequest = async (roomId: string, user: UserType) => {
     const newNotification = {
       userId: user.id,
       name: `${user.firstName} ${user.lastName}`,
-      email: user.email,
+      email: user?.email || '',
       type: 'join_request',
     };
 
@@ -46,7 +46,7 @@ export const sendJoinRoomRequest = async (roomId: string, user: UserType) => {
     notificationManager.add(
       {
         title: error.message,
-        type: 'error',
+        type: 'warn',
       },
       { timeout: 1000 }
     );
