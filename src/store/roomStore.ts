@@ -1,7 +1,8 @@
-import { collection, doc, getDocs } from 'firebase/firestore';
+import { collection, getDocs } from 'firebase/firestore';
 import { create } from 'zustand';
 
-import { COLLECTION_ROOM, COLLECTION_USER, SUB_COLLECTION_TRANSACTIONS } from '@/constants/db';
+import { notificationManager } from '@/components/shared/toast/utils';
+import { COLLECTION_ROOM, SUB_COLLECTION_TRANSACTIONS } from '@/constants/db';
 import { TRANSACTION_TYPE } from '@/constants/transaction-type';
 import { db } from '@/services/firebase/config';
 import { createCategory } from '@/services/firebase/createCategory';
@@ -13,9 +14,8 @@ import { removeNotificationRoom } from '@/services/firebase/removeNotificationRo
 import { updateCategory } from '@/services/firebase/updateCategory';
 import { updateTransaction } from '@/services/firebase/updateTransaction';
 import { CategoryType } from '@/types/category';
-import { RolesRoom, RoomType } from '@/types/room';
+import { RoomType } from '@/types/room';
 import { TransactionProps } from '@/types/transaction';
-import { UserType } from '@/types/user';
 
 type RoomStoreState = {
   room: RoomType | null;
@@ -84,7 +84,8 @@ export const useRoomStore = create<RoomStoreState>((set, get) => ({
   },
 
   addCategory: async (category: { name: string; type: TRANSACTION_TYPE }) => {
-    const roomId = get().room?.id;
+    const roomId = get().room?.roomId;
+
     if (!roomId) throw new Error('roomId не найден');
 
     try {
@@ -103,7 +104,7 @@ export const useRoomStore = create<RoomStoreState>((set, get) => ({
   updateCategory: async (data: CategoryType) => {
     const { room } = get();
 
-    const roomId = room?.id;
+    const roomId = room?.roomId;
 
     if (!roomId) throw new Error('roomId не найден');
 
@@ -121,7 +122,7 @@ export const useRoomStore = create<RoomStoreState>((set, get) => ({
   deleteCategory: async (categoryId: string) => {
     const { room } = get();
 
-    const roomId = room?.id;
+    const roomId = room?.roomId;
 
     if (!roomId) throw new Error('roomId не найден');
 
@@ -139,7 +140,7 @@ export const useRoomStore = create<RoomStoreState>((set, get) => ({
   updateTransaction: async (data: TransactionProps) => {
     const { room } = get();
 
-    const roomId = room?.id;
+    const roomId = room?.roomId;
 
     if (!roomId) throw new Error('roomId не найден');
 
@@ -165,7 +166,7 @@ export const useRoomStore = create<RoomStoreState>((set, get) => ({
   deleteTransaction: async (transactionId: string) => {
     const { room } = get();
 
-    const roomId = room?.id;
+    const roomId = room?.roomId;
 
     if (!roomId) throw new Error('roomId не найден');
 
@@ -202,8 +203,22 @@ export const useRoomStore = create<RoomStoreState>((set, get) => ({
           notifications: data?.notifications,
         },
       });
+
+      notificationManager.add(
+        {
+          title: 'Пользователь добавлен',
+          type: 'ok',
+        },
+        { timeout: 1500 }
+      );
     } catch (err: any) {
-      console.error('Ошибка при добавлении пользователя в комнату:', err);
+      notificationManager.add(
+        {
+          title: err.message || 'Ошибка при добавлении пользователя',
+          type: 'error',
+        },
+        { timeout: 1500 }
+      );
     }
   },
 

@@ -99,7 +99,11 @@ export const RoomsPage = () => {
 
       <div className={styles.roomsGrid}>
         {rooms.map((room) => (
-          <div key={room.id} className={styles.roomCard} onClick={() => handleToRoom(room.id)}>
+          <div
+            key={room.roomId}
+            className={styles.roomCard}
+            onClick={() => handleToRoom(room.roomId)}
+          >
             <div className={styles.roomHeader}>
               <h2 className={styles.roomName}>{room.name}</h2>
             </div>
@@ -108,7 +112,7 @@ export const RoomsPage = () => {
             <div className={styles.actions}>
               <Button
                 className={styles.transactionButton}
-                onClick={() => handleAddTransaction(room.id)}
+                onClick={() => handleAddTransaction(room.roomId)}
               >
                 Добавить транзакцию
               </Button>

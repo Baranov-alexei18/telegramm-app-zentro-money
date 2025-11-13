@@ -12,10 +12,11 @@ import { getUserRooms } from '@/services/firebase/getUserRooms';
 import { useAppStore } from '@/store/appStore';
 import { useRoomStore } from '@/store/roomStore';
 import { useUserStore } from '@/store/userStore';
-import { RolesRoom } from '@/types/room';
+import { RolesRoom, RoomType } from '@/types/room';
 import { TransactionFormValues } from '@/types/transaction';
 import { UserWithRoleRoom } from '@/types/user';
 
+import { ChatPanel } from './chat-panel';
 import { NotificationPanel } from './notification-panel';
 
 import styles from './styles.module.css';
@@ -34,25 +35,19 @@ export const RoomPage = () => {
     const fetchRoom = async () => {
       if (!user) return;
 
-      let currentRoom = room;
-
       try {
-        if (!currentRoom?.id) {
-          const rooms = await getUserRooms(user.id);
+        const rooms = await getUserRooms(user.id);
 
-          currentRoom = rooms.find((r) => r.id === id) || null;
-        }
+        const currentRoom = rooms.find((r) => r.roomId === id) || null;
 
-        if (!currentRoom?.id) return;
+        if (!currentRoom?.roomId) return;
 
         setRoom(currentRoom);
 
         const [_, users] = await Promise.all([
-          fetchTransactions(currentRoom.id),
+          fetchTransactions(currentRoom.roomId),
           getRoomUsers(currentRoom),
         ]);
-
-        setMembersInfo(users);
 
         setMembersInfo(users);
       } catch (e) {
@@ -61,7 +56,7 @@ export const RoomPage = () => {
     };
 
     fetchRoom();
-  }, [user, id, fetchTransactions, setRoom, room]);
+  }, [id]);
 
   if (!room) {
     return <div className={styles.loader}>Загрузка...</div>;
@@ -72,13 +67,13 @@ export const RoomPage = () => {
 
     const transactionData = {
       userId: user.id,
-      roomId: room.id,
+      roomId: room.roomId,
       type: type,
       ...data,
     };
 
     try {
-      await addTransaction(room.id, transactionData);
+      await addTransaction(room.roomId, transactionData);
     } catch (e) {
       alert(e);
     }
@@ -92,10 +87,10 @@ export const RoomPage = () => {
 
   const handleCopyIdRoom = async () => {
     try {
-      await navigator.clipboard.writeText(room.id);
+      await navigator.clipboard.writeText(room.roomId);
     } catch (err) {
       const textarea = document.createElement('textarea');
-      textarea.value = room.id;
+      textarea.value = room.roomId;
       document.body.appendChild(textarea);
       textarea.select();
       document.execCommand('copy');
@@ -152,6 +147,8 @@ export const RoomPage = () => {
       </header>
 
       <NotificationPanel notifications={room.notifications} />
+
+      <ChatPanel />
 
       <div className={styles.card}>
         <div className={styles.cardHeader}>

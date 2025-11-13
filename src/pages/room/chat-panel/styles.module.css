@@ -1,0 +1,59 @@
+.chatPanel {
+  display: flex;
+  flex-direction: column;
+  height: 80vh;
+  padding: 12px;
+}
+
+.title {
+  font-weight: 600;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.messages {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.message {
+  background: var(--color-indigo);
+  padding: 8px 12px;
+  border-radius: 10px;
+  max-width: 80%;
+  align-self: flex-start;
+}
+
+.myMessage {
+  background: #0066ff;
+  align-self: flex-end;
+}
+
+.sender {
+  font-size: 12px;
+  margin-bottom: 4px;
+  margin-top: 0;
+}
+
+.text {
+  color: #fff;
+  word-wrap: break-word;
+  margin: 0;
+}
+
+.inputWrapper {
+  display: flex;
+  gap: 8px;
+}
+
+.input {
+  flex: 1;
+}
+
+.sendButton {
+  padding: 8px;
+}

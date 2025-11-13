@@ -21,7 +21,7 @@ export const getUserRooms = async (userId: string) => {
     const querySnapshot = await getDocs(roomsQuery);
 
     const rooms = querySnapshot.docs.map((doc) => ({
-      id: doc.id,
+      roomId: doc.id,
       ...doc.data(),
     })) as RoomType[];
 

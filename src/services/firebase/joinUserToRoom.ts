@@ -3,14 +3,13 @@ import { arrayUnion, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { notificationManager } from '@/components/shared/toast/utils';
 import { COLLECTION_ROOM, COLLECTION_USER } from '@/constants/db';
 import { RolesRoom, RoomType } from '@/types/room';
-import { UserType } from '@/types/user';
 
 import { db } from './config';
 
 export const joinUserToRoom = async (userId: string, room: RoomType) => {
   if (!room) throw new Error('Комната не найдена');
 
-  const roomRef = doc(db, COLLECTION_ROOM, room.id);
+  const roomRef = doc(db, COLLECTION_ROOM, room.roomId);
   const userRef = doc(db, COLLECTION_USER, userId);
 
   const alreadyInRoom = !!room.members?.[userId];
@@ -38,7 +37,7 @@ export const joinUserToRoom = async (userId: string, room: RoomType) => {
     }
 
     await updateDoc(userRef, {
-      rooms: arrayUnion(room.id),
+      rooms: arrayUnion(room.roomId),
     });
 
     return {

@@ -14,7 +14,7 @@ export type NotificationRoomType = {
 };
 
 export type RoomType = {
-  id: string;
+  roomId: string;
   name: string;
   members: Record<
     string,

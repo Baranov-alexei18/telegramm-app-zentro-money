@@ -9,7 +9,7 @@ import { db } from './config';
 export const removeNotificationRoom = async (userId: string, room: RoomType) => {
   if (!room) throw new Error('Комната не найдена');
 
-  const roomRef = doc(db, COLLECTION_ROOM, room.id);
+  const roomRef = doc(db, COLLECTION_ROOM, room.roomId);
 
   try {
     const updatedNotifications = room.notifications?.filter((n) => n.userId !== userId) || [];
