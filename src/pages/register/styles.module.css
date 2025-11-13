@@ -8,7 +8,7 @@
 
 .wrapperContent {
   width: 700px;
-  height: 500px;
+  height: auto;
   margin: auto;
   padding: 20px;
 }

@@ -3,6 +3,7 @@ import { Controller, useForm } from 'react-hook-form';
 
 import { Button } from '@/components/shared/button';
 import { Input } from '@/components/shared/input';
+import { notificationManager } from '@/components/shared/toast/utils';
 import { createRoom } from '@/services/firebase/createRoom';
 import { useAppStore } from '@/store/appStore';
 import { useUserStore } from '@/store/userStore';
@@ -39,9 +40,14 @@ export const CreateRoomForm = () => {
 
       setUser({ ...user, rooms: [...(user?.rooms || []), roomId] });
       closeTopBottomSheet();
-    } catch (error) {
-      console.error('Ошибка при создании комнаты:', error);
-      alert('Произошла ошибка при создании комнаты ❌');
+    } catch (error: any) {
+      notificationManager.add(
+        {
+          title: error.message,
+          type: 'error',
+        },
+        { timeout: 2000 }
+      );
     } finally {
       setIsLoading(false);
     }

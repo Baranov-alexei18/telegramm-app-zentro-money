@@ -23,7 +23,7 @@ export const useUserStore = create<Props>((set, get) => ({
   //   telegramId: null,
   // },
   user: null,
-  loading: false,
+  loading: true,
   error: null,
   setUser: (user: UserType | null) => set({ user }),
   setLoading: (data: boolean) => set({ loading: data }),
