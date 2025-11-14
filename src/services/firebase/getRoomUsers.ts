@@ -1,7 +1,8 @@
 import { collection, getDocs, query, where } from 'firebase/firestore';
 
 import { COLLECTION_USER } from '@/constants/db';
-import { RolesRoom, RoomType } from '@/types/room';
+import { RoomUserRole } from '@/constants/room-roles';
+import { RoomType } from '@/types/room';
 import { UserType, UserWithRoleRoom } from '@/types/user';
 
 import { db } from './config';
@@ -31,7 +32,7 @@ export const getRoomUsers = async (room: RoomType): Promise<UserWithRoleRoom[]> 
         users.push({
           ...userData,
           id: doc.id,
-          role: members[doc.id]?.role || RolesRoom.USER,
+          role: members[doc.id]?.role || RoomUserRole.USER,
         });
       });
     }

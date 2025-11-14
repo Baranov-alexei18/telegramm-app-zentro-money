@@ -1,4 +1,4 @@
-import { StrictMode, useEffect } from 'react';
+import React, { StrictMode, useEffect } from 'react';
 import { RouterProvider } from 'react-router';
 
 import { AppLoader } from './components/app-loader';
@@ -46,7 +46,7 @@ export const App = () => {
     };
 
     auth();
-  }, []);
+  }, [setLoading, setUser]);
 
   if (loading) {
     return <AppLoader />;
