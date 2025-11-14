@@ -1,3 +1,10 @@
+# [1.17.0](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/compare/v1.16.0...v1.17.0) (2025-11-14)
+
+
+### Features
+
+* add roles in room ([d0f3be7](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/commit/d0f3be74302e520edc8b172f496f7e7c69ce04ce))
+
 # [1.16.0](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/compare/v1.15.0...v1.16.0) (2025-11-13)
 
 
