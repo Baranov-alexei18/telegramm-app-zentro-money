@@ -1,4 +1,4 @@
-import { RolesRoom } from './room';
+import { RoomUserRole } from '@/constants/room-roles';
 
 export type UserType = {
   id: string;
@@ -19,5 +19,5 @@ export type TelegramUser = {
 };
 
 export type UserWithRoleRoom = UserType & {
-  role: RolesRoom;
+  role: RoomUserRole;
 };

@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router';
 
 import { AuthForm } from '@/components/forms/auth-form';
@@ -14,9 +15,11 @@ export const AuthPage = () => {
 
   const { user } = useUserStore();
 
-  if (user?.id) {
-    navigate(ROUTE_PATHS.main);
-  }
+  useEffect(() => {
+    if (user?.id) {
+      navigate(ROUTE_PATHS.main);
+    }
+  }, [navigate, user]);
 
   const handleAuth = async (data: { login: string; password: string }) => {
     try {

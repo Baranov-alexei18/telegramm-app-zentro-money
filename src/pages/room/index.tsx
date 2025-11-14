@@ -5,16 +5,18 @@ import { TransactionForm } from '@/components/forms/transaction-form';
 import { BottomSheet } from '@/components/shared/bottom-sheet';
 import { Button } from '@/components/shared/button';
 import { notificationManager } from '@/components/shared/toast/utils';
+import { RoomUserRole } from '@/constants/room-roles';
 import { ROUTE_PATHS } from '@/constants/route-path';
 import { TRANSACTION_TYPE } from '@/constants/transaction-type';
+import { useRoomAccess } from '@/hooks/useRoomAccess';
 import { getRoomUsers } from '@/services/firebase/getRoomUsers';
 import { getUserRooms } from '@/services/firebase/getUserRooms';
 import { useAppStore } from '@/store/appStore';
 import { useRoomStore } from '@/store/roomStore';
 import { useUserStore } from '@/store/userStore';
-import { RolesRoom, RoomType } from '@/types/room';
 import { TransactionFormValues } from '@/types/transaction';
 import { UserWithRoleRoom } from '@/types/user';
+import { getUsername } from '@/utils/getUsername';
 
 import { ChatPanel } from './chat-panel';
 import { NotificationPanel } from './notification-panel';
@@ -23,6 +25,7 @@ import styles from './styles.module.css';
 
 export const RoomPage = () => {
   const { user } = useUserStore();
+  const { canViewNotifications } = useRoomAccess();
   const { room, setRoom, fetchTransactions, addTransaction } = useRoomStore();
   const { closeTopBottomSheet } = useAppStore();
   const { id } = useParams<{ id: string }>();
@@ -132,8 +135,8 @@ export const RoomPage = () => {
                     <div className={styles.memberAvatar}>{member.firstName}</div>
                     <div className={styles.memberInfo}>
                       <p className={styles.memberName}>
-                        {member.firstName || member.email}{' '}
-                        {member.role === RolesRoom.ADMIN && (
+                        {getUsername(member)}{' '}
+                        {member.role === RoomUserRole.ADMIN && (
                           <span className={styles.adminBadge}>Админ</span>
                         )}
                       </p>
@@ -146,7 +149,7 @@ export const RoomPage = () => {
         )}
       </header>
 
-      <NotificationPanel notifications={room.notifications} />
+      {canViewNotifications() && <NotificationPanel notifications={room.notifications} />}
 
       <ChatPanel />
 

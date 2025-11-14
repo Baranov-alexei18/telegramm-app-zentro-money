@@ -9,6 +9,7 @@ import { BottomSheet } from '@/components/shared/bottom-sheet';
 import { Button } from '@/components/shared/button';
 import { ROUTE_PATHS } from '@/constants/route-path';
 import { TRANSACTION_TYPE } from '@/constants/transaction-type';
+import { useRoomAccess } from '@/hooks/useRoomAccess';
 import { getUserRooms } from '@/services/firebase/getUserRooms';
 import { useAppStore } from '@/store/appStore';
 import { useRoomStore } from '@/store/roomStore';
@@ -20,6 +21,7 @@ import styles from './styles.module.css';
 
 export const TransactionsPage = () => {
   const { closeTopBottomSheet } = useAppStore();
+  const { canModifyTransaction, canDeleteTransaction } = useRoomAccess();
   const { user } = useUserStore();
   const { room, setRoom, fetchTransactions, deleteTransaction, updateTransaction } = useRoomStore();
 
@@ -142,51 +144,61 @@ export const TransactionsPage = () => {
 
               {isOpen && (
                 <div className={styles.transactionsList}>
-                  {transactions.map((t) => (
-                    <div key={t.category.id} className={styles.transactionItem}>
-                      <div className={styles.transactionInfo}>
-                        <span className={styles.transactionName}>{t.description}</span>
-                        <span className={styles.transactionDate}>
-                          {t.date?.seconds
-                            ? convertToDate(t.date).toLocaleDateString('ru-RU', {
-                                day: 'numeric',
-                                month: 'long',
-                                year: 'numeric',
-                              })
-                            : 'даты нет'}
-                        </span>
-                      </div>
-                      <span
-                        className={cn(
-                          styles.transactionAmount,
-                          t.type === TRANSACTION_TYPE.EXPENSE ? styles.expense : styles.income
-                        )}
-                      >
-                        {t.type === TRANSACTION_TYPE.EXPENSE ? '-' : '+'}
-                        {t.amount} у.е.
-                      </span>
+                  {transactions.map((t) => {
+                    console.log('canDeleteTransaction(t)');
+                    console.log(canDeleteTransaction(t));
+                    console.log(canModifyTransaction(t));
 
-                      <div className={styles.wrapperActions}>
-                        <BottomSheet
-                          id={`update-transactions-${t.transactionId}`}
-                          triggerComponent={<div className={styles.sheetContent}>✏️</div>}
+                    return (
+                      <div key={t.category.id} className={styles.transactionItem}>
+                        <div className={styles.transactionInfo}>
+                          <span className={styles.transactionName}>{t.description}</span>
+                          <span className={styles.transactionDate}>
+                            {t.date?.seconds
+                              ? convertToDate(t.date).toLocaleDateString('ru-RU', {
+                                  day: 'numeric',
+                                  month: 'long',
+                                  year: 'numeric',
+                                })
+                              : 'даты нет'}
+                          </span>
+                        </div>
+                        <span
+                          className={cn(
+                            styles.transactionAmount,
+                            t.type === TRANSACTION_TYPE.EXPENSE ? styles.expense : styles.income
+                          )}
                         >
-                          <TransactionForm
-                            values={t}
-                            type={viewType}
-                            onSubmit={(data) => handleTransitionSubmit(data, viewType)}
-                            categories={filterCategories}
-                          />
-                        </BottomSheet>
-                        <Button
-                          onClick={() => deleteTransaction(t.transactionId!)}
-                          className={styles.menuItemDelete}
-                        >
-                          🗑️
-                        </Button>
+                          {t.type === TRANSACTION_TYPE.EXPENSE ? '-' : '+'}
+                          {t.amount} у.е.
+                        </span>
+
+                        <div className={styles.wrapperActions}>
+                          {canModifyTransaction(t) && (
+                            <BottomSheet
+                              id={`update-transactions-${t.transactionId}`}
+                              triggerComponent={<div className={styles.sheetContent}>✏️</div>}
+                            >
+                              <TransactionForm
+                                values={t}
+                                type={viewType}
+                                onSubmit={(data) => handleTransitionSubmit(data, viewType)}
+                                categories={filterCategories}
+                              />
+                            </BottomSheet>
+                          )}
+                          {canDeleteTransaction(t) && (
+                            <Button
+                              onClick={() => deleteTransaction(t.transactionId!)}
+                              className={styles.menuItemDelete}
+                            >
+                              🗑️
+                            </Button>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </div>

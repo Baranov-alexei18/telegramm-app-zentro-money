@@ -1,4 +1,4 @@
 export enum RoomUserRole {
   ADMIN = 'admin',
-  user = 'user',
+  USER = 'base_user',
 }

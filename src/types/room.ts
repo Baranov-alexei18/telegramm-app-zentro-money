@@ -1,9 +1,18 @@
+import { RoomUserRole } from '@/constants/room-roles';
+
 import { CategoryType } from './category';
 import { TransactionProps } from './transaction';
 
-export enum RolesRoom {
-  ADMIN = 'admin',
-  USER = 'base_user',
+export enum PermissionRoom {
+  NOTIFICATION_VIEW = 'NOTIFICATION_VIEW',
+
+  TRANSACTION_CREATE = 'TRANSACTION_CREATE',
+  TRANSACTION_UPDATE = 'TRANSACTION_UPDATE',
+  TRANSACTION_DELETE = 'TRANSACTION_DELETE',
+
+  CATEGORY_CREATE = 'CATEGORY_CREATE',
+  CATEGORY_UPDATE = 'CATEGORY_UPDATE',
+  CATEGORY_DELETE = 'CATEGORY_DELETE',
 }
 
 export type NotificationRoomType = {
@@ -20,7 +29,7 @@ export type RoomType = {
     string,
     {
       joineredAt: Date;
-      role: RolesRoom;
+      role: RoomUserRole;
     }
   >;
   notifications?: NotificationRoomType[];

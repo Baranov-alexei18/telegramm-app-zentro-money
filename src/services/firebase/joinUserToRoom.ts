@@ -2,7 +2,8 @@ import { arrayUnion, doc, getDoc, updateDoc } from 'firebase/firestore';
 
 import { notificationManager } from '@/components/shared/toast/utils';
 import { COLLECTION_ROOM, COLLECTION_USER } from '@/constants/db';
-import { RolesRoom, RoomType } from '@/types/room';
+import { RoomUserRole } from '@/constants/room-roles';
+import { RoomType } from '@/types/room';
 
 import { db } from './config';
 
@@ -19,7 +20,7 @@ export const joinUserToRoom = async (userId: string, room: RoomType) => {
   try {
     const updatedMembers: RoomType['members'] = {
       ...room.members,
-      [userId]: { role: RolesRoom.USER, joineredAt: new Date() },
+      [userId]: { role: RoomUserRole.USER, joineredAt: new Date() },
     };
 
     const updatedNotifications: RoomType['notifications'] =

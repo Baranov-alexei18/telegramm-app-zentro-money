@@ -1,6 +1,7 @@
 import React, { Fragment, useState } from 'react';
 import { Menu, MenuItem, MenuTrigger, Popover } from 'react-aria-components';
 
+import { useRoomAccess } from '@/hooks/useRoomAccess';
 import { CategoryType } from '@/types/category';
 
 import { Button } from '../shared/button';
@@ -26,6 +27,8 @@ export const CategoryPicker: React.FC<Props> = ({
   onEditCategory,
   activeCategoryId,
 }) => {
+  const { canDeleteCategory, canCreateCategory, canModifyCategory } = useRoomAccess();
+
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValue, setEditValue] = useState('');
   const [newCategory, setNewCategory] = useState('');
@@ -89,44 +92,52 @@ export const CategoryPicker: React.FC<Props> = ({
                   onClick={() => onSelectCategory(category)}
                 />
 
-                <MenuTrigger>
-                  <Button aria-label="Меню" className={styles.menuButton} type="button">
-                    ⋮
-                  </Button>
-                  <Popover className={styles.popover}>
-                    <Menu className={styles.menu}>
-                      <MenuItem
-                        onAction={() => handleEditStart(category)}
-                        className={styles.menuItem}
-                      >
-                        ✏️ Переименовать
-                      </MenuItem>
-                      <MenuItem
-                        onAction={() => onDeleteCategory?.(category.id)}
-                        className={styles.menuItemDelete}
-                      >
-                        🗑️ Удалить
-                      </MenuItem>
-                    </Menu>
-                  </Popover>
-                </MenuTrigger>
+                {(canModifyCategory() || canDeleteCategory()) && (
+                  <MenuTrigger>
+                    <Button aria-label="Меню" className={styles.menuButton} type="button">
+                      ⋮
+                    </Button>
+                    <Popover className={styles.popover}>
+                      <Menu className={styles.menu}>
+                        {canModifyCategory() && (
+                          <MenuItem
+                            onAction={() => handleEditStart(category)}
+                            className={styles.menuItem}
+                          >
+                            ✏️ Переименовать
+                          </MenuItem>
+                        )}
+                        {canDeleteCategory() && (
+                          <MenuItem
+                            onAction={() => onDeleteCategory?.(category.id)}
+                            className={styles.menuItemDelete}
+                          >
+                            🗑️ Удалить
+                          </MenuItem>
+                        )}
+                      </Menu>
+                    </Popover>
+                  </MenuTrigger>
+                )}
               </div>
             )}
           </Fragment>
         );
       })}
 
-      <div className={styles.addCategoryRow}>
-        <Input
-          value={newCategory}
-          onChange={(e) => setNewCategory(e.target.value)}
-          placeholder="Новая категория"
-          className={styles.addInput}
-        />
-        <Button className={styles.addButton} onClick={handleAddNewCategory} type="button">
-          ➕
-        </Button>
-      </div>
+      {canCreateCategory() && (
+        <div className={styles.addCategoryRow}>
+          <Input
+            value={newCategory}
+            onChange={(e) => setNewCategory(e.target.value)}
+            placeholder="Новая категория"
+            className={styles.addInput}
+          />
+          <Button className={styles.addButton} onClick={handleAddNewCategory} type="button">
+            ➕
+          </Button>
+        </div>
+      )}
     </div>
   );
 };
