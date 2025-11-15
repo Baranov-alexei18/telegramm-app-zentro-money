@@ -10,6 +10,8 @@ import {
 } from 'react-aria-components';
 import cn from 'classnames';
 
+import { ArrowDownIcon } from '@/components/icons/arrow-down-icon';
+
 import styles from './styles.module.css';
 
 type Option = {
@@ -64,6 +66,8 @@ export const Select = ({
         })}
       >
         <SelectValue />
+
+        <ArrowDownIcon size={16} />
       </Button>
 
       <Popover className={styles.popover}>

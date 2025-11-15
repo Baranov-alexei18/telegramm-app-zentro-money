@@ -1,4 +1,5 @@
 .container {
+  position: relative;
   max-width: 100%;
   box-sizing: content-box;
   display: flex;
@@ -14,6 +15,9 @@
 }
 
 .input {
+  display: flex;
+  align-items: center;
+  gap: 4px;
   width: 100%;
   padding: 8px 10px;
   border: 1px solid var(--color-border);
@@ -86,9 +90,10 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
   margin-top: 4px;
   padding: 4px 0;
-  max-height: 200px;
+  width: max-content;
+  max-height: 220px;
   overflow-y: auto;
-  z-index: 10;
+  z-index: 1;
 }
 
 .option {
@@ -103,7 +108,6 @@
   background: rgba(117, 150, 217, 0.1);
 }
 
-.popover {
-  max-width: 100%;
-  width: 100%;
+[data-open] > .input svg {
+  transform: rotate(180deg);
 }
