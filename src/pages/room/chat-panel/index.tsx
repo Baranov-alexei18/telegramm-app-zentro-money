@@ -15,6 +15,7 @@ import { Button } from '@/components/shared/button';
 import { Input } from '@/components/shared/input';
 import { COLLECTION_ROOM, SUB_COLLECTION_MESSAGES } from '@/constants/db';
 import { db } from '@/services/firebase/config';
+import { createMessageChat } from '@/services/firebase/createMessageChat';
 import { useRoomStore } from '@/store/roomStore';
 import { useUserStore } from '@/store/userStore';
 import { getUsername } from '@/utils/getUsername';
@@ -49,6 +50,7 @@ export const ChatPanel = () => {
         id: doc.id,
         ...doc.data(),
       })) as Message[];
+
       setMessages(msgs);
     });
 
@@ -58,12 +60,7 @@ export const ChatPanel = () => {
   const sendMessage = async () => {
     if (!text.trim() || !room || !user) return;
 
-    await addDoc(collection(db, COLLECTION_ROOM, room.roomId, SUB_COLLECTION_MESSAGES), {
-      text,
-      senderId: user.id,
-      senderName: getUsername(user),
-      createdAt: serverTimestamp(),
-    });
+    await createMessageChat(user, room.roomId, text);
 
     setText('');
   };

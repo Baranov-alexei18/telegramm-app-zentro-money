@@ -1,0 +1,31 @@
+.container {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  padding: 8px 10px;
+  border-radius: 12px;
+
+  border: 1px solid var(--color-border);
+  width: fit-content;
+
+  user-select: none;
+}
+
+.label {
+  font-size: 12px;
+  font-weight: 500;
+  min-width: 180px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.arrow {
+  border-radius: 10px;
+
+  font-size: 18px;
+  font-weight: 600;
+
+  cursor: pointer;
+  transition: all 0.2s ease;
+}

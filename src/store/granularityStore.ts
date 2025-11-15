@@ -1,17 +1,29 @@
+import { CalendarDate, today } from '@internationalized/date';
 import { create } from 'zustand';
 
-import { GRANULARITY } from '@/constants/granularity';
+import { GranularityFields } from '@/constants/granularity';
 
 type Store = {
-  type: keyof typeof GRANULARITY;
-  period: any;
+  type: GranularityFields;
+  period: { start: CalendarDate; end: CalendarDate };
   setGranularityType: (data: Store['type']) => void;
   setGranularityPeriod: (data: Store['period']) => void;
 };
 
+const now = today('UTC');
+const startOfMonth = new CalendarDate(now.year, now.month, 1);
+const endOfMonth = new CalendarDate(
+  now.year,
+  now.month,
+  new Date(now.year, now.month, 0).getDate()
+);
+
 export const useGranularityStore = create<Store>()((set) => ({
-  type: 'month',
-  period: '',
-  setGranularityType: (data: Store['type']) => set(() => ({ type: data })),
-  setGranularityPeriod: (data: Store['period']) => set(() => ({ period: data })),
+  type: GranularityFields.MONTH,
+  period: {
+    start: startOfMonth,
+    end: endOfMonth,
+  },
+  setGranularityType: (data) => set({ type: data }),
+  setGranularityPeriod: (data) => set({ period: data }),
 }));

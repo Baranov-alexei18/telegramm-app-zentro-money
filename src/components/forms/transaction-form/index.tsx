@@ -12,6 +12,7 @@ import { useAppStore } from '@/store/appStore';
 import { useRoomStore } from '@/store/roomStore';
 import { CategoryType } from '@/types/category';
 import { TransactionFormValues, TransactionProps } from '@/types/transaction';
+import { convertDateToTimestamp } from '@/utils/convertDateToTimestamp';
 import { dateValueToDate } from '@/utils/dateValueToDate';
 
 import styles from './styles.module.css';
@@ -48,7 +49,9 @@ export const TransactionForm = ({ type, categories, onSubmit, values }: Transact
     try {
       setIsLoading(true);
 
-      await onSubmit(data);
+      const submitData = { ...data, date: convertDateToTimestamp(data.date) };
+
+      await onSubmit(submitData);
 
       reset();
     } catch (error) {

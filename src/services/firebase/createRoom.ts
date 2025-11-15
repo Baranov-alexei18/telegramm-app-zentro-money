@@ -1,4 +1,11 @@
-import { addDoc, arrayUnion, collection, doc, updateDoc } from 'firebase/firestore';
+import {
+  addDoc,
+  arrayUnion,
+  collection,
+  doc,
+  serverTimestamp,
+  updateDoc,
+} from 'firebase/firestore';
 
 import { BASE_CATEGORIES } from '@/constants/category';
 import { COLLECTION_ROOM, COLLECTION_USER } from '@/constants/db';
@@ -17,7 +24,7 @@ export const createRoom = async ({ userId, name, description }: CreateRoomParams
     const roomRef = await addDoc(collection(db, COLLECTION_ROOM), {
       name,
       description: description || '',
-      createdAt: new Date(),
+      createdAt: serverTimestamp(),
       categories: BASE_CATEGORIES,
       members: {
         [userId]: {
