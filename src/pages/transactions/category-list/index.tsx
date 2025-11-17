@@ -50,17 +50,19 @@ export const CategoryList = ({ viewType }: Props) => {
                 borderBottom: isOpen ? `1px solid ${category.color}` : 'none',
               }}
             >
-              <div className={styles.categoryInfo}>
-                <div
-                  className={styles.categoryColor}
-                  style={{
-                    backgroundColor: category.color,
-                  }}
-                />
-                <span className={styles.categoryName}>{category.name}</span>
+              <div className={styles.categoryInfoWrapper}>
+                <div className={styles.categoryInfo}>
+                  <div
+                    className={styles.categoryColor}
+                    style={{
+                      backgroundColor: category.color,
+                    }}
+                  />
+                  <span className={styles.categoryName}>{category.name}</span>
+                </div>
                 <span className={styles.categorySum}>
                   {viewType === TRANSACTION_TYPE.EXPENSE ? '-' : '+'}
-                  {categoryTotal} у.е.
+                  {categoryTotal}
                 </span>
               </div>
               <span className={styles.arrow}>{isOpen ? <ArrowUpIcon /> : <ArrowDownIcon />}</span>

@@ -22,25 +22,6 @@
   font-size: 16px;
 }
 
-.card {
-  background: #f7f7f7;
-  border-radius: 12px;
-  padding: 16px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.cardHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-}
-
-.cardText {
-  color: #555;
-  font-size: 14px;
-}
-
 .transactions {
   margin-top: 24px;
 }

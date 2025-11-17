@@ -1,23 +1,21 @@
 import { useEffect, useState } from 'react';
-import { useLocation, useNavigate, useParams } from 'react-router';
+import { useParams } from 'react-router';
 
 import { TransactionForm } from '@/components/forms/transaction-form';
 import { BottomSheet } from '@/components/shared/bottom-sheet';
 import { Button } from '@/components/shared/button';
 import { notificationManager } from '@/components/shared/toast/utils';
 import { RoomUserRole } from '@/constants/room-roles';
-import { ROUTE_PATHS } from '@/constants/route-path';
 import { TRANSACTION_TYPE } from '@/constants/transaction-type';
 import { useRoomAccess } from '@/hooks/useRoomAccess';
 import { getRoomUsers } from '@/services/firebase/getRoomUsers';
 import { getUserRooms } from '@/services/firebase/getUserRooms';
-import { useAppStore } from '@/store/appStore';
 import { useRoomStore } from '@/store/roomStore';
 import { useUserStore } from '@/store/userStore';
-import { TransactionFormValues } from '@/types/transaction';
 import { UserWithRoleRoom } from '@/types/user';
 import { getUsername } from '@/utils/getUsername';
 
+import { CardInfo } from './card-info';
 import { ChatPanel } from './chat-panel';
 import { NotificationPanel } from './notification-panel';
 
@@ -26,11 +24,9 @@ import styles from './styles.module.css';
 export const RoomPage = () => {
   const { user } = useUserStore();
   const { canViewNotifications } = useRoomAccess();
-  const { room, setRoom, fetchTransactions, addTransaction } = useRoomStore();
-  const { closeTopBottomSheet } = useAppStore();
+  const { room, setRoom, fetchTransactions } = useRoomStore();
+
   const { id } = useParams<{ id: string }>();
-  const location = useLocation();
-  const navigate = useNavigate();
 
   const [membersInfo, setMembersInfo] = useState<UserWithRoleRoom[]>([]);
 
@@ -65,29 +61,6 @@ export const RoomPage = () => {
     return <div className={styles.loader}>Загрузка...</div>;
   }
 
-  const handleTransitionSubmit = async (data: TransactionFormValues, type: TRANSACTION_TYPE) => {
-    if (!user || !room) return;
-
-    const transactionData = {
-      userId: user.id,
-      roomId: room.roomId,
-      type: type,
-      ...data,
-    };
-
-    try {
-      await addTransaction(room.roomId, transactionData);
-    } catch (e) {
-      alert(e);
-    }
-
-    closeTopBottomSheet();
-  };
-
-  const handleGoToTransitionsPage = (type: TRANSACTION_TYPE) => {
-    navigate(`${location.pathname}${ROUTE_PATHS.transactions}`, { state: { type } });
-  };
-
   const handleCopyIdRoom = async () => {
     try {
       await navigator.clipboard.writeText(room.roomId);
@@ -109,7 +82,11 @@ export const RoomPage = () => {
     );
   };
 
-  const lastTransactions = room.transactions?.slice(-5).reverse() || [];
+  const lastTransactions =
+    room.transactions
+      ?.sort((a, b) => (a.createdAt?.seconds || 0) - (b.createdAt?.seconds || 0))
+      ?.slice(-5)
+      .reverse() || [];
 
   return (
     <div className={styles.wrapper}>
@@ -132,7 +109,10 @@ export const RoomPage = () => {
               <ul className={styles.membersListWrapper}>
                 {membersInfo.map((member) => (
                   <li key={member.id} className={styles.memberItem}>
-                    <div className={styles.memberAvatar}>{member.firstName}</div>
+                    <img
+                      src={`https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${member.id}`}
+                      className={styles.memberAvatar}
+                    />
                     <div className={styles.memberInfo}>
                       <p className={styles.memberName}>
                         {getUsername(member)}{' '}
@@ -153,56 +133,10 @@ export const RoomPage = () => {
 
       <ChatPanel />
 
-      <div className={styles.card}>
-        <div className={styles.cardHeader}>
-          <h2>Приход</h2>
-          <BottomSheet
-            id="add-income"
-            triggerComponent={
-              <div className={styles.sheetContent}>
-                <h3>Добавить приход</h3>
-              </div>
-            }
-          >
-            <TransactionForm
-              type={TRANSACTION_TYPE.INCOME}
-              onSubmit={(data) => handleTransitionSubmit(data, TRANSACTION_TYPE.INCOME)}
-              categories={room?.categories?.filter(
-                (category) => category.type === TRANSACTION_TYPE.INCOME
-              )}
-            />
-          </BottomSheet>
-        </div>
-        <p className={styles.cardText}>Добавьте запись о поступлении денег</p>
-        <Button onClick={() => handleGoToTransitionsPage(TRANSACTION_TYPE.INCOME)}>
-          Все поступления
-        </Button>
-      </div>
-      <div className={styles.card}>
-        <div className={styles.cardHeader}>
-          <h2>Расход</h2>
-          <BottomSheet
-            id="add-expense"
-            triggerComponent={
-              <div className={styles.sheetContent}>
-                <h3>Добавить расход</h3>
-              </div>
-            }
-          >
-            <TransactionForm
-              type={TRANSACTION_TYPE.EXPENSE}
-              onSubmit={(data) => handleTransitionSubmit(data, TRANSACTION_TYPE.EXPENSE)}
-              categories={room?.categories?.filter(
-                (category) => category.type === TRANSACTION_TYPE.EXPENSE
-              )}
-            />
-          </BottomSheet>
-        </div>
-        <p className={styles.cardText}>Добавьте запись о трате</p>
-        <Button onClick={() => handleGoToTransitionsPage(TRANSACTION_TYPE.EXPENSE)}>
-          Все траты
-        </Button>
-      </div>
+      <CardInfo type={TRANSACTION_TYPE.INCOME} />
+
+      <CardInfo type={TRANSACTION_TYPE.EXPENSE} />
+
       <div className={styles.transactions}>
         <h3 className={styles.subTitle}>Последние транзакции</h3>
         {lastTransactions.length ? (

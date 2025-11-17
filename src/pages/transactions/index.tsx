@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router';
+import { useLocation, useParams } from 'react-router';
 import cn from 'classnames';
 
 import { PeriodDateNavigator } from '@/components/period-date-navigator';
@@ -17,7 +17,11 @@ export const TransactionsPage = () => {
   const { user } = useUserStore();
   const { room, setRoom, fetchTransactions } = useRoomStore();
 
-  const [viewType, setViewType] = useState<TRANSACTION_TYPE>(TRANSACTION_TYPE.EXPENSE);
+  const location = useLocation();
+
+  const { type } = location.state ?? {};
+
+  const [viewType, setViewType] = useState<TRANSACTION_TYPE>(type);
   const params = useParams<{ id: string }>();
 
   useEffect(() => {

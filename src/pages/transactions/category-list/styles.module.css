@@ -9,18 +9,37 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 10px;
   padding: 12px 14px;
   cursor: pointer;
 }
 
-.categoryInfo {
+.categoryInfoWrapper {
+  width: 100%;
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: space-between;
+  flex-direction: row;
+  gap: 6px;
+}
+
+.categoryInfo {
+  display: flex;
+
+  align-items: center;
+  gap: 6px;
 }
 
 .categoryColor {
   width: 16px;
   height: 16px;
   border-radius: 4px;
+}
+
+.arrow {
+  padding-top: 6px;
+}
+
+.categorySum {
+  color: inherit;
 }

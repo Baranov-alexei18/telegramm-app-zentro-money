@@ -9,9 +9,17 @@ type ButtonType = ButtonProps & {
   onClick?: () => void;
   type?: 'button' | 'submit';
   className?: string;
+  loading?: boolean;
 };
 
-export const Button = ({ children, onClick, type = 'button', className, ...props }: ButtonType) => {
+export const Button = ({
+  children,
+  onClick,
+  type = 'button',
+  className,
+  loading = false,
+  ...props
+}: ButtonType) => {
   return (
     <HeadlessButton
       className={cn(styles.button, className)}
@@ -19,7 +27,7 @@ export const Button = ({ children, onClick, type = 'button', className, ...props
       type={type}
       {...props}
     >
-      {children}
+      {loading ? <div className={styles.spinner} /> : children}
     </HeadlessButton>
   );
 };

@@ -1,5 +1,4 @@
 import { useMemo, useState } from 'react';
-import { useNavigate, useParams } from 'react-router';
 import cn from 'classnames';
 
 import { TransactionForm } from '@/components/forms/transaction-form';
@@ -26,6 +25,8 @@ export const TransactionsList = ({ transactions, viewType }: Props) => {
   const { user } = useUserStore();
   const { room, deleteTransaction, updateTransaction } = useRoomStore();
 
+  const [loading, setLoading] = useState(false);
+
   const handleTransitionSubmit = async (data: TransactionFormValues, type: TRANSACTION_TYPE) => {
     if (!user || !room) return;
 
@@ -43,36 +44,54 @@ export const TransactionsList = ({ transactions, viewType }: Props) => {
     closeTopBottomSheet();
   };
 
+  const handleDeleteTransaction = async (id: string) => {
+    try {
+      setLoading(true);
+
+      await deleteTransaction(id);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const filterCategories = useMemo(
     () => room?.categories?.filter((category) => category.type === viewType),
     [room?.categories, viewType]
   );
+
   return (
     <div className={styles.transactionsList}>
       {transactions.map((t) => {
         return (
-          <div key={t.category.id} className={styles.transactionItem}>
-            <div className={styles.transactionInfo}>
-              <span className={styles.transactionName}>{t.description}</span>
-              <span className={styles.transactionDate}>
-                {t.date?.seconds
-                  ? convertToDate(t.date).toLocaleDateString('ru-RU', {
-                      day: 'numeric',
-                      month: 'long',
-                      year: 'numeric',
-                    })
-                  : 'даты нет'}
+          <div key={t.transactionId} className={styles.transactionItem}>
+            <div className={styles.transactionInfoWrapper}>
+              <div className={styles.transactionInfo}>
+                <span className={styles.transactionName}>{t.description}</span>
+                <span className={styles.transactionDate}>
+                  {t.date?.seconds
+                    ? convertToDate(t.date).toLocaleDateString('ru-RU', {
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })
+                    : 'даты нет'}
+                </span>
+              </div>
+
+              <span
+                className={cn(
+                  styles.transactionAmount,
+                  t.type === TRANSACTION_TYPE.EXPENSE ? styles.expense : styles.income
+                )}
+              >
+                {t.type === TRANSACTION_TYPE.EXPENSE ? '-' : '+'}
+                {t.amount}
               </span>
             </div>
-            <span
-              className={cn(
-                styles.transactionAmount,
-                t.type === TRANSACTION_TYPE.EXPENSE ? styles.expense : styles.income
-              )}
-            >
-              {t.type === TRANSACTION_TYPE.EXPENSE ? '-' : '+'}
-              {t.amount} у.е.
-            </span>
 
             <div className={styles.wrapperActions}>
               {canModifyTransaction(t) && (
@@ -90,8 +109,9 @@ export const TransactionsList = ({ transactions, viewType }: Props) => {
               )}
               {canDeleteTransaction(t) && (
                 <Button
-                  onClick={() => deleteTransaction(t.transactionId!)}
+                  onClick={() => handleDeleteTransaction(t.transactionId!)}
                   className={styles.menuItemDelete}
+                  loading={loading}
                 >
                   🗑️
                 </Button>
