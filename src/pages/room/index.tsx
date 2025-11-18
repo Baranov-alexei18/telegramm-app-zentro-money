@@ -18,6 +18,7 @@ import { getUsername } from '@/utils/getUsername';
 import { CardInfo } from './card-info';
 import { ChatPanel } from './chat-panel';
 import { NotificationPanel } from './notification-panel';
+import { TransactionCard } from './transaction-card';
 
 import styles from './styles.module.css';
 
@@ -137,21 +138,12 @@ export const RoomPage = () => {
 
       <CardInfo type={TRANSACTION_TYPE.EXPENSE} />
 
-      <div className={styles.transactions}>
+      <div>
         <h3 className={styles.subTitle}>Последние транзакции</h3>
         {lastTransactions.length ? (
           <ul className={styles.transactionsList}>
             {lastTransactions.map((t) => (
-              <li key={t.transactionId} className={styles.transactionItem}>
-                <span
-                  className={`${styles.transactionType} ${
-                    t.type === TRANSACTION_TYPE.INCOME ? styles.income : styles.expense
-                  }`}
-                >
-                  {t.type === TRANSACTION_TYPE.INCOME ? '+' : '-'}${t.amount}
-                </span>
-                <span>{t.description}</span>
-              </li>
+              <TransactionCard key={t.transactionId} transaction={t} />
             ))}
           </ul>
         ) : (
