@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 
-import { TransactionForm } from '@/components/forms/transaction-form';
+import { AvatarCircle } from '@/components/avatar-circle';
 import { BottomSheet } from '@/components/shared/bottom-sheet';
 import { Button } from '@/components/shared/button';
 import { notificationManager } from '@/components/shared/toast/utils';
@@ -110,10 +110,7 @@ export const RoomPage = () => {
               <ul className={styles.membersListWrapper}>
                 {membersInfo.map((member) => (
                   <li key={member.id} className={styles.memberItem}>
-                    <img
-                      src={`https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${member.id}`}
-                      className={styles.memberAvatar}
-                    />
+                    <AvatarCircle id={member.id} height={36} width={36} />
                     <div className={styles.memberInfo}>
                       <p className={styles.memberName}>
                         {getUsername(member)}{' '}
