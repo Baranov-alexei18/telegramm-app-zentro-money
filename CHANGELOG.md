@@ -1,3 +1,13 @@
+# [1.18.0](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/compare/v1.17.0...v1.18.0) (2025-11-18)
+
+
+### Features
+
+* add granularity for transactions ([7255205](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/commit/7255205e5bac6e08fb3232c980e78e9bfb2adc99))
+* add profile page ([697c9d7](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/commit/697c9d740cce2020ae5ef20f0f610cd411369573))
+* update card info in room page ([4906a37](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/commit/4906a37cec093c7f023eaa43045d5adc13048db5))
+* update last transaction list in room ([096f262](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/commit/096f262c882c4948406e561c9954e9dc98bd1f4f))
+
 # [1.17.0](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/compare/v1.16.0...v1.17.0) (2025-11-14)
 
 
