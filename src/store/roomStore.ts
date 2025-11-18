@@ -1,3 +1,4 @@
+import { CalendarDate } from '@internationalized/date';
 import { collection, getDocs } from 'firebase/firestore';
 import { create } from 'zustand';
 
@@ -24,6 +25,10 @@ type RoomStoreState = {
   setRoom: (room: RoomType | null) => void;
   clearRoom: () => void;
   fetchTransactions: (roomId: string) => Promise<void>;
+  getFilteredTransactions: (
+    viewType: TRANSACTION_TYPE,
+    period: { start: CalendarDate; end: CalendarDate }
+  ) => TransactionProps[];
   addTransaction: (
     roomId: string,
     transaction: Omit<TransactionProps, 'transactionId'>
@@ -135,6 +140,27 @@ export const useRoomStore = create<RoomStoreState>((set, get) => ({
     } catch (err: any) {
       console.error('Ошибка при удалении категории:', err);
     }
+  },
+
+  getFilteredTransactions: (viewType, period) => {
+    const { room } = get();
+
+    if (!room || !period) return [];
+
+    return (
+      room.transactions?.filter((t) => {
+        if (t.type !== viewType) return false;
+
+        const date = t.date?.toDate() ? t.date.toDate() : t.createdAt;
+
+        if (!date) return false;
+
+        const start = period.start.toDate('UTC');
+        const end = period.end.toDate('UTC');
+
+        return date >= start && date <= end;
+      }) || []
+    );
   },
 
   updateTransaction: async (data: TransactionProps) => {

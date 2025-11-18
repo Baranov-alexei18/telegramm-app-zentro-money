@@ -17,6 +17,7 @@ import {
 } from 'react-aria-components';
 import { CalendarDate } from '@internationalized/date';
 import cn from 'classnames';
+import { Timestamp } from 'firebase/firestore';
 
 import { convertToDate } from '@/utils/convertToDate';
 
@@ -24,7 +25,7 @@ import styles from './styles.module.css';
 
 type Props = {
   label?: string;
-  value: Date | null;
+  value: Timestamp | null;
   onChange: (date: DateValue | null) => void;
   required?: boolean;
   disabled?: boolean;

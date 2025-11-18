@@ -1,7 +1,7 @@
 import { createBrowserRouter } from 'react-router';
 
 import { ProtectedLayout } from '@/components/protected-layout';
-import { EditPage } from '@/pages/edit';
+import { ProfilePage } from '@/pages/profile';
 import { RegisterPage } from '@/pages/register';
 import { RoomPage } from '@/pages/room';
 import { TransactionsPage } from '@/pages/transactions';
@@ -28,7 +28,7 @@ export const router = createBrowserRouter([
       { path: `${ROUTE_PATHS.room}/:id${ROUTE_PATHS.transactions}`, element: <TransactionsPage /> },
       { path: ROUTE_PATHS.rooms, element: <RoomsPage /> },
       { path: ROUTE_PATHS.statistics, element: <ExpensePage /> },
-      { path: ROUTE_PATHS.profile, element: <EditPage /> },
+      { path: ROUTE_PATHS.profile, element: <ProfilePage /> },
     ],
   },
   { path: ROUTE_PATHS.auth, element: <AuthPage /> },

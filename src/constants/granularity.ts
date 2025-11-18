@@ -1,6 +1,7 @@
-export const GRANULARITY = {
-  week: 'Неделя',
-  month: 'Месяц',
-  year: 'Год',
-  all: 'За все время',
-} as const;
+export enum GranularityFields {
+  DAY = 'day',
+  WEEK = 'week',
+  MONTH = 'month',
+  YEAR = 'year',
+  ALL = 'all',
+}
