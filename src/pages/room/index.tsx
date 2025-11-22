@@ -1,7 +1,9 @@
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 
 import { AvatarCircle } from '@/components/avatar-circle';
+import { BackButton } from '@/components/back-button';
+import { Header } from '@/components/header';
 import { BottomSheet } from '@/components/shared/bottom-sheet';
 import { Button } from '@/components/shared/button';
 import { notificationManager } from '@/components/shared/toast/utils';
@@ -90,63 +92,70 @@ export const RoomPage = () => {
       .reverse() || [];
 
   return (
-    <div className={styles.wrapper}>
-      <header className={styles.header}>
-        <h1 className={styles.title}>{room.name}</h1>
-        <p className={styles.description}>{room.description}</p>
+    <Fragment>
+      <Header>
+        <BackButton />
+      </Header>
+      <div className={styles.wrapper}>
+        <div className={styles.header}>
+          <h1 className={styles.title}>{room.name}</h1>
+          <p className={styles.description}>{room.description}</p>
 
-        {membersInfo.length > 0 && (
-          <BottomSheet
-            id="room-members"
-            triggerComponent={
-              <div className={styles.membersTrigger}>
-                👥 {membersInfo.length} участник{membersInfo.length > 1 ? 'ов' : ''}
+          {membersInfo.length > 0 && (
+            <BottomSheet
+              id="room-members"
+              triggerComponent={
+                <div className={styles.membersTrigger}>
+                  👥 {membersInfo.length} участник{membersInfo.length > 1 ? 'ов' : ''}
+                </div>
+              }
+            >
+              <div className={styles.membersList}>
+                <h3 className={styles.membersTitle}>
+                  Участники комнаты ({membersInfo.length} из 5)
+                </h3>
+                <Button onClick={handleCopyIdRoom}>Добавить нового участника</Button>
+                <ul className={styles.membersListWrapper}>
+                  {membersInfo.map((member) => (
+                    <li key={member.id} className={styles.memberItem}>
+                      <AvatarCircle id={member.id} height={36} width={36} />
+                      <div className={styles.memberInfo}>
+                        <p className={styles.memberName}>
+                          {getUsername(member)}{' '}
+                          {member.role === RoomUserRole.ADMIN && (
+                            <span className={styles.adminBadge}>Админ</span>
+                          )}
+                        </p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
               </div>
-            }
-          >
-            <div className={styles.membersList}>
-              <h3 className={styles.membersTitle}>Участники комнаты ({membersInfo.length} из 5)</h3>
-              <Button onClick={handleCopyIdRoom}>Добавить нового участника</Button>
-              <ul className={styles.membersListWrapper}>
-                {membersInfo.map((member) => (
-                  <li key={member.id} className={styles.memberItem}>
-                    <AvatarCircle id={member.id} height={36} width={36} />
-                    <div className={styles.memberInfo}>
-                      <p className={styles.memberName}>
-                        {getUsername(member)}{' '}
-                        {member.role === RoomUserRole.ADMIN && (
-                          <span className={styles.adminBadge}>Админ</span>
-                        )}
-                      </p>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </BottomSheet>
-        )}
-      </header>
+            </BottomSheet>
+          )}
+        </div>
 
-      {canViewNotifications() && <NotificationPanel notifications={room.notifications} />}
+        {canViewNotifications() && <NotificationPanel notifications={room.notifications} />}
 
-      <ChatPanel />
+        <ChatPanel />
 
-      <CardInfo type={TRANSACTION_TYPE.INCOME} />
+        <CardInfo type={TRANSACTION_TYPE.INCOME} />
 
-      <CardInfo type={TRANSACTION_TYPE.EXPENSE} />
+        <CardInfo type={TRANSACTION_TYPE.EXPENSE} />
 
-      <div>
-        <h3 className={styles.subTitle}>Последние транзакции</h3>
-        {lastTransactions.length ? (
-          <ul className={styles.transactionsList}>
-            {lastTransactions.map((t) => (
-              <TransactionCard key={t.transactionId} transaction={t} />
-            ))}
-          </ul>
-        ) : (
-          <p className={styles.empty}>Транзакций пока нет</p>
-        )}
+        <div>
+          <h3 className={styles.subTitle}>Последние транзакции</h3>
+          {lastTransactions.length ? (
+            <ul className={styles.transactionsList}>
+              {lastTransactions.map((t) => (
+                <TransactionCard key={t.transactionId} transaction={t} />
+              ))}
+            </ul>
+          ) : (
+            <p className={styles.empty}>Транзакций пока нет</p>
+          )}
+        </div>
       </div>
-    </div>
+    </Fragment>
   );
 };

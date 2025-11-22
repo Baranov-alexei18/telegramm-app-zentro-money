@@ -1,7 +1,9 @@
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { useLocation, useParams } from 'react-router';
 import cn from 'classnames';
 
+import { BackButton } from '@/components/back-button';
+import { Header } from '@/components/header';
 import { PeriodDateNavigator } from '@/components/period-date-navigator';
 import { PeriodPicker } from '@/components/period-picker';
 import { TRANSACTION_TYPE } from '@/constants/transaction-type';
@@ -49,25 +51,30 @@ export const TransactionsPage = () => {
   }, [user, setRoom, room?.roomId, params.id, fetchTransactions]);
 
   return (
-    <div className={styles.wrapper}>
-      <h1 className={styles.title}>Транзакции</h1>
-      <PeriodPicker />
-      <PeriodDateNavigator />
-      <div className={styles.tabs}>
-        <button
-          className={cn(styles.tab, viewType === TRANSACTION_TYPE.EXPENSE && styles.activeTab)}
-          onClick={() => setViewType(TRANSACTION_TYPE.EXPENSE)}
-        >
-          Расходы
-        </button>
-        <button
-          className={cn(styles.tab, viewType === TRANSACTION_TYPE.INCOME && styles.activeTab)}
-          onClick={() => setViewType(TRANSACTION_TYPE.INCOME)}
-        >
-          Доходы
-        </button>
-      </div>
-      <CategoryList viewType={viewType} />
-    </div>
+    <Fragment>
+      <Header>
+        <BackButton />
+      </Header>
+      <div className={styles.wrapper}>
+        <h1 className={styles.title}>Транзакции</h1>
+        <PeriodPicker />
+        <PeriodDateNavigator />
+        <div className={styles.tabs}>
+          <button
+            className={cn(styles.tab, viewType === TRANSACTION_TYPE.EXPENSE && styles.activeTab)}
+            onClick={() => setViewType(TRANSACTION_TYPE.EXPENSE)}
+          >
+            Расходы
+          </button>
+          <button
+            className={cn(styles.tab, viewType === TRANSACTION_TYPE.INCOME && styles.activeTab)}
+            onClick={() => setViewType(TRANSACTION_TYPE.INCOME)}
+          >
+            Доходы
+          </button>
+        </div>
+        <CategoryList viewType={viewType} />
+      </div>{' '}
+    </Fragment>
   );
 };

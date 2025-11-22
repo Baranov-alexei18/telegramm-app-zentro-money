@@ -5,6 +5,7 @@ import { ArrowUpIcon } from '@/components/icons/arrow-up-icon';
 import { TRANSACTION_TYPE } from '@/constants/transaction-type';
 import { useGranularityStore } from '@/store/granularityStore';
 import { useRoomStore } from '@/store/roomStore';
+import { formatSmartNumber } from '@/utils/formatSmartNumber';
 
 import { TransactionsList } from '../transactions-list';
 
@@ -62,7 +63,7 @@ export const CategoryList = ({ viewType }: Props) => {
                 </div>
                 <span className={styles.categorySum}>
                   {viewType === TRANSACTION_TYPE.EXPENSE ? '-' : '+'}
-                  {categoryTotal}
+                  {formatSmartNumber(categoryTotal)}
                 </span>
               </div>
               <span className={styles.arrow}>{isOpen ? <ArrowUpIcon /> : <ArrowDownIcon />}</span>

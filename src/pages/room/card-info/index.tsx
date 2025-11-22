@@ -10,6 +10,7 @@ import { useAppStore } from '@/store/appStore';
 import { useRoomStore } from '@/store/roomStore';
 import { useUserStore } from '@/store/userStore';
 import { TransactionFormValues } from '@/types/transaction';
+import { formatSmartNumber } from '@/utils/formatSmartNumber';
 
 import { CardInfoMapper } from './constants';
 import { isSameDay, isSameMonth, isSameWeek } from './utils';
@@ -90,15 +91,15 @@ export const CardInfo = ({ type }: Props) => {
       <div className={styles.statsTable}>
         <div className={styles.row}>
           <span>День</span>
-          <span>{dayTotal}</span>
+          <span>{formatSmartNumber(dayTotal)}</span>
         </div>
         <div className={styles.row}>
           <span>Неделя</span>
-          <span>{weekTotal}</span>
+          <span>{formatSmartNumber(weekTotal)}</span>
         </div>
         <div className={styles.row}>
           <span>Месяц</span>
-          <span>{monthTotal}</span>
+          <span>{formatSmartNumber(monthTotal)}</span>
         </div>
       </div>
 
