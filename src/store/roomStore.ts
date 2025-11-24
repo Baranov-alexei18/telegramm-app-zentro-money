@@ -10,6 +10,7 @@ import { createCategory } from '@/services/firebase/createCategory';
 import { createTransaction } from '@/services/firebase/createTransaction';
 import { deleteCategoryById } from '@/services/firebase/deleteCategoryById';
 import { deleteTransactionById } from '@/services/firebase/deleteTransactionById';
+import { getRoomUsers } from '@/services/firebase/getRoomUsers';
 import { joinUserToRoom } from '@/services/firebase/joinUserToRoom';
 import { removeNotificationRoom } from '@/services/firebase/removeNotificationRoom';
 import { updateCategory } from '@/services/firebase/updateCategory';
@@ -17,14 +18,17 @@ import { updateTransaction } from '@/services/firebase/updateTransaction';
 import { CategoryType } from '@/types/category';
 import { RoomType } from '@/types/room';
 import { TransactionProps } from '@/types/transaction';
+import { UserWithRoleRoom } from '@/types/user';
 
 type RoomStoreState = {
   room: RoomType | null;
+  members: UserWithRoleRoom[];
   isLoading: boolean;
   error: string | null;
   setRoom: (room: RoomType | null) => void;
   clearRoom: () => void;
   fetchTransactions: (roomId: string) => Promise<void>;
+  fetchMembers: (room: RoomType) => Promise<void>;
   getFilteredTransactions: (
     viewType: TRANSACTION_TYPE,
     period: { start: CalendarDate; end: CalendarDate }
@@ -44,6 +48,7 @@ type RoomStoreState = {
 
 export const useRoomStore = create<RoomStoreState>((set, get) => ({
   room: null,
+  members: [],
   isLoading: false,
   error: null,
 
@@ -65,6 +70,19 @@ export const useRoomStore = create<RoomStoreState>((set, get) => ({
       }));
     } catch (err: any) {
       console.error('Ошибка при получении транзакций:', err);
+    }
+  },
+
+  fetchMembers: async (room) => {
+    try {
+      const users = await getRoomUsers(room);
+
+      set((state) => ({
+        ...state,
+        members: users,
+      }));
+    } catch (e) {
+      console.error('Ошибка при загрузке участников:', e);
     }
   },
 

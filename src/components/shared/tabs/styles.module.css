@@ -1,0 +1,33 @@
+.tabsWrapper {
+  width: 100%;
+}
+
+.tabList {
+  width: 100%;
+  display: flex;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+}
+
+.tabButton {
+  flex: 1;
+  padding: 10px 0;
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.active {
+  background: var(--color-indigo);
+  color: var(--color-surface);
+}
+
+.tabPanel {
+  margin-top: 16px;
+}

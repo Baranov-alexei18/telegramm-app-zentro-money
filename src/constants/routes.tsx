@@ -4,6 +4,7 @@ import { ProtectedLayout } from '@/components/protected-layout';
 import { ProfilePage } from '@/pages/profile';
 import { RegisterPage } from '@/pages/register';
 import { RoomPage } from '@/pages/room';
+import { StatisticsPage } from '@/pages/statistics';
 import { TransactionsPage } from '@/pages/transactions';
 
 import { LayoutApp } from '../components/base-layout';
@@ -25,8 +26,8 @@ export const router = createBrowserRouter([
       { path: ROUTE_PATHS.main, element: <HomePage /> },
       { path: `${ROUTE_PATHS.room}/:id`, element: <RoomPage /> },
       { path: `${ROUTE_PATHS.room}/:id${ROUTE_PATHS.transactions}`, element: <TransactionsPage /> },
+      { path: `${ROUTE_PATHS.room}/:id${ROUTE_PATHS.statistics}`, element: <StatisticsPage /> },
       { path: ROUTE_PATHS.rooms, element: <RoomsPage /> },
-      { path: ROUTE_PATHS.statistics, element: <HomePage /> },
       { path: ROUTE_PATHS.profile, element: <ProfilePage /> },
     ],
   },

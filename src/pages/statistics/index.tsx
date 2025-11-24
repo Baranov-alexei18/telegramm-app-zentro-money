@@ -1,5 +1,4 @@
 import { Fragment, useState } from 'react';
-import { useLocation } from 'react-router';
 import cn from 'classnames';
 
 import { BackButton } from '@/components/back-button';
@@ -9,18 +8,14 @@ import { PeriodPicker } from '@/components/period-picker';
 import { TRANSACTION_TYPE } from '@/constants/transaction-type';
 import { useLoadRoom } from '@/hooks/useLoadRoom';
 
-import { CategoryList } from './category-list';
+import { StatisticView } from './statisctic-view';
 
 import styles from './styles.module.css';
 
-export const TransactionsPage = () => {
-  const location = useLocation();
-
+export const StatisticsPage = () => {
   useLoadRoom();
 
-  const { type } = location.state ?? {};
-
-  const [viewType, setViewType] = useState<TRANSACTION_TYPE>(type);
+  const [viewType, setViewType] = useState<TRANSACTION_TYPE>(TRANSACTION_TYPE.EXPENSE);
 
   return (
     <Fragment>
@@ -28,7 +23,7 @@ export const TransactionsPage = () => {
         <BackButton />
       </Header>
       <div className={styles.wrapper}>
-        <h1 className={styles.title}>Транзакции</h1>
+        <h1 className={styles.title}>Статистика</h1>
         <PeriodPicker />
         <PeriodDateNavigator />
         <div className={styles.tabs}>
@@ -45,7 +40,8 @@ export const TransactionsPage = () => {
             Доходы
           </button>
         </div>
-        <CategoryList viewType={viewType} />
+
+        <StatisticView viewType={viewType} />
       </div>
     </Fragment>
   );

@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from 'react';
+import { Fragment, useEffect } from 'react';
 import { useParams } from 'react-router';
 
 import { AvatarCircle } from '@/components/avatar-circle';
@@ -6,15 +6,15 @@ import { BackButton } from '@/components/back-button';
 import { Header } from '@/components/header';
 import { BottomSheet } from '@/components/shared/bottom-sheet';
 import { Button } from '@/components/shared/button';
+import { LinkButton } from '@/components/shared/link-button';
 import { notificationManager } from '@/components/shared/toast/utils';
 import { RoomUserRole } from '@/constants/room-roles';
+import { ROUTE_PATHS } from '@/constants/route-path';
 import { TRANSACTION_TYPE } from '@/constants/transaction-type';
 import { useRoomAccess } from '@/hooks/useRoomAccess';
-import { getRoomUsers } from '@/services/firebase/getRoomUsers';
 import { getUserRooms } from '@/services/firebase/getUserRooms';
 import { useRoomStore } from '@/store/roomStore';
 import { useUserStore } from '@/store/userStore';
-import { UserWithRoleRoom } from '@/types/user';
 import { getUsername } from '@/utils/getUsername';
 
 import { CardInfo } from './card-info';
@@ -27,11 +27,9 @@ import styles from './styles.module.css';
 export const RoomPage = () => {
   const { user } = useUserStore();
   const { canViewNotifications } = useRoomAccess();
-  const { room, setRoom, fetchTransactions } = useRoomStore();
+  const { room, setRoom, fetchTransactions, fetchMembers, members } = useRoomStore();
 
   const { id } = useParams<{ id: string }>();
-
-  const [membersInfo, setMembersInfo] = useState<UserWithRoleRoom[]>([]);
 
   useEffect(() => {
     const fetchRoom = async () => {
@@ -46,12 +44,7 @@ export const RoomPage = () => {
 
         setRoom(currentRoom);
 
-        const [_, users] = await Promise.all([
-          fetchTransactions(currentRoom.roomId),
-          getRoomUsers(currentRoom),
-        ]);
-
-        setMembersInfo(users);
+        await Promise.all([fetchTransactions(currentRoom.roomId), fetchMembers(currentRoom)]);
       } catch (e) {
         console.error('Ошибка при загрузке комнаты или участников:', e);
       }
@@ -101,22 +94,21 @@ export const RoomPage = () => {
           <h1 className={styles.title}>{room.name}</h1>
           <p className={styles.description}>{room.description}</p>
 
-          {membersInfo.length > 0 && (
+          <LinkButton href={`${location.pathname}${ROUTE_PATHS.statistics}`}>Статистика</LinkButton>
+          {members.length > 0 && (
             <BottomSheet
               id="room-members"
               triggerComponent={
                 <div className={styles.membersTrigger}>
-                  👥 {membersInfo.length} участник{membersInfo.length > 1 ? 'ов' : ''}
+                  👥 {members.length} участник{members.length > 1 ? 'ов' : ''}
                 </div>
               }
             >
               <div className={styles.membersList}>
-                <h3 className={styles.membersTitle}>
-                  Участники комнаты ({membersInfo.length} из 5)
-                </h3>
+                <h3 className={styles.membersTitle}>Участники комнаты ({members.length} из 5)</h3>
                 <Button onClick={handleCopyIdRoom}>Добавить нового участника</Button>
                 <ul className={styles.membersListWrapper}>
-                  {membersInfo.map((member) => (
+                  {members.map((member) => (
                     <li key={member.id} className={styles.memberItem}>
                       <AvatarCircle id={member.id} height={36} width={36} />
                       <div className={styles.memberInfo}>

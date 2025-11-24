@@ -1,0 +1,19 @@
+.chartContainer {
+  position: relative;
+}
+
+.labelWrapper {
+  position: absolute;
+  left: 40%;
+  top: 40%;
+}
+
+.label {
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.labelSmall {
+  font-size: 16px;
+  font-weight: normal;
+}
