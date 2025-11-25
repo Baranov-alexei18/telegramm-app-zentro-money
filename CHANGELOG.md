@@ -1,3 +1,13 @@
+# [1.19.0](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/compare/v1.18.0...v1.19.0) (2025-11-25)
+
+
+### Features
+
+* add 3 charts for statistics ([5013a8e](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/commit/5013a8ede0cd861c3f38b96fad47652b9ab302b8))
+* add header ([39f479c](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/commit/39f479c871eadd4b1dae3f116a532388e7c7173a))
+* add tables for every charts ([1cb4e7d](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/commit/1cb4e7db4565ffcd040fe8e560cadba91a569c5a))
+* redesign tabs ([f84db0d](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/commit/f84db0d0113d29c7560387efa408839f594253b2))
+
 # [1.18.0](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/compare/v1.17.0...v1.18.0) (2025-11-18)
 
 
