@@ -51,7 +51,7 @@
   display: flex;
   gap: 4px;
   padding: 6px 10px;
-  border-radius: 6px;
+  border-radius: var(--border-radius-main);
   cursor: pointer;
   transition: background 0.2s ease;
 }
@@ -60,7 +60,7 @@
   color: #ff6b6b;
   font-size: 14px;
   padding: 6px 10px;
-  border-radius: 6px;
+  border-radius: var(--border-radius-main);
   cursor: pointer;
   transition: background 0.2s ease;
 }

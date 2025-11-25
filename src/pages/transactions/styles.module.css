@@ -9,14 +9,15 @@
   overflow: auto;
 }
 
-.title {
-  font-size: 24px;
-  font-weight: 600;
-  margin-bottom: 16px;
+.headerWrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.dateWrapper {
-  display: flex;
-  gap: 8px;
-  width: 100%;
+.title {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--color-text-dark);
+  margin: 0;
 }

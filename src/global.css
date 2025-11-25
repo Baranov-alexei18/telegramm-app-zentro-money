@@ -51,6 +51,8 @@
 
   --color-card: #f7f9fc;
   --color-card-dark: #1a1d1f;
+
+  --border-radius-main: 6px;
 }
 
 * {

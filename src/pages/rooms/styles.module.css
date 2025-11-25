@@ -9,23 +9,27 @@
   overflow: auto;
 }
 
-.header {
+.headerWrapper {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
 .title {
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 600;
+  color: var(--color-text-dark);
+  margin: 0;
 }
 
 .create {
-  background-color: var(--color-indigo);
+  height: 30px;
   color: var(--color-text-dark);
-  padding: 12px;
-  border-radius: 12px;
+  padding: 4px;
+  border-radius: var(--border-radius-main);
+  font-size: 12px;
   cursor: pointer;
+  border: 1px solid white;
   transition: all 0.2s ease-in-out;
 }
 
@@ -41,7 +45,7 @@
 .roomCard {
   width: 100%;
   border: 1px solid var(--color-indigo);
-  border-radius: 16px;
+  border-radius: var(--border-radius-main);
   padding: 20px;
   display: flex;
   flex-direction: column;

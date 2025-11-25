@@ -2,7 +2,7 @@
   background: var(--color-indigo);
   color: #fff;
   padding: 8px 12px;
-  border-radius: 6px;
+  border-radius: var(--border-radius-main);
   border: none;
   font-weight: 500;
   cursor: pointer;

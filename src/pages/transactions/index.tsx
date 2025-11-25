@@ -24,16 +24,13 @@ export const TransactionsPage = () => {
 
   return (
     <Fragment>
-      <Header>
+      <Header className={styles.headerWrapper}>
         <BackButton />
+        <h2 className={styles.title}>Транзакции</h2>
+        <PeriodPicker />
       </Header>
       <div className={styles.wrapper}>
-        <h1 className={styles.title}>Транзакции</h1>
-        <div className={styles.dateWrapper}>
-          <PeriodPicker />
-
-          <PeriodDateNavigator />
-        </div>
+        <PeriodDateNavigator />
 
         <Tabs
           tabs={TABS_TYPES}

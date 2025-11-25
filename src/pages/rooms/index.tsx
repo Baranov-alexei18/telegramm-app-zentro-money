@@ -75,8 +75,17 @@ export const RoomsPage = () => {
 
   return (
     <Fragment>
-      <Header>
+      <Header className={styles.headerWrapper}>
         <BackButton />
+
+        <h2 className={styles.title}>Мои комнаты</h2>
+
+        <BottomSheet
+          triggerComponent={<div className={styles.create}>Создать комнату</div>}
+          id="create-room"
+        >
+          <CreateRoomForm />
+        </BottomSheet>
       </Header>
       <div className={styles.wrapper}>
         <div className={styles.connectRoom}>
@@ -89,15 +98,6 @@ export const RoomsPage = () => {
             <ArrowRightIcon />
           </Button>
         </div>
-
-        <h1 className={styles.title}>Мои комнаты</h1>
-
-        <BottomSheet
-          triggerComponent={<div className={styles.create}>Создать комнату</div>}
-          id="create-room"
-        >
-          <CreateRoomForm />
-        </BottomSheet>
 
         <div className={styles.roomsGrid}>
           {rooms.map((room) => (

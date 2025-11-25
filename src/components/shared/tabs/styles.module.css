@@ -5,7 +5,7 @@
 .tabList {
   width: 100%;
   display: flex;
-  border-radius: 6px;
+  border-radius: var(--border-radius-main);
   overflow: hidden;
   border: 1px solid var(--color-border);
 }

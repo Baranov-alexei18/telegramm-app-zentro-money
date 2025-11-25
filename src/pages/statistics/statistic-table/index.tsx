@@ -3,6 +3,7 @@ import { Button, Cell, Column, Row, Table, TableBody, TableHeader } from 'react-
 
 import { ArrowDownIcon } from '@/components/icons/arrow-down-icon';
 import { TransactionProps } from '@/types/transaction';
+import { formatSmartNumber } from '@/utils/formatSmartNumber';
 
 import styles from './styles.module.css';
 
@@ -58,7 +59,7 @@ export const StatisticTable = ({ data }: Props) => {
                             {t.date?.toDate?.().toLocaleDateString?.() ?? '—'}
                           </span>
                           <span className={styles.description}>{t.description}</span>
-                          <span className={styles.amount}>{t.amount}</span>
+                          <span className={styles.amount}>{formatSmartNumber(t.amount)}</span>
                         </li>
                       ))}
                     </ul>

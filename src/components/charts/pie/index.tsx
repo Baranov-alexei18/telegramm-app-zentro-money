@@ -20,6 +20,7 @@ export const ChartPie = ({ data }: Props) => {
   const [selected, setSelected] = useState<string | null>(null);
 
   const validData = data.filter((d) => d.amount > 0);
+
   const totalAmount = validData.reduce((s, d) => Number(formatSmartNumber(s || 0)) + d.amount, 0);
 
   const handleClick = (_: any, props: any) => {
@@ -89,7 +90,7 @@ export const ChartPie = ({ data }: Props) => {
           text={
             selected
               ? formatSmartNumber(validData.find((d) => d.id === selected)?.amount ?? '')
-              : `${totalAmount}`
+              : `${formatSmartNumber(totalAmount)}`
           }
         />
 

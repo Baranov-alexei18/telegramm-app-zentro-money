@@ -1,6 +1,8 @@
 import React from 'react';
 import { Cell, Column, Row, Table, TableBody, TableHeader } from 'react-aria-components';
 
+import { formatSmartNumber } from '@/utils/formatSmartNumber';
+
 import styles from './styles.module.css';
 
 export type Props = {
@@ -28,7 +30,7 @@ export const StatisticTableByDate = ({ data }: Props) => {
             <Row key={row.id} style={{ color: row.color }}>
               <Cell>{row.dateLabel}</Cell>
               <Cell>{row.label}</Cell>
-              <Cell className={styles.cellTotal}>{row.total}</Cell>
+              <Cell className={styles.cellTotal}>{formatSmartNumber(row.total)}</Cell>
             </Row>
           ))}
         </TableBody>
