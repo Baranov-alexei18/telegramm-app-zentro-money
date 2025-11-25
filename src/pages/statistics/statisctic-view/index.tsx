@@ -70,7 +70,7 @@ export const StatisticView = ({ viewType }: Props) => {
     .map((cat) => {
       const tx = filteredTransactions.filter((t) => t.category.id === cat.id);
 
-      const total = tx.reduce((s, t) => s + Number(t.amount), 0);
+      const total = tx.reduce((s, t) => Number(formatSmartNumber(s) || 0) + Number(t.amount), 0);
 
       return {
         id: cat.id,
@@ -86,10 +86,11 @@ export const StatisticView = ({ viewType }: Props) => {
     .map((user) => {
       const tx = filteredTransactions.filter((t) => t.userId === user.id);
 
-      const total = tx.reduce((s, t) => s + Number(t.amount), 0);
+      const total = tx.reduce((s, t) => Number(formatSmartNumber(s) || 0) + Number(t.amount), 0);
 
       return {
         id: user.id,
+        color: getRandomColor(),
         label: getUsername(user) || user.email || 'Нет имени',
         total,
         transactions: tx,
@@ -139,11 +140,13 @@ export const StatisticView = ({ viewType }: Props) => {
         ariaLabel="Статистика с типами"
       />
 
-      <h3 className={styles.title}>
-        {type === GranularityFields.WEEK && 'Траты по дням недели'}
-        {type === GranularityFields.MONTH && 'Траты по дням месяца'}
-        {type === GranularityFields.YEAR && 'Траты по месяцам'}
-      </h3>
+      {tab === 'date' && (
+        <h3 className={styles.title}>
+          {type === GranularityFields.WEEK && 'Траты по дням недели'}
+          {type === GranularityFields.MONTH && 'Траты по дням месяца'}
+          {type === GranularityFields.YEAR && 'Траты по месяцам'}
+        </h3>
+      )}
 
       {COMPONENTS[tab].chart}
 

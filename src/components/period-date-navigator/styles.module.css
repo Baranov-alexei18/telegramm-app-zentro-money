@@ -2,10 +2,10 @@
   width: 100%;
   display: flex;
   align-items: center;
-  justify-content: space-around;
+  justify-content: space-between;
   gap: 12px;
   padding: 4px 6px;
-  border-radius: 6px;
+  border-radius: var(--border-radius-main);
   border: 1px solid var(--color-border);
   user-select: none;
 }
@@ -20,7 +20,7 @@
 }
 
 .arrow {
-  border-radius: 6px;
+  border-radius: var(--border-radius-main);
   padding-top: 4px;
   height: 25px;
   background-color: unset;

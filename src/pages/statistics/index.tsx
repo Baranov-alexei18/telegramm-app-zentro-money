@@ -19,18 +19,14 @@ export const StatisticsPage = () => {
 
   return (
     <Fragment>
-      <Header>
+      <Header className={styles.headerWrapper}>
         <BackButton />
+        <h2 className={styles.title}>Статистика</h2>
+        <PeriodPicker />
       </Header>
 
       <div className={styles.wrapper}>
-        <h1 className={styles.title}>Статистика</h1>
-
-        <div className={styles.dateWrapper}>
-          <PeriodPicker />
-
-          <PeriodDateNavigator />
-        </div>
+        <PeriodDateNavigator />
 
         <Tabs
           tabs={TABS_TYPES}
