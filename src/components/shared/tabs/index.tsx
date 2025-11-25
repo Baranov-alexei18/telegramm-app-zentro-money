@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { Button } from 'react-aria-components';
+import { Button, Tabs as TabsArea } from 'react-aria-components';
 
 import styles from './styles.module.css';
 
@@ -13,13 +13,12 @@ type TabsProps = {
   selected: string;
   ariaLabel: string;
   onChange: (key: string) => void;
-  children: ReactNode;
 };
 
-export const Tabs = ({ tabs, selected, ariaLabel, onChange, children }: TabsProps) => {
+export const Tabs = ({ tabs, selected, ariaLabel, onChange }: TabsProps) => {
   return (
     <div className={styles.tabsWrapper} aria-label={ariaLabel}>
-      <div className={styles.tabList}>
+      <TabsArea className={styles.tabList}>
         {tabs.map((tab) => (
           <Button
             key={tab.key}
@@ -29,9 +28,7 @@ export const Tabs = ({ tabs, selected, ariaLabel, onChange, children }: TabsProp
             {tab.label}
           </Button>
         ))}
-      </div>
-
-      <div className={styles.tabPanel}>{children}</div>
+      </TabsArea>
     </div>
   );
 };

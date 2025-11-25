@@ -9,17 +9,18 @@ import { useGranularityStore } from '@/store/granularityStore';
 import { useRoomStore } from '@/store/roomStore';
 import { formatSmartNumber } from '@/utils/formatSmartNumber';
 import { getRandomColor } from '@/utils/getRandomColor';
+import { getUsername } from '@/utils/getUsername';
 import { groupTransactionsByPeriod } from '@/utils/groupTransactionsStatistics';
 import { prepareVictoryData } from '@/utils/prepareVictoryData';
 
 import { StatisticTable } from '../statistic-table';
+import { StatisticTableByDate } from '../statistic-table-date';
 
 import styles from './styles.module.css';
 
 export type Props = {
   viewType: TRANSACTION_TYPE;
 };
-
 const tabs = [
   { key: 'date', label: 'По дате' },
   { key: 'categories', label: 'По категориям' },
@@ -30,7 +31,7 @@ export const StatisticView = ({ viewType }: Props) => {
   const { room, getFilteredTransactions, members, fetchMembers } = useRoomStore();
   const { period, type } = useGranularityStore();
 
-  const [tab, setTab] = useState('date');
+  const [tab, setTab] = useState<keyof typeof COMPONENTS>('date');
 
   useEffect(() => {
     const fetchUsersRoom = async () => {
@@ -46,23 +47,54 @@ export const StatisticView = ({ viewType }: Props) => {
     fetchUsersRoom();
   }, [fetchMembers, members.length, room]);
 
-  const categoryList = room?.categories.filter((cat) => cat.type === viewType) ?? [];
+  const categoryList = room?.categories?.filter((cat) => cat.type === viewType) ?? [];
   const filteredTransactions = getFilteredTransactions(viewType, period);
 
   const { labels, result } = groupTransactionsByPeriod(filteredTransactions, type);
   const victoryData = prepareVictoryData(labels, result, categoryList);
 
-  const tableData = labels.flatMap((label) =>
+  const tableByDate = labels.flatMap((label) =>
     categoryList
       .map((cat) => ({
         id: `${label}-${cat.id}`,
-        categoryName: cat.name,
+        label: cat.name,
         dateLabel: label,
-        amount: result[label][cat.id] ?? 0,
+        total: result[label]?.[cat.id] ?? 0,
         color: cat.color,
       }))
-      .filter((row) => row.amount !== 0)
+      .filter((row) => row.total !== 0)
   );
+
+  const tableByCategory = categoryList
+    .map((cat) => {
+      const tx = filteredTransactions.filter((t) => t.category.id === cat.id);
+
+      const total = tx.reduce((s, t) => s + Number(t.amount), 0);
+
+      return {
+        id: cat.id,
+        label: cat.name,
+        color: cat.color,
+        total,
+        transactions: tx,
+      };
+    })
+    .filter((row) => row.total !== 0);
+
+  const tableByPeople = members
+    .map((user) => {
+      const tx = filteredTransactions.filter((t) => t.userId === user.id);
+
+      const total = tx.reduce((s, t) => s + Number(t.amount), 0);
+
+      return {
+        id: user.id,
+        label: getUsername(user) || user.email || 'Нет имени',
+        total,
+        transactions: tx,
+      };
+    })
+    .filter((row) => row.total !== 0);
 
   const categorySummary = categoryList.map((cat) => ({
     id: cat.id,
@@ -82,23 +114,38 @@ export const StatisticView = ({ viewType }: Props) => {
       .reduce((sum, t) => Number(formatSmartNumber(sum) || 0) + Number(t.amount), 0),
   }));
 
-  const hasData = tableData.length > 0;
+  const COMPONENTS = {
+    date: {
+      chart: <ChartExplorer data={victoryData} labels={labels} hasData={tableByDate.length > 0} />,
+      table: tableByDate.length > 0 ? <StatisticTableByDate data={tableByDate} /> : null,
+    },
+    categories: {
+      chart: <ChartPie data={categorySummary} />,
+      table: tableByCategory.length > 0 ? <StatisticTable data={tableByCategory} /> : null,
+    },
+    people: {
+      chart: <ChartPie data={peopleSummary} />,
+      table: tableByPeople.length > 0 ? <StatisticTable data={tableByPeople} /> : null,
+    },
+  };
 
   return (
     <div className={styles.wrapper}>
-      <Tabs tabs={tabs} selected={tab} onChange={setTab} ariaLabel="Статистика с типами">
-        <h3 className={styles.title}>
-          {type === GranularityFields.WEEK && 'Траты по дням недели'}
-          {type === GranularityFields.MONTH && 'Траты по дням месяца'}
-          {type === GranularityFields.YEAR && 'Траты по месяцам'}
-        </h3>
+      <Tabs
+        tabs={tabs}
+        selected={tab}
+        onChange={(key: string) => setTab(key as keyof typeof COMPONENTS)}
+        ariaLabel="Статистика с типами"
+      ></Tabs>
+      <h3 className={styles.title}>
+        {type === GranularityFields.WEEK && 'Траты по дням недели'}
+        {type === GranularityFields.MONTH && 'Траты по дням месяца'}
+        {type === GranularityFields.YEAR && 'Траты по месяцам'}
+      </h3>
 
-        {tab === 'date' && <ChartExplorer data={victoryData} labels={labels} hasData={hasData} />}
-        {tab === 'categories' && <ChartPie data={categorySummary} />}
-        {tab === 'people' && <ChartPie data={peopleSummary} />}
-      </Tabs>
+      {COMPONENTS[tab].chart}
 
-      {hasData && <StatisticTable data={tableData} />}
+      {COMPONENTS[tab].table}
     </div>
   );
 };
