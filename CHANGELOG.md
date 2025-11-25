@@ -1,3 +1,10 @@
+# [1.20.0](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/compare/v1.19.0...v1.20.0) (2025-11-25)
+
+
+### Features
+
+* redisign header on pages ([7c5319c](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/commit/7c5319c4b01fed0e66c7790d754f5ef3272d4652))
+
 # [1.19.0](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/compare/v1.18.0...v1.19.0) (2025-11-25)
 
 
