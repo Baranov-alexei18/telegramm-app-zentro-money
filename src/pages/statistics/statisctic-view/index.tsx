@@ -21,6 +21,7 @@ import styles from './styles.module.css';
 export type Props = {
   viewType: TRANSACTION_TYPE;
 };
+
 const tabs = [
   { key: 'date', label: 'По дате' },
   { key: 'categories', label: 'По категориям' },
@@ -136,7 +137,8 @@ export const StatisticView = ({ viewType }: Props) => {
         selected={tab}
         onChange={(key: string) => setTab(key as keyof typeof COMPONENTS)}
         ariaLabel="Статистика с типами"
-      ></Tabs>
+      />
+
       <h3 className={styles.title}>
         {type === GranularityFields.WEEK && 'Траты по дням недели'}
         {type === GranularityFields.MONTH && 'Траты по дням месяца'}

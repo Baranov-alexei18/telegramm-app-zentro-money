@@ -5,17 +5,17 @@
 .tabList {
   width: 100%;
   display: flex;
-  border-radius: 16px;
+  border-radius: 6px;
   overflow: hidden;
   border: 1px solid var(--color-border);
 }
 
 .tabButton {
   flex: 1;
-  padding: 10px 0;
+  padding: 8px 0;
   border: none;
   background: transparent;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
   color: var(--text-secondary);
   transition:

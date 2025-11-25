@@ -1,29 +1,28 @@
 .container {
+  width: 100%;
   display: flex;
   align-items: center;
-  gap: 16px;
-
+  justify-content: space-around;
+  gap: 12px;
   padding: 4px 6px;
-  border-radius: 12px;
-
+  border-radius: 6px;
   border: 1px solid var(--color-border);
-  width: fit-content;
-
   user-select: none;
 }
 
 .label {
   font-size: 12px;
   font-weight: 500;
-  min-width: 180px;
+  width: auto;
+  min-width: 100px;
   text-align: center;
   white-space: nowrap;
 }
 
 .arrow {
-  border-radius: 10px;
+  border-radius: 6px;
   padding-top: 4px;
-  height: 30px;
+  height: 25px;
   background-color: unset;
   border: 1px solid var(--color-border-dark);
   cursor: pointer;

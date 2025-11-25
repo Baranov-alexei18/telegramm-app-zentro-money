@@ -1,11 +1,11 @@
 import { Fragment, useState } from 'react';
-import cn from 'classnames';
 
 import { BackButton } from '@/components/back-button';
 import { Header } from '@/components/header';
 import { PeriodDateNavigator } from '@/components/period-date-navigator';
 import { PeriodPicker } from '@/components/period-picker';
-import { TRANSACTION_TYPE } from '@/constants/transaction-type';
+import { Tabs } from '@/components/shared/tabs';
+import { TABS_TYPES, TRANSACTION_TYPE } from '@/constants/transaction-type';
 import { useLoadRoom } from '@/hooks/useLoadRoom';
 
 import { StatisticView } from './statisctic-view';
@@ -22,24 +22,22 @@ export const StatisticsPage = () => {
       <Header>
         <BackButton />
       </Header>
+
       <div className={styles.wrapper}>
         <h1 className={styles.title}>Статистика</h1>
-        <PeriodPicker />
-        <PeriodDateNavigator />
-        <div className={styles.tabs}>
-          <button
-            className={cn(styles.tab, viewType === TRANSACTION_TYPE.EXPENSE && styles.activeTab)}
-            onClick={() => setViewType(TRANSACTION_TYPE.EXPENSE)}
-          >
-            Расходы
-          </button>
-          <button
-            className={cn(styles.tab, viewType === TRANSACTION_TYPE.INCOME && styles.activeTab)}
-            onClick={() => setViewType(TRANSACTION_TYPE.INCOME)}
-          >
-            Доходы
-          </button>
+
+        <div className={styles.dateWrapper}>
+          <PeriodPicker />
+
+          <PeriodDateNavigator />
         </div>
+
+        <Tabs
+          tabs={TABS_TYPES}
+          selected={viewType}
+          onChange={(tab) => setViewType(tab as TRANSACTION_TYPE)}
+          ariaLabel="Переключатель доходов/расходов"
+        />
 
         <StatisticView viewType={viewType} />
       </div>

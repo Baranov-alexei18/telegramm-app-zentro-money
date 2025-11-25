@@ -1,4 +1,3 @@
-import { ReactNode } from 'react';
 import { Button, Tabs as TabsArea } from 'react-aria-components';
 
 import styles from './styles.module.css';
