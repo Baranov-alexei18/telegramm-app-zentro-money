@@ -1,5 +1,4 @@
 import { Fragment, useState } from 'react';
-import { useLocation } from 'react-router';
 
 import { BackButton } from '@/components/back-button';
 import { Header } from '@/components/header';
@@ -9,26 +8,24 @@ import { Tabs } from '@/components/shared/tabs';
 import { TABS_TYPES, TRANSACTION_TYPE } from '@/constants/transaction-type';
 import { useLoadRoom } from '@/hooks/useLoadRoom';
 
-import { CategoryList } from './category-list';
+import { StatisticView } from './statisctic-view';
 
 import styles from './styles.module.css';
 
-export const TransactionsPage = () => {
-  const location = useLocation();
-
+export const StatisticsPage = () => {
   useLoadRoom();
 
-  const { type } = location.state ?? {};
-
-  const [viewType, setViewType] = useState<TRANSACTION_TYPE>(type);
+  const [viewType, setViewType] = useState<TRANSACTION_TYPE>(TRANSACTION_TYPE.EXPENSE);
 
   return (
     <Fragment>
       <Header>
         <BackButton />
       </Header>
+
       <div className={styles.wrapper}>
-        <h1 className={styles.title}>Транзакции</h1>
+        <h1 className={styles.title}>Статистика</h1>
+
         <div className={styles.dateWrapper}>
           <PeriodPicker />
 
@@ -41,7 +38,8 @@ export const TransactionsPage = () => {
           onChange={(tab) => setViewType(tab as TRANSACTION_TYPE)}
           ariaLabel="Переключатель доходов/расходов"
         />
-        <CategoryList viewType={viewType} />
+
+        <StatisticView viewType={viewType} />
       </div>
     </Fragment>
   );

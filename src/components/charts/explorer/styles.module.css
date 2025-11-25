@@ -1,0 +1,18 @@
+.chartContainer {
+  position: relative;
+}
+
+.noDataOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--color-muted-dark);
+
+  backdrop-filter: blur(2px);
+  pointer-events: none;
+}

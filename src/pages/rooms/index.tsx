@@ -1,7 +1,9 @@
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 
+import { BackButton } from '@/components/back-button';
 import { CreateRoomForm } from '@/components/forms/create-room-form';
+import { Header } from '@/components/header';
 import { ArrowRightIcon } from '@/components/icons/arrow-right-icon';
 import { BottomSheet } from '@/components/shared/bottom-sheet';
 import { Button } from '@/components/shared/button';
@@ -39,10 +41,6 @@ export const RoomsPage = () => {
     getRoomsData();
   }, [user]);
 
-  const handleAddTransaction = (roomId: string) => {
-    console.log('Добавить транзакцию для комнаты:', roomId);
-  };
-
   const handleToRoom = (id: string) => {
     navigate(`${ROUTE_PATHS.room}/${id}`);
   };
@@ -76,50 +74,46 @@ export const RoomsPage = () => {
   };
 
   return (
-    <div className={styles.wrapper}>
-      <div className={styles.connectRoom}>
-        <Input
-          onChange={(e) => setRoomId(e.target.value)}
-          value={roomId}
-          placeholder="Введите id комнаты"
-        />
-        <Button onClick={handleConnectToRoom}>
-          <ArrowRightIcon />
-        </Button>
-      </div>
+    <Fragment>
+      <Header>
+        <BackButton />
+      </Header>
+      <div className={styles.wrapper}>
+        <div className={styles.connectRoom}>
+          <Input
+            onChange={(e) => setRoomId(e.target.value)}
+            value={roomId}
+            placeholder="Введите id комнаты"
+          />
+          <Button onClick={handleConnectToRoom}>
+            <ArrowRightIcon />
+          </Button>
+        </div>
 
-      <h1 className={styles.title}>Мои комнаты</h1>
+        <h1 className={styles.title}>Мои комнаты</h1>
 
-      <BottomSheet
-        triggerComponent={<div className={styles.create}>Создать комнату</div>}
-        id="create-room"
-      >
-        <CreateRoomForm />
-      </BottomSheet>
+        <BottomSheet
+          triggerComponent={<div className={styles.create}>Создать комнату</div>}
+          id="create-room"
+        >
+          <CreateRoomForm />
+        </BottomSheet>
 
-      <div className={styles.roomsGrid}>
-        {rooms.map((room) => (
-          <div
-            key={room.roomId}
-            className={styles.roomCard}
-            onClick={() => handleToRoom(room.roomId)}
-          >
-            <div className={styles.roomHeader}>
-              <h2 className={styles.roomName}>{room.name}</h2>
+        <div className={styles.roomsGrid}>
+          {rooms.map((room) => (
+            <div
+              key={room.roomId}
+              className={styles.roomCard}
+              onClick={() => handleToRoom(room.roomId)}
+            >
+              <div className={styles.roomHeader}>
+                <h2 className={styles.roomName}>{room.name}</h2>
+              </div>
+              <p className={styles.roomDescription}>{room.description}</p>
             </div>
-            <p className={styles.roomDescription}>{room.description}</p>
-
-            <div className={styles.actions}>
-              <Button
-                className={styles.transactionButton}
-                onClick={() => handleAddTransaction(room.roomId)}
-              >
-                Добавить транзакцию
-              </Button>
-            </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
-    </div>
+    </Fragment>
   );
 };

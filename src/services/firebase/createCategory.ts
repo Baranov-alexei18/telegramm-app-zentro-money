@@ -3,14 +3,11 @@ import { arrayUnion, doc, updateDoc } from 'firebase/firestore';
 import { COLLECTION_ROOM } from '@/constants/db';
 import { TRANSACTION_TYPE } from '@/constants/transaction-type';
 import { CategoryType } from '@/types/category';
+import { getRandomColor } from '@/utils/getRandomColor';
 
 import { db } from './config';
 
 const generateCategoryId = () => `category_${Date.now()}`;
-const getRandomColor = () =>
-  `#${Math.floor(Math.random() * 16777215)
-    .toString(16)
-    .padStart(6, '0')}`;
 
 export const createCategory = async (
   roomId: string,

@@ -1,29 +1,12 @@
-import { updateProfile } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 
-import { COLLECTION_USER } from '@/constants/db'; // Импортируем название коллекции в Firestore
+import { COLLECTION_USER } from '@/constants/db';
+import { UpdateUserType } from '@/types/user';
 
-import { auth, db } from './config'; // Импортируем конфиг Firebase
+import { db } from './config';
 
-// Тип данных для обновления
-type UpdateUserData = {
-  firstName: string;
-  lastName: string;
-  email: string;
-};
-
-export const updateUser = async (userId: string, data: UpdateUserData) => {
+export const updateUser = async (userId: string, data: UpdateUserType) => {
   try {
-    const user = auth.currentUser;
-
-    if (!user || user.uid !== userId) {
-      throw new Error('Невозможно обновить данные пользователя: пользователь не найден');
-    }
-
-    await updateProfile(user, {
-      displayName: `${data.firstName} ${data.lastName}`,
-    });
-
     await setDoc(
       doc(db, COLLECTION_USER, userId),
       {
