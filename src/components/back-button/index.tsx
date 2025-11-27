@@ -10,7 +10,7 @@ export const BackButton = () => {
 
   return (
     <Button className={styles.backBtn} onClick={() => navigate(-1)}>
-      <ArrowLeftIcon height={12} width={12} />
+      <ArrowLeftIcon height={16} width={16} />
     </Button>
   );
 };

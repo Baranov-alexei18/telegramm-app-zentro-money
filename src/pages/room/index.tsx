@@ -4,6 +4,7 @@ import { useParams } from 'react-router';
 import { AvatarCircle } from '@/components/avatar-circle';
 import { BackButton } from '@/components/back-button';
 import { Header } from '@/components/header';
+import { StatisticsIcon } from '@/components/icons/statistics-icon';
 import { BottomSheet } from '@/components/shared/bottom-sheet';
 import { Button } from '@/components/shared/button';
 import { LinkButton } from '@/components/shared/link-button';
@@ -86,15 +87,26 @@ export const RoomPage = () => {
 
   return (
     <Fragment>
-      <Header>
+      <Header className={styles.headerWrapper}>
         <BackButton />
+
+        <h2 className={styles.title}>Комната</h2>
+
+        <div className={styles.headerIconWrapper}>
+          <LinkButton
+            href={`${location.pathname}${ROUTE_PATHS.statistics}`}
+            className={styles.statisticIcon}
+          >
+            <StatisticsIcon />
+          </LinkButton>
+          <ChatPanel />
+        </div>
       </Header>
       <div className={styles.wrapper}>
         <div className={styles.header}>
-          <h1 className={styles.title}>{room.name}</h1>
+          <h1 className={styles.subTitle}>{room.name}</h1>
           <p className={styles.description}>{room.description}</p>
 
-          <LinkButton href={`${location.pathname}${ROUTE_PATHS.statistics}`}>Статистика</LinkButton>
           {members.length > 0 && (
             <BottomSheet
               id="room-members"
@@ -128,8 +140,6 @@ export const RoomPage = () => {
         </div>
 
         {canViewNotifications() && <NotificationPanel notifications={room.notifications} />}
-
-        <ChatPanel />
 
         <CardInfo type={TRANSACTION_TYPE.INCOME} />
 

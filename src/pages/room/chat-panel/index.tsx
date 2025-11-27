@@ -1,14 +1,7 @@
 import { useEffect, useState } from 'react';
-import {
-  addDoc,
-  collection,
-  onSnapshot,
-  orderBy,
-  query,
-  serverTimestamp,
-  Timestamp,
-} from 'firebase/firestore';
+import { collection, onSnapshot, orderBy, query, Timestamp } from 'firebase/firestore';
 
+import { ChatIcon } from '@/components/icons/chat-icon';
 import { PlayStoreIcon } from '@/components/icons/play-store-icon';
 import { BottomSheet } from '@/components/shared/bottom-sheet';
 import { Button } from '@/components/shared/button';
@@ -18,8 +11,8 @@ import { db } from '@/services/firebase/config';
 import { createMessageChat } from '@/services/firebase/createMessageChat';
 import { useRoomStore } from '@/store/roomStore';
 import { useUserStore } from '@/store/userStore';
-import { getUsername } from '@/utils/getUsername';
 
+import stylesParent from '../styles.module.css';
 import styles from './styles.module.css';
 
 type Message = {
@@ -74,43 +67,45 @@ export const ChatPanel = () => {
   };
 
   return (
-    <div className={styles.panel}>
-      <BottomSheet
-        id="room-chat"
-        triggerComponent={<div className={styles.chatTrigger}>💬 Открыть чат</div>}
-      >
-        <div className={styles.chatPanel}>
-          <h3 className={styles.title}>Чат комнаты</h3>
-
-          <div className={styles.messages}>
-            {messages.map((msg) => (
-              <div
-                key={msg.id}
-                className={`${styles.message} ${msg.senderId === user?.id ? styles.myMessage : ''}`}
-              >
-                <div className={styles.messageHeader}>
-                  <p
-                    className={styles.sender}
-                  >{`${msg.senderName},  ${formatTime(msg.createdAt)}`}</p>
-                </div>
-                <p className={styles.text}>{msg.text}</p>
-              </div>
-            ))}
-          </div>
-
-          <div className={styles.inputWrapper}>
-            <Input
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-              placeholder="Введите сообщение..."
-              className={styles.input}
-            />
-            <Button onClick={sendMessage} className={styles.sendButton}>
-              <PlayStoreIcon />
-            </Button>
-          </div>
+    <BottomSheet
+      id="room-chat"
+      triggerComponent={
+        <div className={stylesParent.statisticIcon}>
+          <ChatIcon />
         </div>
-      </BottomSheet>
-    </div>
+      }
+    >
+      <div className={styles.chatPanel}>
+        <h3 className={styles.title}>Чат комнаты</h3>
+
+        <div className={styles.messages}>
+          {messages.map((msg) => (
+            <div
+              key={msg.id}
+              className={`${styles.message} ${msg.senderId === user?.id ? styles.myMessage : ''}`}
+            >
+              <div className={styles.messageHeader}>
+                <p
+                  className={styles.sender}
+                >{`${msg.senderName},  ${formatTime(msg.createdAt)}`}</p>
+              </div>
+              <p className={styles.text}>{msg.text}</p>
+            </div>
+          ))}
+        </div>
+
+        <div className={styles.inputWrapper}>
+          <Input
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            placeholder="Введите сообщение..."
+            className={styles.input}
+          />
+          <Button onClick={sendMessage} className={styles.sendButton}>
+            <PlayStoreIcon />
+          </Button>
+        </div>
+      </div>
+    </BottomSheet>
   );
 };

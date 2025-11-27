@@ -1,3 +1,4 @@
+import { ReactNode } from 'react';
 import { NavLink } from 'react-router';
 import cn from 'classnames';
 
@@ -5,7 +6,7 @@ import styles from './styles.module.css';
 
 type LinkButtonProps = {
   href: string;
-  children: string;
+  children: ReactNode;
   className?: string;
 };
 
