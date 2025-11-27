@@ -8,9 +8,7 @@
 .notificationsBtn {
   position: relative;
   padding: 10px 16px;
-  border-radius: 12px;
-  background: #222;
-  color: #fff;
+  border-radius: var(--border-radius-main);
   font-weight: 500;
   cursor: pointer;
 }

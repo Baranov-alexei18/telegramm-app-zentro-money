@@ -38,7 +38,7 @@ export const StatisticTable = ({ data }: Props) => {
             <React.Fragment key={row.id}>
               <Row className={styles.mainRow} style={{ color: row.color || 'inherit' }}>
                 <Cell>{row.label}</Cell>
-                <Cell>{row.total}</Cell>
+                <Cell>{formatSmartNumber(row.total)}</Cell>
                 <Cell>
                   <Button
                     className={`${styles.toggleBtn} ${openRows[row.id] ? styles.open : ''}`}

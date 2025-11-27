@@ -22,7 +22,7 @@ export const formatPeriod = (period: CalendarDate, type: GranularityFields) => {
     const endDate = end.toDate('UTC');
 
     if (start.month === end.month) {
-      return `${start.day}–${end.day} ${format(startDate, {
+      return `${start.day}–${end.day}.${format(startDate, {
         month: 'numeric',
         year: 'numeric',
       })}`;

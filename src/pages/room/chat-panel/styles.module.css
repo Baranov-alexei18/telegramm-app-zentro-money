@@ -1,7 +1,7 @@
 .chatPanel {
   display: flex;
   flex-direction: column;
-  height: 80vh;
+  max-height: 100%;
   padding: 12px;
 }
 
@@ -9,15 +9,21 @@
   font-weight: 600;
   margin-bottom: 12px;
   text-align: center;
+  margin: 0;
+  margin-bottom: 8px;
 }
 
 .messages {
-  flex: 1;
   overflow-y: auto;
   display: flex;
+  max-height: 400px;
   flex-direction: column;
   gap: 8px;
   margin-bottom: 12px;
+}
+
+.messages::-webkit-scrollbar {
+  display: none;
 }
 
 .message {
