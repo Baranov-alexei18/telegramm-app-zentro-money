@@ -1,3 +1,10 @@
+# [1.25.0](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/compare/v1.24.0...v1.25.0) (2025-12-01)
+
+
+### Features
+
+* create home page p.2 ([eaf49a1](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/commit/eaf49a13e7054fb9254b31ba2b3a05953283e714))
+
 # [1.24.0](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/compare/v1.23.0...v1.24.0) (2025-12-01)
 
 
