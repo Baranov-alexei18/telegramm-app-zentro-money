@@ -14,17 +14,6 @@ type Props = {
 };
 
 export const useUserStore = create<Props>((set, get) => ({
-  //DONT SAVE
-
-  // user: {
-  //   email: 'test@mail.ru',
-  //   id: 'pghQMDZNj3XRo5cXFbuuEouv2W62',
-  //   firstName: '',
-  //   lastName: '',
-  //   rooms: [],
-  //   username: 'test',
-  //   telegramId: null,
-  // },
   user: null,
   loading: true,
   error: null,

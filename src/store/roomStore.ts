@@ -240,6 +240,10 @@ export const useRoomStore = create<RoomStoreState>((set, get) => ({
 
     if (!room) throw new Error('Комната не найдена');
 
+    if (Object.keys(room.members).length >= 5) {
+      throw new Error('В комнате максимальное количество людей - 5');
+    }
+
     try {
       const data = await joinUserToRoom(userId, room);
 
