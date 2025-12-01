@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from 'react';
+import { Fragment, SetStateAction, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 
 import { BackButton } from '@/components/back-button';
@@ -73,6 +73,8 @@ export const RoomsPage = () => {
     }
   };
 
+  const changeRoomId = (e: { target: { value: SetStateAction<string> } }) =>
+    setRoomId(e.target.value);
   return (
     <Fragment>
       <Header className={styles.headerWrapper}>
@@ -89,11 +91,7 @@ export const RoomsPage = () => {
       </Header>
       <div className={styles.wrapper}>
         <div className={styles.connectRoom}>
-          <Input
-            onChange={(e) => setRoomId(e.target.value)}
-            value={roomId}
-            placeholder="Введите id комнаты"
-          />
+          <Input onChange={changeRoomId} value={roomId} placeholder="Введите id комнаты" />
           <Button onClick={handleConnectToRoom}>
             <ArrowRightIcon />
           </Button>
@@ -107,9 +105,11 @@ export const RoomsPage = () => {
               onClick={() => handleToRoom(room.roomId)}
             >
               <div className={styles.roomHeader}>
-                <h2 className={styles.roomName}>{room.name}</h2>
+                <h2 className={styles.roomName}>
+                  {room.name} (👥{Object.keys(room.members || {}).length} )
+                </h2>
               </div>
-              <p className={styles.roomDescription}>{room.description}</p>
+              {room.description && <p className={styles.roomDescription}>{room.description}</p>}
             </div>
           ))}
         </div>

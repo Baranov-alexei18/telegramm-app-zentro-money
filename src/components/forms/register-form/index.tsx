@@ -6,7 +6,6 @@ import Logo from '@/assets/images/logo.png';
 import { Button } from '@/components/shared/button';
 import { Input } from '@/components/shared/input';
 import { LinkButton } from '@/components/shared/link-button';
-import { notificationManager } from '@/components/shared/toast/utils';
 import { ROUTE_PATHS } from '@/constants/route-path';
 
 import styles from './styles.module.css';
