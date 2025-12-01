@@ -22,6 +22,8 @@ export const useRoomAccess = () => {
       canCreateCategory: () => false,
       canModifyCategory: () => false,
       canDeleteCategory: () => false,
+
+      canDeleteUser: () => false,
     };
   }
 
