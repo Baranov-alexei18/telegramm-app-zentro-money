@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 
 import Logo from '@/assets/images/logo.png';
+import { ROUTE_PATHS } from '@/constants/route-path';
 import { getUserRooms } from '@/services/firebase/getUserRooms';
 import { useUserStore } from '@/store/userStore';
 import { RoomType } from '@/types/room';
@@ -39,6 +40,10 @@ export const HomePage = () => {
     getRoomsData();
   }, [user]);
 
+  const handleToRoom = (id: string) => {
+    navigate(`${ROUTE_PATHS.room}/${id}`);
+  };
+
   return (
     <div className={styles.wrapper}>
       <div className={styles.headerSection}>
@@ -64,7 +69,11 @@ export const HomePage = () => {
 
           <div className={styles.roomsCarousel}>
             {rooms.map((room) => (
-              <div key={room.roomId} className={styles.roomCard}>
+              <div
+                key={room.roomId}
+                className={styles.roomCard}
+                onClick={() => handleToRoom(room.roomId)}
+              >
                 <div className={styles.roomName}>{room.name}</div>
                 <div className={styles.roomMeta}>
                   {Object.keys(room.members || {}).length} участника
