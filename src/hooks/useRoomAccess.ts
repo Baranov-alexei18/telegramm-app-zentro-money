@@ -51,5 +51,7 @@ export const useRoomAccess = () => {
     canModifyCategory: () => canInRoom(role, PermissionRoom.CATEGORY_UPDATE),
 
     canDeleteCategory: () => canInRoom(role, PermissionRoom.CATEGORY_DELETE),
+
+    canDeleteUser: () => canInRoom(role, PermissionRoom.REMOVE_USER),
   };
 };

@@ -1,25 +1,20 @@
 import { Fragment, useEffect } from 'react';
 import { useParams } from 'react-router';
 
-import { AvatarCircle } from '@/components/avatar-circle';
 import { BackButton } from '@/components/back-button';
 import { Header } from '@/components/header';
 import { StatisticsIcon } from '@/components/icons/statistics-icon';
-import { BottomSheet } from '@/components/shared/bottom-sheet';
-import { Button } from '@/components/shared/button';
 import { LinkButton } from '@/components/shared/link-button';
-import { notificationManager } from '@/components/shared/toast/utils';
-import { RoomUserRole } from '@/constants/room-roles';
 import { ROUTE_PATHS } from '@/constants/route-path';
 import { TRANSACTION_TYPE } from '@/constants/transaction-type';
 import { useRoomAccess } from '@/hooks/useRoomAccess';
 import { getUserRooms } from '@/services/firebase/getUserRooms';
 import { useRoomStore } from '@/store/roomStore';
 import { useUserStore } from '@/store/userStore';
-import { getUsername } from '@/utils/getUsername';
 
 import { CardInfo } from './card-info';
 import { ChatPanel } from './chat-panel';
+import { MembersPanel } from './members-panel';
 import { NotificationPanel } from './notification-panel';
 import { TransactionCard } from './transaction-card';
 
@@ -54,36 +49,15 @@ export const RoomPage = () => {
     fetchRoom();
   }, [id]);
 
-  if (!room) {
-    return <div className={styles.loader}>Загрузка...</div>;
-  }
-
-  const handleCopyIdRoom = async () => {
-    try {
-      await navigator.clipboard.writeText(room.roomId);
-    } catch (err) {
-      const textarea = document.createElement('textarea');
-      textarea.value = room.roomId;
-      document.body.appendChild(textarea);
-      textarea.select();
-      document.execCommand('copy');
-      document.body.removeChild(textarea);
-    }
-
-    notificationManager.add(
-      {
-        title: 'Ссылка скопирована',
-        type: 'ok',
-      },
-      { timeout: 1000 }
-    );
-  };
-
   const lastTransactions =
-    room.transactions
+    room?.transactions
       ?.sort((a, b) => (a.createdAt?.seconds || 0) - (b.createdAt?.seconds || 0))
       ?.slice(-5)
       .reverse() || [];
+
+  if (!room) {
+    return <div className={styles.loader}>Загрузка...</div>;
+  }
 
   return (
     <Fragment>
@@ -107,36 +81,7 @@ export const RoomPage = () => {
           <h1 className={styles.subTitle}>{room.name}</h1>
           <p className={styles.description}>{room.description}</p>
 
-          {members.length > 0 && (
-            <BottomSheet
-              id="room-members"
-              triggerComponent={
-                <div className={styles.membersTrigger}>
-                  👥 {members.length} участник{members.length > 1 ? 'ов' : ''}
-                </div>
-              }
-            >
-              <div className={styles.membersList}>
-                <h3 className={styles.membersTitle}>Участники комнаты ({members.length} из 5)</h3>
-                <Button onClick={handleCopyIdRoom}>Добавить нового участника</Button>
-                <ul className={styles.membersListWrapper}>
-                  {members.map((member) => (
-                    <li key={member.id} className={styles.memberItem}>
-                      <AvatarCircle id={member.id} height={36} width={36} />
-                      <div className={styles.memberInfo}>
-                        <p className={styles.memberName}>
-                          {getUsername(member)}{' '}
-                          {member.role === RoomUserRole.ADMIN && (
-                            <span className={styles.adminBadge}>Админ</span>
-                          )}
-                        </p>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </BottomSheet>
-          )}
+          <MembersPanel members={members} />
         </div>
 
         {canViewNotifications() && <NotificationPanel notifications={room.notifications} />}

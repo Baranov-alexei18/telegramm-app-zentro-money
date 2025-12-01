@@ -1,0 +1,84 @@
+.membersTrigger {
+  text-align: center;
+  margin-top: 8px;
+  color: var(--color-muted);
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.membersTrigger:hover {
+  color: #fff;
+}
+
+.membersTitle {
+  text-align: center;
+}
+
+.addButton {
+  width: 100%;
+  margin: auto;
+}
+
+.membersListWrapper {
+  padding: 0;
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.memberItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px;
+  border: 1px solid var(--color-border-dark);
+  border-radius: var(--border-radius-main);
+}
+
+.memberLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.memberInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.memberName {
+  font-weight: 500;
+  margin: 8px 0;
+}
+
+.adminBadge {
+  margin-left: 6px;
+  background: var(--color-muted);
+  color: var(--color-warning);
+  padding: 2px 6px;
+  border-radius: var(--border-radius-main);
+  font-size: 12px;
+}
+
+.removeBtn {
+  border: 1px solid var(--color-border-dark);
+  color: var(--color-danger);
+  border-radius: var(--border-radius-main);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 16px;
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.removeBtn:hover {
+  background: var(--color-danger);
+  color: #fff;
+}

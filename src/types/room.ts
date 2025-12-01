@@ -13,6 +13,8 @@ export enum PermissionRoom {
   CATEGORY_CREATE = 'CATEGORY_CREATE',
   CATEGORY_UPDATE = 'CATEGORY_UPDATE',
   CATEGORY_DELETE = 'CATEGORY_DELETE',
+
+  REMOVE_USER = 'REMOVE_USER',
 }
 
 export type NotificationRoomType = {

@@ -29,7 +29,7 @@ export const NotificationPanel = ({ notifications = [] }: Props) => {
             {notifications.map((notification) => (
               <li key={notification.userId} className={styles.notificationItem}>
                 <div className={styles.userInfo}>
-                  {!notification.name?.length ? notification.name : notification.email}
+                  {notification.name?.length ? notification.name : notification.email}
                 </div>
                 <div className={styles.actions}>
                   <button
