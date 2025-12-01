@@ -1,3 +1,10 @@
+# [1.23.0](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/compare/v1.22.0...v1.23.0) (2025-12-01)
+
+
+### Features
+
+* redesign members room panel p.2 ([752331e](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/commit/752331e4ef22b4b99d9a417347e9004f6241b613))
+
 # [1.22.0](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/compare/v1.21.0...v1.22.0) (2025-12-01)
 
 
