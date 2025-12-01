@@ -4,12 +4,23 @@ export const isSameDay = (a: Date, b: Date) =>
   a.getDate() === b.getDate();
 
 export const isSameWeek = (a: Date, b: Date) => {
-  const startOfWeek = new Date(b);
-  startOfWeek.setHours(0, 0, 0, 0);
-  startOfWeek.setDate(b.getDate() - b.getDay() + 1);
+  const day = (b.getUTCDay() + 6) % 7;
 
-  const endOfWeek = new Date(startOfWeek);
-  endOfWeek.setDate(startOfWeek.getDate() + 6);
+  const startOfWeek = new Date(
+    Date.UTC(b.getUTCFullYear(), b.getUTCMonth(), b.getUTCDate() - day, 0, 0, 0, 0)
+  );
+
+  const endOfWeek = new Date(
+    Date.UTC(
+      startOfWeek.getUTCFullYear(),
+      startOfWeek.getUTCMonth(),
+      startOfWeek.getUTCDate() + 6,
+      23,
+      59,
+      59,
+      999
+    )
+  );
 
   return a >= startOfWeek && a <= endOfWeek;
 };

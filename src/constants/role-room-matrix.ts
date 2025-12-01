@@ -13,6 +13,8 @@ export const ROLE_ROOM_MATRIX: Record<RoomUserRole, PermissionRoom[]> = {
     PermissionRoom.CATEGORY_CREATE,
     PermissionRoom.CATEGORY_UPDATE,
     PermissionRoom.CATEGORY_DELETE,
+
+    PermissionRoom.REMOVE_USER,
   ],
 
   [RoomUserRole.USER]: [

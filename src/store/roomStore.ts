@@ -10,6 +10,7 @@ import { createCategory } from '@/services/firebase/createCategory';
 import { createTransaction } from '@/services/firebase/createTransaction';
 import { deleteCategoryById } from '@/services/firebase/deleteCategoryById';
 import { deleteTransactionById } from '@/services/firebase/deleteTransactionById';
+import { deleteUserFromRoom } from '@/services/firebase/deleteUserFromRoom';
 import { getRoomUsers } from '@/services/firebase/getRoomUsers';
 import { joinUserToRoom } from '@/services/firebase/joinUserToRoom';
 import { removeNotificationRoom } from '@/services/firebase/removeNotificationRoom';
@@ -43,6 +44,7 @@ type RoomStoreState = {
   updateTransaction: (data: TransactionProps) => Promise<void>;
   deleteTransaction: (transactionId: string) => Promise<void>;
   addUserToRoom: (userId: string) => Promise<void>;
+  removeUserFromRoom: (userId: string) => Promise<void>;
   removeNotification: (userId: string) => Promise<void>;
 };
 
@@ -175,6 +177,7 @@ export const useRoomStore = create<RoomStoreState>((set, get) => ({
 
         const start = period.start.toDate('UTC');
         const end = period.end.toDate('UTC');
+        end.setUTCHours(23, 59, 59, 999);
 
         return date >= start && date <= end;
       }) || []
@@ -259,6 +262,40 @@ export const useRoomStore = create<RoomStoreState>((set, get) => ({
       notificationManager.add(
         {
           title: err.message || 'Ошибка при добавлении пользователя',
+          type: 'error',
+        },
+        { timeout: 1500 }
+      );
+    }
+  },
+
+  removeUserFromRoom: async (userId) => {
+    const { room } = get();
+
+    if (!room) throw new Error('Комната не найдена');
+
+    try {
+      const data = await deleteUserFromRoom(userId, room);
+
+      set({
+        room: {
+          ...room,
+          members: data?.members || room.members,
+          notifications: data?.notifications,
+        },
+      });
+
+      notificationManager.add(
+        {
+          title: 'Пользователь удален из комнаты',
+          type: 'ok',
+        },
+        { timeout: 1500 }
+      );
+    } catch (err: any) {
+      notificationManager.add(
+        {
+          title: err.message || 'Ошибка при удалении пользователя',
           type: 'error',
         },
         { timeout: 1500 }
