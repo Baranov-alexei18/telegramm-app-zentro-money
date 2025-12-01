@@ -78,7 +78,7 @@ export const MembersPanel = ({ members = [] }: Props) => {
                 </div>
               </div>
 
-              {canDeleteUser && member.id !== user?.id && (
+              {canDeleteUser() && member.id !== user?.id && (
                 <Button className={styles.removeBtn} onClick={() => handleRemove(member.id)}>
                   🗑️
                 </Button>
