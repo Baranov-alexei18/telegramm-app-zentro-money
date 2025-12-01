@@ -46,17 +46,20 @@ export const MembersPanel = ({ members = [] }: Props) => {
     notificationManager.add({ title: 'Пользователь удалён', type: 'ok' }, { timeout: 1200 });
   };
 
+  const roomMembers = Object.keys(room?.members || {});
+
   return (
     <BottomSheet
       id="room-members"
       triggerComponent={
         <div className={styles.membersTrigger}>
-          👥 {members.length} участник{members.length > 1 ? 'ов' : ''}
+          👥 {roomMembers.length} участник
+          {roomMembers.length > 1 ? 'ов' : ''}
         </div>
       }
     >
       <Fragment>
-        <h4 className={styles.membersTitle}>Участники комнаты ({members.length} из 5)</h4>
+        <h4 className={styles.membersTitle}>Участники комнаты ({roomMembers.length} из 5)</h4>
 
         <Button onClick={handleCopyIdRoom} className={styles.addButton}>
           Добавить нового участника

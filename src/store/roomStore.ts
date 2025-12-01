@@ -246,7 +246,7 @@ export const useRoomStore = create<RoomStoreState>((set, get) => ({
       set({
         room: {
           ...room,
-          members: data?.members || room.members,
+          members: { ...(data?.members || room.members) },
           notifications: data?.notifications,
         },
       });
@@ -280,7 +280,7 @@ export const useRoomStore = create<RoomStoreState>((set, get) => ({
       set({
         room: {
           ...room,
-          members: data?.members || room.members,
+          members: { ...(data?.members || room.members) },
           notifications: data?.notifications,
         },
       });

@@ -17,6 +17,7 @@ import { ChatPanel } from './chat-panel';
 import { MembersPanel } from './members-panel';
 import { NotificationPanel } from './notification-panel';
 import { TransactionCard } from './transaction-card';
+import { filterMembersByRoom } from './utils';
 
 import styles from './styles.module.css';
 
@@ -81,7 +82,7 @@ export const RoomPage = () => {
           <h1 className={styles.subTitle}>{room.name}</h1>
           <p className={styles.description}>{room.description}</p>
 
-          <MembersPanel members={members} />
+          <MembersPanel members={filterMembersByRoom(members, room.members)} />
         </div>
 
         {canViewNotifications() && <NotificationPanel notifications={room.notifications} />}
