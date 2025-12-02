@@ -93,7 +93,7 @@ export const useRoomStore = create<RoomStoreState>((set, get) => ({
     try {
       const id = await createTransaction(roomId, transaction);
 
-      const chatId = (window as any).Telegram.WebApp.initDataUnsafe?.chat?.id;
+      const chatId = (window as any)?.Telegram?.WebApp?.initDataUnsafe?.chat?.id;
 
       if (chatId) {
         sendTelegramMessage(
@@ -103,7 +103,7 @@ export const useRoomStore = create<RoomStoreState>((set, get) => ({
       } else {
         notificationManager.add(
           {
-            title: 'ChatId не получен',
+            title: `ChatId не получен ${chatId}`,
             type: 'error',
           },
           { timeout: 2000 }
