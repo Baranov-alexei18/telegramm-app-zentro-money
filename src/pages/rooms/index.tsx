@@ -105,7 +105,7 @@ export const RoomsPage = () => {
               onClick={() => handleToRoom(room.roomId)}
             >
               <div className={styles.roomHeader}>
-                <h2 className={styles.roomName}>{room.name} )</h2>
+                <h2 className={styles.roomName}>{room.name}</h2>
               </div>
               {room.description && <p className={styles.roomDescription}>{room.description}</p>}
             </div>
