@@ -16,7 +16,6 @@ import { joinUserToRoom } from '@/services/firebase/joinUserToRoom';
 import { removeNotificationRoom } from '@/services/firebase/removeNotificationRoom';
 import { updateCategory } from '@/services/firebase/updateCategory';
 import { updateTransaction } from '@/services/firebase/updateTransaction';
-import { sendTelegramMessage } from '@/services/telegram/setTelegramMessage';
 import { CategoryType } from '@/types/category';
 import { RoomType } from '@/types/room';
 import { TransactionProps } from '@/types/transaction';
@@ -92,23 +91,6 @@ export const useRoomStore = create<RoomStoreState>((set, get) => ({
   addTransaction: async (roomId, transaction) => {
     try {
       const id = await createTransaction(roomId, transaction);
-
-      const chatId = (window as any)?.Telegram?.WebApp?.initDataUnsafe?.chat?.id;
-
-      if (chatId) {
-        sendTelegramMessage(
-          chatId,
-          `💸 Новая транзакция:\n${transaction.category.name} — ${transaction.amount}₽`
-        );
-      } else {
-        notificationManager.add(
-          {
-            title: `ChatId не получен ${chatId}`,
-            type: 'error',
-          },
-          { timeout: 2000 }
-        );
-      }
 
       set((state) => ({
         room: state.room
