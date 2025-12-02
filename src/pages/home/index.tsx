@@ -23,6 +23,8 @@ export const HomePage = () => {
 
   const navigate = useNavigate();
 
+  const chat = (window as any)?.Telegram?.WebApp?.initDataUnsafe;
+
   useEffect(() => {
     const getRoomsData = async () => {
       if (!user) {
@@ -52,6 +54,8 @@ export const HomePage = () => {
           Управляйте общими расходами, создавайте комнаты, приглашайте участников и отслеживайте
           совместный бюджет.
         </p>
+
+        <p>{JSON.stringify(chat, null, 2)}</p>
       </div>
 
       <div className={styles.stepsGrid}>
