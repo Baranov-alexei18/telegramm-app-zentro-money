@@ -1,3 +1,10 @@
+# [1.28.0](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/compare/v1.27.0...v1.28.0) (2025-12-02)
+
+
+### Features
+
+* add telegramm message for bot p.3 ([93d7257](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/commit/93d7257e321bcf2b3a4ca929e430b5350f1c299e))
+
 # [1.27.0](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/compare/v1.26.0...v1.27.0) (2025-12-02)
 
 
