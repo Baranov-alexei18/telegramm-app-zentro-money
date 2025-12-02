@@ -1,3 +1,10 @@
+# [1.29.0](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/compare/v1.28.0...v1.29.0) (2025-12-02)
+
+
+### Features
+
+* remove telegram messages ([19e8c6f](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/commit/19e8c6f94b29ddce0953e44678a60d4568e6866d))
+
 # [1.28.0](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/compare/v1.27.0...v1.28.0) (2025-12-02)
 
 
