@@ -1,3 +1,12 @@
+# [1.32.0](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/compare/v1.31.0...v1.32.0) (2026-01-17)
+
+
+### Features
+
+* update README.md ([cfe0e60](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/commit/cfe0e6016f7f643ddefa98852912fe81f1f274e4))
+* update README.md 2 ([b26c606](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/commit/b26c6069b11a2c650713f83c076b02cadd2533f9))
+* update README.md 3 ([c814d98](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/commit/c814d987946dc57ec7f495299f573bfe68b72be5))
+
 # [1.31.0](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/compare/v1.30.0...v1.31.0) (2026-01-17)
 
 
