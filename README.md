@@ -39,8 +39,8 @@ VITE_API_KEY_FIREBASE=your_firebase_api_key
 
 Установка зависимостей
 
-yarn install
+**yarn install**
 
 Запуск в dev-режиме
 
-yarn start
+**yarn start**
