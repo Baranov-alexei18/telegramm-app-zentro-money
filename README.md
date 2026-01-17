@@ -1,54 +1,45 @@
-# React + TypeScript + Vite
+Zentro-money
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+![alt text](public/readme-logo.png)
 
-Currently, two official plugins are available:
+Zentro-money — это веб-приложение для ведения общего бюджета в комнатах: с друзьями, семьёй или командой. Приложение позволяет создавать комнаты, добавлять участников и учитывать общие транзакции с последующим анализом.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Приложение разрабатывается как Telegram Mini App и может также работать как обычное web-приложение.
 
-## Expanding the ESLint configuration
+🔗 Mini App / Web:
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+Telegramm: @Zentro_Money_Bot
+Vercel: https://telegramm-app-zentro-money.vercel.app/
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-});
-```
+🧩 Основные возможности
+🏠 Создание комнат
+👥 Совместная работа с участниками
+💳 Добавление и учёт транзакций
+📊 Анализ расходов по периодам
+🔒 Авторизация через Firebase или по id телеграмм
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+🛠️ Стек технологий
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x';
-import reactDom from 'eslint-plugin-react-dom';
+- React
+- TypeScript
+- Vite
+- CSS Modules
+- React-aria-components
+- Zustand
+- Victory
+- Framer-motion
+- Firebase/Firestore
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-});
-```
+🔐 Переменные окружения (.env):
+
+VITE_API_KEY_FIREBASE=your_firebase_api_key
+
+🚀 Запуск проекта локально
+
+# Установка зависимостей
+
+yarn install
+
+# Запуск в dev-режиме
+
+yarn start
