@@ -8,15 +8,16 @@ Zentro-money — это веб-приложение для ведения общ
 
 ## 🔗 Mini App / Web:
 
-Telegramm: @Zentro_Money_Bot
-Vercel: https://telegramm-app-zentro-money.vercel.app/
+- **Telegram:** @Zentro_Money_Bot
+- **Vercel:** https://telegramm-app-zentro-money.vercel.app/
 
-🧩 Основные возможности
-🏠 Создание комнат
-👥 Совместная работа с участниками
-💳 Добавление и учёт транзакций
-📊 Анализ расходов по периодам
-🔒 Авторизация через Firebase или по id телеграмм
+### 🧩 Основные возможности
+
+- 🏠 Создание комнат
+- 👥 Совместная работа с участниками
+- 💳 Добавление и учёт транзакций
+- 📊 Анализ расходов по периодам
+- 🔒 Авторизация через Firebase или по id телеграмм
 
 ### 🛠️ Стек технологий
 
@@ -34,12 +35,12 @@ Vercel: https://telegramm-app-zentro-money.vercel.app/
 
 VITE_API_KEY_FIREBASE=your_firebase_api_key
 
-🚀 Запуск проекта локально
+### 🚀 Запуск проекта локально
 
-### Установка зависимостей
+Установка зависимостей
 
-yarn install
+**yarn install**
 
-### Запуск в dev-режиме
+Запуск в dev-режиме
 
-yarn start
+**yarn start**
