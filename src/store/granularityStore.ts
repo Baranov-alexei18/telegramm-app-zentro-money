@@ -12,11 +12,8 @@ type Store = {
 
 const now = today('UTC');
 const startOfMonth = new CalendarDate(now.year, now.month, 1);
-const endOfMonth = new CalendarDate(
-  now.year,
-  now.month,
-  new Date(now.year, now.month, 0).getDate()
-);
+const daysInMonth = now.calendar.getDaysInMonth(now);
+const endOfMonth = new CalendarDate(now.year, now.month, daysInMonth);
 
 export const useGranularityStore = create<Store>()((set) => ({
   type: GranularityFields.MONTH,

@@ -7,11 +7,9 @@ import { recalcPeriod } from './utils';
 import styles from './styles.module.css';
 
 const options: { value: GranularityFields; label: string }[] = [
-  { value: GranularityFields.DAY, label: 'День' },
   { value: GranularityFields.WEEK, label: 'Неделя' },
   { value: GranularityFields.MONTH, label: 'Месяц' },
   { value: GranularityFields.YEAR, label: 'Год' },
-  { value: GranularityFields.ALL, label: 'Всё время' },
 ];
 
 export const PeriodPicker = () => {
