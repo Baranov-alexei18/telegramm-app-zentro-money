@@ -1,4 +1,5 @@
 import { Button } from 'react-aria-components';
+import { endOfMonth, endOfYear, startOfMonth, startOfYear } from '@internationalized/date';
 
 import { GranularityFields } from '@/constants/granularity';
 import { useGranularityStore } from '@/store/granularityStore';
@@ -21,19 +22,17 @@ export const PeriodDateNavigator = () => {
     switch (type) {
       case GranularityFields.DAY:
         newStart = newStart.subtract({ days: 1 });
-        newEnd = newEnd.subtract({ days: 1 });
+        newEnd = newStart;
         break;
-      case GranularityFields.WEEK:
-        newStart = newStart.subtract({ weeks: 1 });
-        newEnd = newEnd.subtract({ weeks: 1 });
+      case GranularityFields.WEEK: // Неделя — это +6 дней от старта
         break;
       case GranularityFields.MONTH:
-        newStart = newStart.subtract({ months: 1 });
-        newEnd = newEnd.subtract({ months: 1 });
+        newStart = startOfMonth(newStart.subtract({ months: 1 }));
+        newEnd = endOfMonth(newStart);
         break;
       case GranularityFields.YEAR:
-        newStart = newStart.subtract({ years: 1 });
-        newEnd = newEnd.subtract({ years: 1 });
+        newStart = startOfYear(newStart.subtract({ years: 1 }));
+        newEnd = endOfYear(newStart);
         break;
     }
 
@@ -49,19 +48,19 @@ export const PeriodDateNavigator = () => {
     switch (type) {
       case GranularityFields.DAY:
         newStart = newStart.add({ days: 1 });
-        newEnd = newEnd.add({ days: 1 });
+        newEnd = newStart;
         break;
       case GranularityFields.WEEK:
         newStart = newStart.add({ weeks: 1 });
-        newEnd = newEnd.add({ weeks: 1 });
+        newEnd = newStart.add({ days: 6 });
         break;
       case GranularityFields.MONTH:
-        newStart = newStart.add({ months: 1 });
-        newEnd = newEnd.add({ months: 1 });
+        newStart = startOfMonth(newStart.add({ months: 1 }));
+        newEnd = endOfMonth(newStart);
         break;
       case GranularityFields.YEAR:
-        newStart = newStart.add({ years: 1 });
-        newEnd = newEnd.add({ years: 1 });
+        newStart = startOfYear(newStart.add({ years: 1 }));
+        newEnd = endOfYear(newStart);
         break;
     }
 
