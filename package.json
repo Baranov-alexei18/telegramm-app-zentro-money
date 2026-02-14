@@ -55,7 +55,8 @@
     "semantic-release": "^24.2.9",
     "typescript": "~5.7.2",
     "typescript-eslint": "^8.28.0",
-    "vite": "^6.2.0"
+    "vite": "^6.2.0",
+    "vite-plugin-pwa": "^1.2.0"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
