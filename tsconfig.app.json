@@ -30,7 +30,8 @@
       "@lib/*": ["src/lib/*"],
       "@store/*": ["src/store/*"],
       "@public/*": ["public/*"]
-    }
+    },
+    "types": ["vite-plugin-pwa/client"]
   },
   "include": ["src"]
 }
