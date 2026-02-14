@@ -9,6 +9,17 @@ lerna-debug.log*
 
 .env
 
+.yarn/*
+!.yarn/cache
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
+# Игнорируем только логи и временные файлы
+.pnp.*
+
 node_modules
 dist
 dist-ssr
@@ -24,4 +35,5 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
 
