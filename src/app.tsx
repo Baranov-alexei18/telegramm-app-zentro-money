@@ -1,12 +1,15 @@
 import React, { StrictMode, useEffect } from 'react';
 import { RouterProvider } from 'react-router';
+import { onAuthStateChanged } from 'firebase/auth';
 
 import { AppLoader } from './components/app-loader';
 import { ErrorBoundary } from './components/error-boundary';
 import { Toasts } from './components/shared/toast';
 import { notificationManager } from './components/shared/toast/utils';
 import { router } from './constants/routes';
+import { auth } from './services/firebase/config';
 import { getDataUserById } from './services/firebase/getDataUserById';
+import { syncGoogleUser } from './services/google/syncGoogleUser';
 import { getTelegramUser } from './services/telegram/getTelegramUser';
 import { syncTelegramUser } from './services/telegram/syncTelegramUser';
 import { useUserStore } from './store/userStore';
@@ -15,37 +18,46 @@ export const App = () => {
   const { loading, setLoading, setUser } = useUserStore();
 
   useEffect(() => {
-    const auth = async () => {
-      setLoading(true);
+    setLoading(true);
 
-      const telegramUser = getTelegramUser();
-
-      if (!telegramUser) {
-        setLoading(false);
-
-        return;
-      }
-
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       try {
-        const syncedUser = await syncTelegramUser(telegramUser);
+        if (firebaseUser) {
+          const userFromGoogle = await syncGoogleUser({
+            id: firebaseUser.uid,
+            firstName: firebaseUser.displayName || '',
+            lastName: '',
+            email: firebaseUser.email || undefined,
+            telegramId: null,
+          });
 
-        const userData = await getDataUserById(syncedUser.id);
+          if (userFromGoogle) {
+            const userData = await getDataUserById(userFromGoogle.id);
+            setUser(userData);
+            setLoading(false);
+            return;
+          }
+        }
 
-        setUser(userData);
+        const telegramUser = getTelegramUser();
+
+        if (telegramUser) {
+          const syncedUser = await syncTelegramUser(telegramUser);
+          const userData = await getDataUserById(syncedUser.id);
+          setUser(userData);
+          setLoading(false);
+          return;
+        }
+
+        setUser(null);
       } catch (err: any) {
-        notificationManager.add(
-          {
-            title: err.message,
-            type: 'error',
-          },
-          { timeout: 2000 }
-        );
+        notificationManager.add({ title: err.message, type: 'error' }, { timeout: 2000 });
       } finally {
         setLoading(false);
       }
-    };
+    });
 
-    auth();
+    return () => unsubscribe();
   }, [setLoading, setUser]);
 
   if (loading) {
