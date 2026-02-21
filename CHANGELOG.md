@@ -1,3 +1,10 @@
+# [1.34.0](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/compare/v1.33.0...v1.34.0) (2026-02-21)
+
+
+### Features
+
+* add google auth ([45c13a7](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/commit/45c13a7a16f9b3678a3be25464bec3acd0e8ce65))
+
 # [1.33.0](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/compare/v1.32.0...v1.33.0) (2026-02-14)
 
 
