@@ -1,7 +1,5 @@
 import { RoomUserRole } from '@/constants/room-roles';
 
-import { RoomType } from './room';
-
 export type UserType = {
   id: string;
   email?: string;
@@ -18,6 +16,15 @@ export type TelegramUser = {
   lastName: string;
   username?: string;
   telegramId?: string;
+};
+
+export type GoogleUser = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  username?: string;
+  email?: string;
+  telegramId: null;
 };
 
 export type UserWithRoleRoom = UserType & {

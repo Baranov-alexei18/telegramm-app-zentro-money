@@ -34,3 +34,43 @@
 .footerLink {
   color: var(--color-border);
 }
+
+.divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 16px 0;
+  color: #888;
+  font-size: 14px;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #ddd;
+}
+
+.divider:not(:empty)::before {
+  margin-right: 0.25em;
+}
+
+.divider:not(:empty)::after {
+  margin-left: 0.25em;
+}
+
+.googleButton {
+  background-color: #fff;
+  color: #757575;
+  border: 1px solid #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-bottom: 12px;
+  transition: background-color 0.2s;
+}
+
+.googleButton:hover {
+  background-color: #f7f7f7;
+}

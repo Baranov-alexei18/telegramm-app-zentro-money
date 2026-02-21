@@ -5,7 +5,7 @@ import { ManifestOptions, VitePWA } from 'vite-plugin-pwa';
 
 const manifestPWA: Partial<ManifestOptions | false> = {
   theme_color: '#b07ef7',
-  background_color: '#2EC6FE',
+  background_color: '#ece8f7',
   icons: [
     { purpose: 'maskable', sizes: '512x512', src: 'icon512_maskable.png', type: 'image/png' },
     { purpose: 'any', sizes: '512x512', src: 'icon512_rounded.png', type: 'image/png' },
@@ -14,7 +14,8 @@ const manifestPWA: Partial<ManifestOptions | false> = {
   display: 'standalone',
   lang: 'en-RU',
   name: 'Zentro',
-  short_name: 'Finance personal and sharing app',
+  short_name: 'Zentro',
+  description: 'Finance personal and sharing app',
 };
 
 // https://vite.dev/config/
