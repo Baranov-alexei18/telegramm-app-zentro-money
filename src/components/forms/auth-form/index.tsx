@@ -5,8 +5,10 @@ import Logo from '@/assets/images/logo.png';
 import { Button } from '@/components/shared/button';
 import { Input } from '@/components/shared/input';
 import { LinkButton } from '@/components/shared/link-button';
+import { GoogleWidget } from '@/components/widgets/google-widget';
+import { TelegramWidget } from '@/components/widgets/telegram-widget';
 import { ROUTE_PATHS } from '@/constants/route-path';
-import { auth } from '@/services/firebase/config';
+import { UserType } from '@/types/user';
 
 import styles from './styles.module.css';
 
@@ -23,16 +25,8 @@ export const AuthForm = ({ onSubmit }: AuthFormProps) => {
     onSubmit({ login, password });
   };
 
-  const handleGoogleSignIn = async () => {
-    const provider = new GoogleAuthProvider();
-    try {
-      const result = await signInWithPopup(auth, provider);
-      // Пользователь успешно вошел
-      console.log('Google User:', result.user);
-      // Здесь можно сделать редирект или вызвать колбэк успешного входа
-    } catch (error) {
-      console.error('Ошибка Google Auth:', error);
-    }
+  const handleTelegramAuth = async (user: UserType) => {
+    console.log('Данные из Telegram:', user);
   };
 
   return (
@@ -57,16 +51,8 @@ export const AuthForm = ({ onSubmit }: AuthFormProps) => {
         Войти
       </Button>
 
-      <Button type="button" onClick={handleGoogleSignIn} className={styles.googleButton}>
-        <img
-          src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
-          alt="Google"
-          width="18"
-          style={{ marginRight: '8px' }}
-        />
-        Войти через Google
-      </Button>
-
+      <GoogleWidget />
+      <TelegramWidget botName="Zentro_Money_Bot" onAuth={handleTelegramAuth} />
       <div className={styles.footer}>
         <span>Нет аккаунта?</span>
         <LinkButton href={ROUTE_PATHS.register} className={styles.footerLink}>
