@@ -1,11 +1,13 @@
 import { Fragment, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import { signOut } from 'firebase/auth';
 
 import { AvatarCircle } from '@/components/avatar-circle';
 import { BackButton } from '@/components/back-button';
 import { Header } from '@/components/header';
-import { Button as AppButton } from '@/components/shared/button';
+import { Button as AppButton, Button } from '@/components/shared/button';
 import { Input } from '@/components/shared/input';
+import { auth } from '@/services/firebase/config';
 import { useUserStore } from '@/store/userStore';
 import { UpdateUserType } from '@/types/user';
 
@@ -39,10 +41,22 @@ export const ProfilePage = () => {
     }
   };
 
+  const handleLogout = async () => {
+    await signOut(auth);
+    setUser(null);
+    // navigate('/login');
+  };
+
   return (
     <Fragment>
       <Header>
-        <BackButton />
+        <div className={styles.headerWrapper}>
+          <BackButton />
+
+          <Button onClick={handleLogout} className={styles.logoutButton}>
+            Выйти
+          </Button>
+        </div>
       </Header>
       <div className={styles.wrapper}>
         <form onSubmit={handleSubmit(handleFormSubmit)} className={styles.formWrapper}>
@@ -97,3 +111,6 @@ export const ProfilePage = () => {
     </Fragment>
   );
 };
+function setUser(arg0: null) {
+  throw new Error('Function not implemented.');
+}
