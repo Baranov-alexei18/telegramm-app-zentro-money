@@ -1,3 +1,10 @@
+# [1.35.0](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/compare/v1.34.0...v1.35.0) (2026-02-23)
+
+
+### Features
+
+* add telegram widget ([65690a7](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/commit/65690a7300f0cc3834b3937b2b14a9bc9aec8f6a))
+
 # [1.34.0](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/compare/v1.33.0...v1.34.0) (2026-02-21)
 
 
