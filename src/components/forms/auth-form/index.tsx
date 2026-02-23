@@ -6,9 +6,7 @@ import { Button } from '@/components/shared/button';
 import { Input } from '@/components/shared/input';
 import { LinkButton } from '@/components/shared/link-button';
 import { GoogleWidget } from '@/components/widgets/google-widget';
-import { TelegramWidget } from '@/components/widgets/telegram-widget';
 import { ROUTE_PATHS } from '@/constants/route-path';
-import { UserType } from '@/types/user';
 
 import styles from './styles.module.css';
 
@@ -25,9 +23,9 @@ export const AuthForm = ({ onSubmit }: AuthFormProps) => {
     onSubmit({ login, password });
   };
 
-  const handleTelegramAuth = async (user: UserType) => {
-    console.log('Данные из Telegram:', user);
-  };
+  // const handleTelegramAuth = async (user: UserType) => {
+  //   console.log('Данные из Telegram:', user);
+  // };
 
   return (
     <form className={styles.form} onSubmit={handleSubmit}>
@@ -46,13 +44,12 @@ export const AuthForm = ({ onSubmit }: AuthFormProps) => {
         onChange={(e) => setPassword(e.target.value)}
         required={true}
       />
-
       <Button type="submit" className={styles.formButton}>
         Войти
       </Button>
-
       <GoogleWidget />
-      <TelegramWidget botName="Zentro_Money_Bot" onAuth={handleTelegramAuth} />
+      {/* Todo: понять почему не пришло письмо для авторизации через telegramm */}
+      {/* <TelegramWidget botName="Zentro_Money_Bot" onAuth={handleTelegramAuth} /> */}
       <div className={styles.footer}>
         <span>Нет аккаунта?</span>
         <LinkButton href={ROUTE_PATHS.register} className={styles.footerLink}>
