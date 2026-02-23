@@ -1,3 +1,10 @@
+# [1.36.0](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/compare/v1.35.0...v1.36.0) (2026-02-23)
+
+
+### Features
+
+* update config for PWA ([18533ef](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/commit/18533efb66121e602f8e88507338863f5d3e5736))
+
 # [1.35.0](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/compare/v1.34.0...v1.35.0) (2026-02-23)
 
 
