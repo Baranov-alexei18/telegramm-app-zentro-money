@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 
 import Logo from '@/assets/images/logo.png';
+import { OfflineBanner } from '@/components/offline-banner';
 import { ROUTE_PATHS } from '@/constants/route-path';
 import { getUserRooms } from '@/services/firebase/getUserRooms';
 import { useUserStore } from '@/store/userStore';
@@ -46,6 +47,7 @@ export const HomePage = () => {
 
   return (
     <div className={styles.wrapper}>
+      <OfflineBanner />
       <div className={styles.headerSection}>
         <img src={Logo} alt="Logo" className={styles.logoWrapper} />
         <p className={styles.description}>
