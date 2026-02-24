@@ -1,3 +1,10 @@
+# [1.37.0](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/compare/v1.36.0...v1.37.0) (2026-02-24)
+
+
+### Features
+
+* add offline banner ([1d62b2f](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/commit/1d62b2f399ad62caebcc5fdd0eee2abc1f0e52d7))
+
 # [1.36.0](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/compare/v1.35.0...v1.36.0) (2026-02-23)
 
 
