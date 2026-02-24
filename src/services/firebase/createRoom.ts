@@ -1,9 +1,9 @@
 import {
-  addDoc,
   arrayUnion,
   collection,
   doc,
   serverTimestamp,
+  setDoc,
   updateDoc,
 } from 'firebase/firestore';
 
@@ -21,7 +21,12 @@ type CreateRoomParams = {
 
 export const createRoom = async ({ userId, name, description }: CreateRoomParams) => {
   try {
-    const roomRef = await addDoc(collection(db, COLLECTION_ROOM), {
+    const roomCollectionRef = collection(db, COLLECTION_ROOM);
+    const roomRef = doc(roomCollectionRef);
+    const roomId = roomRef.id;
+
+    await setDoc(roomRef, {
+      roomId: roomId,
       name,
       description: description || '',
       createdAt: serverTimestamp(),
@@ -36,17 +41,13 @@ export const createRoom = async ({ userId, name, description }: CreateRoomParams
       notifications: [],
     });
 
-    await updateDoc(roomRef, {
-      roomId: roomRef.id,
-    });
-
     const userRef = doc(db, COLLECTION_USER, userId);
 
     await updateDoc(userRef, {
-      rooms: arrayUnion(roomRef.id),
+      rooms: arrayUnion(roomId),
     });
 
-    return roomRef.id;
+    return roomId;
   } catch (error) {
     console.error('Ошибка при создании комнаты:', error);
     throw error;

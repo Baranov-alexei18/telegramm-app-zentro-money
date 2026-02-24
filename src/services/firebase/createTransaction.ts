@@ -1,4 +1,4 @@
-import { addDoc, collection, serverTimestamp, updateDoc } from 'firebase/firestore';
+import { collection, doc, serverTimestamp, setDoc } from 'firebase/firestore';
 
 import { COLLECTION_ROOM, SUB_COLLECTION_TRANSACTIONS } from '@/constants/db';
 import { TransactionProps } from '@/types/transaction';
@@ -14,16 +14,16 @@ export const createTransaction = async (
 
     const transactionsRef = collection(db, COLLECTION_ROOM, roomId, SUB_COLLECTION_TRANSACTIONS);
 
-    const docRef = await addDoc(transactionsRef, {
+    const newDocRef = doc(transactionsRef);
+    const newId = newDocRef.id;
+
+    await setDoc(newDocRef, {
       ...transaction,
+      transactionId: newId,
       createdAt: serverTimestamp(),
     });
 
-    await updateDoc(docRef, {
-      transactionId: docRef.id,
-    });
-
-    return docRef.id;
+    return newId;
   } catch (error) {
     console.error('Ошибка при создании транзакции:', error);
     throw error;
