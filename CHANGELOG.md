@@ -1,3 +1,10 @@
+# [1.38.0](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/compare/v1.37.0...v1.38.0) (2026-03-17)
+
+
+### Features
+
+* add offline mode in PWA ([99f0d98](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/commit/99f0d9877b0c20c9da4c9558933170953e7f0324))
+
 # [1.37.0](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/compare/v1.36.0...v1.37.0) (2026-02-24)
 
 
