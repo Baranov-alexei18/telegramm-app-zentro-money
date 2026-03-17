@@ -45,20 +45,58 @@ export default defineConfig({
       workbox: {
         skipWaiting: true,
         clientsClaim: true,
-        globPatterns: ['**/*.{html,css,js,ico,png,jpg,svg}'],
+
+        globPatterns: ['**/*.{html,css,js,ico,png,jpg,svg,webp}'],
+
         runtimeCaching: [
           {
-            urlPattern: ({ url }) => {
-              return url.host.includes('zentro-money.firebaseapp.com');
-            },
+            urlPattern: ({ request }) => request.destination === 'document',
             handler: 'NetworkFirst',
             options: {
-              cacheName: 'api-data-cache',
+              cacheName: 'html-cache',
+              networkTimeoutSeconds: 3,
+              expiration: {
+                maxEntries: 20,
+              },
+            },
+          },
+          {
+            urlPattern: ({ request }) =>
+              request.destination === 'script' || request.destination === 'style',
+            handler: 'StaleWhileRevalidate',
+            options: {
+              cacheName: 'static-resources',
+              expiration: {
+                maxEntries: 60,
+                maxAgeSeconds: 60 * 60 * 24 * 30,
+              },
+            },
+          },
+          {
+            urlPattern: ({ request }) => request.destination === 'image',
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'images-cache',
+              expiration: {
+                maxEntries: 100,
+                maxAgeSeconds: 60 * 60 * 24 * 30,
+              },
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
+          },
+
+          {
+            urlPattern: ({ url }) => url.host.includes('zentro-money.firebaseapp.com'),
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'api-cache',
+              networkTimeoutSeconds: 5,
               expiration: {
                 maxEntries: 50,
                 maxAgeSeconds: 60 * 60 * 24,
               },
-              networkTimeoutSeconds: 5,
               cacheableResponse: {
                 statuses: [0, 200],
               },

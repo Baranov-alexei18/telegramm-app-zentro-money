@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
+import { Icon } from '@iconify/react';
 
-import { HouseIcon } from '../icons/house-icon';
 import { SquaresIcon } from '../icons/squares-icon';
 import { UserIcon } from '../icons/user-icon';
 
@@ -14,16 +14,16 @@ export const navItems: NavItem[] = [
   {
     name: 'Главная',
     href: '/',
-    icon: <HouseIcon />,
+    icon: <Icon icon="proicons:home" height={28} width={28} />,
   },
   {
     name: 'Комнаты',
     href: '/rooms',
-    icon: <SquaresIcon />,
+    icon: <Icon icon="glyphs:grid-list-bold" height={28} width={28} />,
   },
   {
     name: 'Профиль',
     href: '/profile',
-    icon: <UserIcon />,
+    icon: <Icon icon="glyphs:user-bold" height={28} width={28} />,
   },
 ];

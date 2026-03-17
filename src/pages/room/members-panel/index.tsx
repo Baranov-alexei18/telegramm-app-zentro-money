@@ -1,4 +1,5 @@
 import { Fragment } from 'react/jsx-runtime';
+import { Icon } from '@iconify/react';
 
 import { AvatarCircle } from '@/components/avatar-circle';
 import { BottomSheet } from '@/components/shared/bottom-sheet';
@@ -53,7 +54,8 @@ export const MembersPanel = ({ members = [] }: Props) => {
       id="room-members"
       triggerComponent={
         <div className={styles.membersTrigger}>
-          👥 {roomMembers.length} участник
+          <Icon icon="glyphs:users-1-bold" height={20} width={20} />
+          {roomMembers.length} участник
           {roomMembers.length > 1 ? 'ов' : ''}
         </div>
       }

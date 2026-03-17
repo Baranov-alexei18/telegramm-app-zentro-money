@@ -52,13 +52,12 @@ export const TransactionForm = ({ type, categories, onSubmit, values }: Transact
       const submitData = { ...data, date: convertDateToTimestamp(data.date) };
 
       await onSubmit(submitData);
-
-      reset();
     } catch (error) {
       console.error('Ошибка при отправке формы:', error);
-      alert('Произошла ошибка ❌');
     } finally {
       setIsLoading(false);
+      closeTopBottomSheet();
+      reset();
     }
   };
 

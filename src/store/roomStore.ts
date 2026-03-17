@@ -5,6 +5,11 @@ import { create } from 'zustand';
 import { notificationManager } from '@/components/shared/toast/utils';
 import { COLLECTION_ROOM, SUB_COLLECTION_TRANSACTIONS } from '@/constants/db';
 import { TRANSACTION_TYPE } from '@/constants/transaction-type';
+import {
+  getQueuedTransactions,
+  queueTransaction,
+  removeQueuedTransaction,
+} from '@/lib/transaction-queue';
 import { db } from '@/services/firebase/config';
 import { createCategory } from '@/services/firebase/createCategory';
 import { createTransaction } from '@/services/firebase/createTransaction';
@@ -18,7 +23,7 @@ import { updateCategory } from '@/services/firebase/updateCategory';
 import { updateTransaction } from '@/services/firebase/updateTransaction';
 import { CategoryType } from '@/types/category';
 import { RoomType } from '@/types/room';
-import { TransactionProps } from '@/types/transaction';
+import { SyncStatus, TransactionProps } from '@/types/transaction';
 import { UserWithRoleRoom } from '@/types/user';
 
 type RoomStoreState = {
@@ -46,6 +51,7 @@ type RoomStoreState = {
   addUserToRoom: (userId: string) => Promise<void>;
   removeUserFromRoom: (userId: string) => Promise<void>;
   removeNotification: (userId: string) => Promise<void>;
+  hydrateTransactionsFromQueue: () => Promise<void>;
 };
 
 export const useRoomStore = create<RoomStoreState>((set, get) => ({
@@ -89,23 +95,72 @@ export const useRoomStore = create<RoomStoreState>((set, get) => ({
   },
 
   addTransaction: async (roomId, transaction) => {
+    const id = crypto.randomUUID();
+
+    const optimisticTx = {
+      ...transaction,
+      transactionId: id,
+      syncStatus: SyncStatus.PENDING,
+    };
+
+    set((state) => ({
+      room: state.room
+        ? {
+            ...state.room,
+            transactions: [...(state.room.transactions || []), optimisticTx],
+          }
+        : state.room,
+    }));
+
+    await queueTransaction({
+      roomId,
+      transaction: optimisticTx,
+    });
+
     try {
-      const id = await createTransaction(roomId, transaction);
+      await createTransaction(roomId, id, transaction);
+
+      await removeQueuedTransaction(id);
 
       set((state) => ({
         room: state.room
           ? {
               ...state.room,
-              transactions: [
-                ...(state.room.transactions || []),
-                { ...transaction, transactionId: id },
-              ],
+              transactions:
+                state.room.transactions?.map((t) =>
+                  t.transactionId === id ? { ...t, syncStatus: SyncStatus.SYNCED } : t
+                ) || [],
             }
           : state.room,
       }));
-    } catch (err: any) {
-      console.error('Ошибка при добавлении транзакции:', err);
+    } catch (e) {
+      console.warn('offline, queued transaction');
     }
+  },
+
+  hydrateTransactionsFromQueue: async () => {
+    const queuedList = await getQueuedTransactions();
+
+    if (!queuedList.length) {
+      return;
+    }
+
+    set((state) => {
+      if (!state.room) return state;
+
+      const existingIds = new Set(state.room.transactions?.map((t) => t.transactionId));
+
+      const pendingTxs = queuedList
+        .map((item) => item.transaction)
+        .filter((tx) => !existingIds.has(tx.transactionId));
+
+      return {
+        room: {
+          ...state.room,
+          transactions: [...(state.room.transactions || []), ...pendingTxs],
+        },
+      };
+    });
   },
 
   addCategory: async (category: { name: string; type: TRANSACTION_TYPE }) => {

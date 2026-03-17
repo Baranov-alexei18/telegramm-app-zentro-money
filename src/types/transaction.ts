@@ -4,6 +4,12 @@ import { TRANSACTION_TYPE } from '@/constants/transaction-type';
 
 import { CategoryType } from './category';
 
+export enum SyncStatus {
+  SYNCED = 'Synced',
+  PENDING = 'Pending',
+  FAILED = 'Failed',
+}
+
 export type TransactionFormValues = {
   date: Timestamp;
   category: CategoryType;
@@ -16,5 +22,6 @@ export type TransactionProps = TransactionFormValues & {
   userId: string;
   roomId: string;
   createdAt?: Timestamp;
+  syncStatus?: SyncStatus;
   transactionId: string;
 };
