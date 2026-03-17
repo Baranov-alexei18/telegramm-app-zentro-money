@@ -8,6 +8,9 @@
 }
 
 .transactionType {
+  display: flex;
+  align-items: center;
+  gap: 4px;
   font-weight: 600;
 }
 
@@ -29,4 +32,18 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+@keyframes soft-bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+.animateBounceShort {
+  animation: soft-bounce 1s ease infinite;
 }

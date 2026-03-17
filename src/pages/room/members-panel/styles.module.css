@@ -1,5 +1,8 @@
 .membersTrigger {
+  display: flex;
+  justify-content: center;
   text-align: center;
+  align-items: center;
   margin-top: 8px;
   color: var(--color-muted);
   cursor: pointer;
@@ -7,7 +10,7 @@
 }
 
 .membersTrigger:hover {
-  color: #fff;
+  color: black;
 }
 
 .membersTitle {

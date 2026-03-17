@@ -24,7 +24,6 @@ type Props = {
 export const CardInfo = ({ type }: Props) => {
   const { user } = useUserStore();
   const { room, addTransaction } = useRoomStore();
-  const { closeTopBottomSheet } = useAppStore();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -57,10 +56,8 @@ export const CardInfo = ({ type }: Props) => {
     try {
       await addTransaction(room.roomId, transactionData);
     } catch (e) {
-      alert(e);
+      console.error(e);
     }
-
-    closeTopBottomSheet();
   };
 
   const handleGoToTransitionsPage = (type: TRANSACTION_TYPE) => {

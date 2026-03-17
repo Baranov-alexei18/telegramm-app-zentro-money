@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Icon } from '@iconify/react';
 import { collection, onSnapshot, orderBy, query, Timestamp } from 'firebase/firestore';
 
 import { ChatIcon } from '@/components/icons/chat-icon';
@@ -71,7 +72,7 @@ export const ChatPanel = () => {
       id="room-chat"
       triggerComponent={
         <div className={stylesParent.statisticIcon}>
-          <ChatIcon />
+          <Icon icon="glyphs:comment-1-bold" height={24} width={24} />
         </div>
       }
     >

@@ -1,5 +1,7 @@
 import { Fragment, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router';
+import { Icon } from '@iconify/react';
 import { signOut } from 'firebase/auth';
 
 import { AvatarCircle } from '@/components/avatar-circle';
@@ -14,7 +16,9 @@ import { UpdateUserType } from '@/types/user';
 import styles from './styles.module.css';
 
 export const ProfilePage = () => {
-  const { user, updateDataUser } = useUserStore();
+  const navigate = useNavigate();
+
+  const { user, updateDataUser, setUser } = useUserStore();
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -44,7 +48,7 @@ export const ProfilePage = () => {
   const handleLogout = async () => {
     await signOut(auth);
     setUser(null);
-    // navigate('/login');
+    navigate('/login');
   };
 
   return (
@@ -54,7 +58,7 @@ export const ProfilePage = () => {
           <BackButton />
 
           <Button onClick={handleLogout} className={styles.logoutButton}>
-            Выйти
+            <Icon icon="mingcute:exit-fill" height={24} width={24} />
           </Button>
         </div>
       </Header>
@@ -111,6 +115,3 @@ export const ProfilePage = () => {
     </Fragment>
   );
 };
-function setUser(arg0: null) {
-  throw new Error('Function not implemented.');
-}

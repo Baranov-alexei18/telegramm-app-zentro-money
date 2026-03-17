@@ -1,5 +1,6 @@
 import { Fragment, useEffect } from 'react';
 import { useParams } from 'react-router';
+import { Icon } from '@iconify/react';
 
 import { BackButton } from '@/components/back-button';
 import { Header } from '@/components/header';
@@ -17,14 +18,15 @@ import { ChatPanel } from './chat-panel';
 import { MembersPanel } from './members-panel';
 import { NotificationPanel } from './notification-panel';
 import { TransactionCard } from './transaction-card';
-import { filterMembersByRoom } from './utils';
+import { filterMembersByRoom, getLastTransactions } from './utils';
 
 import styles from './styles.module.css';
 
 export const RoomPage = () => {
   const { user } = useUserStore();
   const { canViewNotifications } = useRoomAccess();
-  const { room, setRoom, fetchTransactions, fetchMembers, members } = useRoomStore();
+  const { room, setRoom, fetchTransactions, fetchMembers, hydrateTransactionsFromQueue, members } =
+    useRoomStore();
 
   const { id } = useParams<{ id: string }>();
 
@@ -42,6 +44,8 @@ export const RoomPage = () => {
         setRoom(currentRoom);
 
         await Promise.all([fetchTransactions(currentRoom.roomId), fetchMembers(currentRoom)]);
+
+        await hydrateTransactionsFromQueue();
       } catch (e) {
         console.error('Ошибка при загрузке комнаты или участников:', e);
       }
@@ -50,11 +54,7 @@ export const RoomPage = () => {
     fetchRoom();
   }, [id]);
 
-  const lastTransactions =
-    room?.transactions
-      ?.sort((a, b) => (a.createdAt?.seconds || 0) - (b.createdAt?.seconds || 0))
-      ?.slice(-5)
-      .reverse() || [];
+  const lastTransactions = getLastTransactions(room?.transactions);
 
   if (!room) {
     return <div className={styles.loader}>Загрузка...</div>;
@@ -72,7 +72,7 @@ export const RoomPage = () => {
             href={`${location.pathname}${ROUTE_PATHS.statistics}`}
             className={styles.statisticIcon}
           >
-            <StatisticsIcon />
+            <Icon icon="glyphs:chart-pie-slice-bold" height={28} width={28} />
           </LinkButton>
           <ChatPanel />
         </div>

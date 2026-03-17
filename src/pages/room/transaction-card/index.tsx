@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { Icon } from '@iconify/react';
 import cn from 'classnames';
 
 import { TransactionForm } from '@/components/forms/transaction-form';
@@ -9,7 +10,7 @@ import { useRoomAccess } from '@/hooks/useRoomAccess';
 import { useAppStore } from '@/store/appStore';
 import { useRoomStore } from '@/store/roomStore';
 import { useUserStore } from '@/store/userStore';
-import { TransactionFormValues, TransactionProps } from '@/types/transaction';
+import { SyncStatus, TransactionFormValues, TransactionProps } from '@/types/transaction';
 
 import styles from './styles.module.css';
 
@@ -35,6 +36,15 @@ const TransactionCardItem = ({ transaction, onClick }: Props) => {
       >
         {transaction.type === TRANSACTION_TYPE.INCOME ? '+' : '-'}
         {transaction.amount}
+        {transaction.syncStatus === SyncStatus.PENDING && (
+          <Icon
+            icon="tdesign:time"
+            height={16}
+            width={16}
+            color="grey"
+            className={styles.animateBounceShort}
+          />
+        )}
       </span>
     </li>
   );
@@ -58,9 +68,9 @@ export const TransactionCard = ({ transaction }: Props) => {
       await updateTransaction(transactionData);
     } catch (e) {
       alert(e);
+    } finally {
+      closeTopBottomSheet();
     }
-
-    closeTopBottomSheet();
   };
 
   const handleClick = () => {
