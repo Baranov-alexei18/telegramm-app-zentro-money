@@ -9,16 +9,7 @@ export const filterMembersByRoom = <T extends { id: string }>(
 };
 
 export const getLastTransactions = (transactions: TransactionProps[] = []) => {
-  const withoutCreatedAt = transactions.filter((t) => !t.createdAt);
-  const withCreatedAt = transactions.filter((t) => t.createdAt);
+  const sortedWithout = transactions.sort((a, b) => (b.date.seconds || 0) - (a.date.seconds || 0));
 
-  const sortedWithout = withoutCreatedAt.sort(
-    (a, b) => (b.date.seconds || 0) - (a.date.seconds || 0)
-  );
-
-  const sortedWith = withCreatedAt.sort(
-    (a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0)
-  );
-
-  return [...sortedWithout, ...sortedWith].slice(0, 5);
+  return sortedWithout.slice(0, 5);
 };

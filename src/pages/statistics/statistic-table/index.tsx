@@ -4,6 +4,7 @@ import { Button, Cell, Column, Row, Table, TableBody, TableHeader } from 'react-
 import { ArrowDownIcon } from '@/components/icons/arrow-down-icon';
 import { TransactionProps } from '@/types/transaction';
 import { formatSmartNumber } from '@/utils/formatSmartNumber';
+import { getSortedTransactionsByDate } from '@/utils/get-sorted-transactions-by-date';
 
 import styles from './styles.module.css';
 
@@ -34,40 +35,46 @@ export const StatisticTable = ({ data }: Props) => {
         </TableHeader>
 
         <TableBody>
-          {data.map((row) => (
-            <React.Fragment key={row.id}>
-              <Row className={styles.mainRow} style={{ color: row.color || 'inherit' }}>
-                <Cell>{row.label}</Cell>
-                <Cell>{formatSmartNumber(row.total)}</Cell>
-                <Cell>
-                  <Button
-                    className={`${styles.toggleBtn} ${openRows[row.id] ? styles.open : ''}`}
-                    onClick={() => toggle(row.id)}
-                  >
-                    <ArrowDownIcon height={16} width={16} />
-                  </Button>
-                </Cell>
-              </Row>
+          {data.map((row) => {
+            const sortedTransactions = getSortedTransactionsByDate(row.transactions || []);
 
-              <Row>
-                <Cell colSpan={3} className={styles.expandCell}>
-                  <div className={`${styles.expandContent} ${openRows[row.id] ? styles.open : ''}`}>
-                    <ul className={styles.list}>
-                      {row.transactions?.map((t) => (
-                        <li key={t.transactionId} className={styles.itemWrapper}>
-                          <span className={styles.date}>
-                            {t.date?.toDate?.().toLocaleDateString?.() ?? '—'}
-                          </span>
-                          <span className={styles.description}>{t.description}</span>
-                          <span className={styles.amount}>{formatSmartNumber(t.amount)}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </Cell>
-              </Row>
-            </React.Fragment>
-          ))}
+            return (
+              <React.Fragment key={row.id}>
+                <Row className={styles.mainRow} style={{ color: row.color || 'inherit' }}>
+                  <Cell>{row.label}</Cell>
+                  <Cell>{formatSmartNumber(row.total)}</Cell>
+                  <Cell>
+                    <Button
+                      className={`${styles.toggleBtn} ${openRows[row.id] ? styles.open : ''}`}
+                      onClick={() => toggle(row.id)}
+                    >
+                      <ArrowDownIcon height={16} width={16} />
+                    </Button>
+                  </Cell>
+                </Row>
+
+                <Row>
+                  <Cell colSpan={3} className={styles.expandCell}>
+                    <div
+                      className={`${styles.expandContent} ${openRows[row.id] ? styles.open : ''}`}
+                    >
+                      <ul className={styles.list}>
+                        {sortedTransactions.map((t) => (
+                          <li key={t.transactionId} className={styles.itemWrapper}>
+                            <span className={styles.date}>
+                              {t.date?.toDate?.().toLocaleDateString?.() ?? '—'}
+                            </span>
+                            <span className={styles.description}>{t.description}</span>
+                            <span className={styles.amount}>{formatSmartNumber(t.amount)}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </Cell>
+                </Row>
+              </React.Fragment>
+            );
+          })}
         </TableBody>
       </Table>
     </div>
