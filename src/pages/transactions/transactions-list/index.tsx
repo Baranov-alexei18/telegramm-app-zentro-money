@@ -11,6 +11,7 @@ import { useRoomStore } from '@/store/roomStore';
 import { useUserStore } from '@/store/userStore';
 import { TransactionFormValues, TransactionProps } from '@/types/transaction';
 import { convertToDate } from '@/utils/convertToDate';
+import { getSortedTransactionsByDate } from '@/utils/get-sorted-transactions-by-date';
 
 import styles from './styles.module.css';
 
@@ -26,6 +27,10 @@ export const TransactionsList = ({ transactions, viewType }: Props) => {
   const { room, deleteTransaction, updateTransaction } = useRoomStore();
 
   const [loading, setLoading] = useState(false);
+
+  const sortedTransactions = useMemo(() => {
+    return getSortedTransactionsByDate(transactions);
+  }, [transactions]);
 
   const handleTransitionSubmit = async (data: TransactionFormValues, type: TRANSACTION_TYPE) => {
     if (!user || !room) return;
@@ -63,7 +68,7 @@ export const TransactionsList = ({ transactions, viewType }: Props) => {
 
   return (
     <div className={styles.transactionsList}>
-      {transactions.map((t) => {
+      {sortedTransactions.map((t) => {
         return (
           <div key={t.transactionId} className={styles.transactionItem}>
             <div className={styles.transactionInfoWrapper}>
