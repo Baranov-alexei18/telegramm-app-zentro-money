@@ -1,3 +1,10 @@
+## [1.38.1](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/compare/v1.38.0...v1.38.1) (2026-05-09)
+
+
+### Bug Fixes
+
+* sorting in transactions ([718e3f2](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/commit/718e3f2a82645ca2381a1a7ea159f7257f1a41e4))
+
 # [1.38.0](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/compare/v1.37.0...v1.38.0) (2026-03-17)
 
 
