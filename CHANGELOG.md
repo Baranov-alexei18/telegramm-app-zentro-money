@@ -1,3 +1,10 @@
+# [1.39.0](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/compare/v1.38.1...v1.39.0) (2026-11-20)
+
+
+### Features
+
+* revamp home page, add quick transactions, room caching, and overlay offline banner ([f391212](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/commit/f391212e4ddb296fa53fd3be00314525e3b136bb))
+
 ## [1.38.1](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/compare/v1.38.0...v1.38.1) (2026-05-09)
 
 
