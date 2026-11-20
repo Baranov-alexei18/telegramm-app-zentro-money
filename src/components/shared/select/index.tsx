@@ -1,3 +1,4 @@
+import { useId } from 'react';
 import {
   Button,
   FieldError,
@@ -8,9 +9,8 @@ import {
   Select as HeadlessSelect,
   SelectValue,
 } from 'react-aria-components';
+import { Icon } from '@iconify/react';
 import cn from 'classnames';
-
-import { ArrowDownIcon } from '@/components/icons/arrow-down-icon';
 
 import styles from './styles.module.css';
 
@@ -21,6 +21,8 @@ type Option = {
 
 type Props = {
   label?: string;
+  ariaLabel?: string;
+  'aria-label'?: string;
   options: Option[];
   placeholder?: string;
   value: string;
@@ -33,6 +35,8 @@ type Props = {
 
 export const Select = ({
   label,
+  ariaLabel,
+  'aria-label': ariaLabelAttr,
   options,
   placeholder,
   value,
@@ -42,39 +46,63 @@ export const Select = ({
   disabled,
   className,
 }: Props) => {
-  const selectId = `select-${label?.replace(/\s+/g, '-') || Math.random()}`;
+  const labelId = useId();
+  const resolvedAriaLabel = label
+    ? undefined
+    : (ariaLabel ?? ariaLabelAttr ?? placeholder ?? 'Выбор значения');
 
   return (
     <HeadlessSelect
-      value={value}
-      onChange={(key) => onChange(key as string)}
+      selectedKey={value}
+      onSelectionChange={(key) => {
+        if (key !== null) {
+          onChange(String(key));
+        }
+      }}
       isRequired={required}
       isDisabled={disabled}
-      aria-labelledby={selectId}
+      aria-labelledby={label ? labelId : undefined}
+      aria-label={resolvedAriaLabel}
       className={styles.container}
       placeholder={placeholder}
     >
       {label && (
-        <Label className={styles.label} id={selectId}>
+        <Label className={styles.label} id={labelId}>
           {label}
         </Label>
       )}
 
       <Button
-        className={cn(styles.input, className, {
-          [styles.inputError]: error,
+        className={cn(styles.trigger, className, {
+          [styles.triggerError]: Boolean(error),
         })}
       >
-        <SelectValue />
+        <SelectValue className={styles.value} />
 
-        <ArrowDownIcon size={16} />
+        <span className={styles.chevron} aria-hidden="true">
+          <Icon icon="mingcute:down-line" width={16} height={16} />
+        </span>
       </Button>
 
-      <Popover className={styles.popover}>
+      <Popover className={styles.popover} offset={6}>
         <ListBox className={styles.listbox}>
           {options.map((option) => (
-            <ListBoxItem key={option.value} id={option.value} className={styles.option}>
-              {option.label}
+            <ListBoxItem
+              key={option.value}
+              id={option.value}
+              textValue={option.label}
+              className={styles.option}
+            >
+              {({ isSelected }) => (
+                <>
+                  <span className={styles.optionLabel}>{option.label}</span>
+                  {isSelected && (
+                    <span className={styles.checkIcon} aria-hidden="true">
+                      <Icon icon="mingcute:check-line" width={16} height={16} />
+                    </span>
+                  )}
+                </>
+              )}
             </ListBoxItem>
           ))}
         </ListBox>

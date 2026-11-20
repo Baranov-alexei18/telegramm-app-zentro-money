@@ -6,6 +6,7 @@ import { Input } from '@/components/shared/input';
 import { notificationManager } from '@/components/shared/toast/utils';
 import { createRoom } from '@/services/firebase/createRoom';
 import { useAppStore } from '@/store/appStore';
+import { useRoomStore } from '@/store/roomStore';
 import { useUserStore } from '@/store/userStore';
 
 import styles from './styles.module.css';
@@ -17,6 +18,7 @@ type CreateRoomFormValues = {
 
 export const CreateRoomForm = () => {
   const { closeTopBottomSheet } = useAppStore();
+  const { fetchUserRooms } = useRoomStore();
 
   const { control, handleSubmit } = useForm<CreateRoomFormValues>({
     defaultValues: {
@@ -28,7 +30,7 @@ export const CreateRoomForm = () => {
   const { user, setUser } = useUserStore();
   const [isLoading, setIsLoading] = useState(false);
 
-  const onSubmit = async (data: CreateRoomFormValues) => {
+  const handleFormSubmit = async (data: CreateRoomFormValues) => {
     if (!user) return;
     setIsLoading(true);
 
@@ -39,11 +41,13 @@ export const CreateRoomForm = () => {
       });
 
       setUser({ ...user, rooms: [...(user?.rooms || []), roomId] });
+      await fetchUserRooms(user.id, { force: true, silent: true });
       closeTopBottomSheet();
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Ошибка при создании комнаты';
       notificationManager.add(
         {
-          title: error.message,
+          title: message,
           type: 'error',
         },
         { timeout: 2000 }
@@ -54,7 +58,7 @@ export const CreateRoomForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className={styles.formWrapper}>
+    <form onSubmit={handleSubmit(handleFormSubmit)} className={styles.formWrapper}>
       <Controller
         name="name"
         control={control}
@@ -83,7 +87,6 @@ export const CreateRoomForm = () => {
             placeholder="Описание"
             error={fieldState.error?.message}
             disabled={isLoading}
-            style={{ width: '100%' }}
           />
         )}
       />

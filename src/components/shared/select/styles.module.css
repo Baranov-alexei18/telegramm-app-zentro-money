@@ -1,42 +1,155 @@
 .container {
   position: relative;
   max-width: 100%;
-  box-sizing: content-box;
   display: flex;
   flex-direction: column;
   border: none;
   padding: 0;
-  gap: 4px;
+  gap: 5px;
 }
 
 .label {
-  font-size: 14px;
-  color: var(--color-card);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text);
 }
 
-.input {
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  min-height: 38px;
+  padding: 7px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.trigger:hover {
+  border-color: var(--color-indigo);
+  background: var(--color-bg);
+}
+
+.trigger:focus,
+.trigger[data-focus-visible],
+.trigger[data-pressed] {
+  outline: none;
+  border-color: var(--color-indigo-secondary);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.16);
+}
+
+.trigger[data-disabled] {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.triggerError {
+  border-color: var(--color-danger);
+}
+
+.value {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: left;
+}
+
+.chevron {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-indigo-secondary);
+  flex-shrink: 0;
+  transition: transform 0.22s ease;
+}
+
+[data-open] .chevron {
+  transform: rotate(180deg);
+}
+
+.popover {
+  z-index: 350;
+  min-width: var(--trigger-width);
+  animation: popoverIn 0.16s ease-out;
+}
+
+@keyframes popoverIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.listbox {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.14);
+  padding: 6px;
+  min-width: 150px;
+  max-height: 240px;
+  overflow-y: auto;
+  outline: none;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.option {
   display: flex;
   align-items: center;
-  gap: 4px;
-  width: 100%;
+  justify-content: space-between;
+  gap: 10px;
   padding: 8px 10px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius-main);
-  background: var(--color-bg);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
   color: var(--color-text);
-  transition:
-    border 0.2s ease,
-    box-shadow 0.2s ease;
-}
-
-.input:focus {
   outline: none;
-  border-color: var(--color-indigo);
-  box-shadow: 0 0 0 2px rgba(117, 150, 217, 0.3);
+  transition:
+    background 0.16s ease,
+    color 0.16s ease;
 }
 
-.inputError {
-  border-color: var(--color-danger);
+.option:hover,
+.option[data-hovered],
+.option[data-focused] {
+  background: var(--color-bg);
+}
+
+.option[data-selected] {
+  background: rgba(99, 102, 241, 0.12);
+  color: var(--color-indigo-secondary);
+  font-weight: 600;
+}
+
+.optionLabel {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.checkIcon {
+  display: inline-flex;
+  align-items: center;
+  color: var(--color-indigo-secondary);
+  flex-shrink: 0;
 }
 
 .error {
@@ -44,70 +157,4 @@
   font-size: 12px;
   margin-top: -2px;
   display: inline-block;
-  animation: shake 1s ease-in-out;
-}
-
-@keyframes shake {
-  0% {
-    transform: translateX(0);
-  }
-  10% {
-    transform: translateX(-5px);
-  }
-  20% {
-    transform: translateX(5px);
-  }
-  30% {
-    transform: translateX(-5px);
-  }
-  40% {
-    transform: translateX(5px);
-  }
-  50% {
-    transform: translateX(-5px);
-  }
-  60% {
-    transform: translateX(5px);
-  }
-  70% {
-    transform: translateX(-5px);
-  }
-  80% {
-    transform: translateX(5px);
-  }
-  90% {
-    transform: translateX(-5px);
-  }
-  100% {
-    transform: translateX(0);
-  }
-}
-
-.listbox {
-  background: var(--color-bg);
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius-main);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-  margin-top: 4px;
-  padding: 4px 0;
-  width: max-content;
-  max-height: 220px;
-  overflow-y: auto;
-  z-index: 1;
-}
-
-.option {
-  padding: 8px 10px;
-  cursor: pointer;
-  color: var(--color-text);
-  transition: background 0.2s ease;
-}
-
-.option:hover,
-.option[data-focused] {
-  background: rgba(117, 150, 217, 0.1);
-}
-
-[data-open] > .input svg {
-  transform: rotate(180deg);
 }

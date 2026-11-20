@@ -5,6 +5,7 @@ import { create } from 'zustand';
 import { notificationManager } from '@/components/shared/toast/utils';
 import { COLLECTION_ROOM, SUB_COLLECTION_TRANSACTIONS } from '@/constants/db';
 import { TRANSACTION_TYPE } from '@/constants/transaction-type';
+import { mergeRoomPreservingTransactions, syncRoomInList } from '@/lib/merge-room-data';
 import {
   getQueuedTransactions,
   queueTransaction,
@@ -17,6 +18,7 @@ import { deleteCategoryById } from '@/services/firebase/deleteCategoryById';
 import { deleteTransactionById } from '@/services/firebase/deleteTransactionById';
 import { deleteUserFromRoom } from '@/services/firebase/deleteUserFromRoom';
 import { getRoomUsers } from '@/services/firebase/getRoomUsers';
+import { getUserRooms } from '@/services/firebase/getUserRooms';
 import { joinUserToRoom } from '@/services/firebase/joinUserToRoom';
 import { removeNotificationRoom } from '@/services/firebase/removeNotificationRoom';
 import { updateCategory } from '@/services/firebase/updateCategory';
@@ -26,13 +28,25 @@ import { RoomType } from '@/types/room';
 import { SyncStatus, TransactionProps } from '@/types/transaction';
 import { UserWithRoleRoom } from '@/types/user';
 
+type FetchUserRoomsOptions = {
+  force?: boolean;
+  silent?: boolean;
+};
+
 type RoomStoreState = {
   room: RoomType | null;
+  loadedTransactionsRoomId: string | null;
+  userRooms: RoomType[];
+  isUserRoomsLoading: boolean;
+  hasLoadedUserRooms: boolean;
+  loadedRoomsUserId: string | null;
   members: UserWithRoleRoom[];
   isLoading: boolean;
   error: string | null;
   setRoom: (room: RoomType | null) => void;
   clearRoom: () => void;
+  fetchUserRooms: (userId: string, options?: FetchUserRoomsOptions) => Promise<RoomType[]>;
+  resetUserRooms: () => void;
   fetchTransactions: (roomId: string) => Promise<void>;
   fetchMembers: (room: RoomType) => Promise<void>;
   getFilteredTransactions: (
@@ -54,14 +68,108 @@ type RoomStoreState = {
   hydrateTransactionsFromQueue: () => Promise<void>;
 };
 
+let inFlightRoomsRequest: { userId: string; promise: Promise<RoomType[]> } | null = null;
+
 export const useRoomStore = create<RoomStoreState>((set, get) => ({
   room: null,
+  loadedTransactionsRoomId: null,
+  userRooms: [],
+  isUserRoomsLoading: false,
+  hasLoadedUserRooms: false,
+  loadedRoomsUserId: null,
   members: [],
   isLoading: false,
   error: null,
 
-  setRoom: (room) => set({ room }),
-  clearRoom: () => set({ room: null, error: null }),
+  setRoom: (incomingRoom) =>
+    set((state) => {
+      const mergedRoom = mergeRoomPreservingTransactions(state.room, incomingRoom);
+      return {
+        room: mergedRoom,
+        loadedTransactionsRoomId:
+          mergedRoom && state.loadedTransactionsRoomId === mergedRoom.roomId
+            ? state.loadedTransactionsRoomId
+            : null,
+        userRooms: syncRoomInList(state.userRooms, mergedRoom),
+      };
+    }),
+  clearRoom: () => set({ room: null, loadedTransactionsRoomId: null, error: null }),
+
+  fetchUserRooms: async (userId, options) => {
+    const { hasLoadedUserRooms, loadedRoomsUserId, userRooms } = get();
+
+    if (!options?.force && hasLoadedUserRooms && loadedRoomsUserId === userId) {
+      return userRooms;
+    }
+
+    if (!options?.force && inFlightRoomsRequest?.userId === userId) {
+      return inFlightRoomsRequest.promise;
+    }
+
+    if (!options?.silent) {
+      set({ isUserRoomsLoading: true });
+    }
+
+    let requestPromise: Promise<RoomType[]> | null = null;
+
+    const executeFetch = async (): Promise<RoomType[]> => {
+      try {
+        const fetchedRooms = await getUserRooms(userId);
+        const state = get();
+        const mergedRooms = fetchedRooms.map((fetched) => {
+          const cached = state.userRooms.find((item) => item.roomId === fetched.roomId) ?? null;
+          const base =
+            state.room?.roomId === fetched.roomId
+              ? mergeRoomPreservingTransactions(state.room, fetched)
+              : mergeRoomPreservingTransactions(cached, fetched);
+          return base ?? fetched;
+        });
+
+        const syncedActiveRoom = state.room
+          ? mergeRoomPreservingTransactions(
+              state.room,
+              mergedRooms.find((item) => item.roomId === state.room?.roomId) ?? state.room
+            )
+          : null;
+
+        set({
+          userRooms: mergedRooms,
+          hasLoadedUserRooms: true,
+          loadedRoomsUserId: userId,
+          isUserRoomsLoading: false,
+          room: syncedActiveRoom,
+        });
+
+        return mergedRooms;
+      } catch (error) {
+        set({ isUserRoomsLoading: false });
+        throw error;
+      } finally {
+        if (inFlightRoomsRequest?.promise === requestPromise) {
+          inFlightRoomsRequest = null;
+        }
+      }
+    };
+
+    requestPromise = executeFetch();
+    inFlightRoomsRequest = { userId, promise: requestPromise };
+
+    return requestPromise;
+  },
+
+  resetUserRooms: () => {
+    inFlightRoomsRequest = null;
+    set({
+      room: null,
+      loadedTransactionsRoomId: null,
+      userRooms: [],
+      isUserRoomsLoading: false,
+      hasLoadedUserRooms: false,
+      loadedRoomsUserId: null,
+      members: [],
+      error: null,
+    });
+  },
 
   fetchTransactions: async (roomId: string) => {
     try {
@@ -73,9 +181,15 @@ export const useRoomStore = create<RoomStoreState>((set, get) => ({
         ...doc.data(),
       })) as unknown as TransactionProps[];
 
-      set((state) => ({
-        room: state.room ? { ...state.room, transactions } : state.room,
-      }));
+      set((state) => {
+        const nextRoom =
+          state.room && state.room.roomId === roomId ? { ...state.room, transactions } : state.room;
+        return {
+          room: nextRoom,
+          loadedTransactionsRoomId: roomId,
+          userRooms: syncRoomInList(state.userRooms, nextRoom),
+        };
+      });
     } catch (err: any) {
       console.error('Ошибка при получении транзакций:', err);
     }
@@ -171,11 +285,15 @@ export const useRoomStore = create<RoomStoreState>((set, get) => ({
     try {
       const data = await createCategory(roomId, category);
 
-      set((state) => ({
-        room: state.room
+      set((state) => {
+        const nextRoom = state.room
           ? { ...state.room, categories: [...state.room.categories, data] }
-          : state.room,
-      }));
+          : state.room;
+        return {
+          room: nextRoom,
+          userRooms: syncRoomInList(state.userRooms, nextRoom),
+        };
+      });
     } catch (err: any) {
       console.error('Ошибка при добавлении категории:', err);
     }
@@ -191,9 +309,13 @@ export const useRoomStore = create<RoomStoreState>((set, get) => ({
     try {
       const categories = await updateCategory(roomId, room.categories, data);
 
-      set((prev) => ({
-        room: prev.room ? { ...prev.room, categories: categories } : prev.room,
-      }));
+      set((prev) => {
+        const nextRoom = prev.room ? { ...prev.room, categories } : prev.room;
+        return {
+          room: nextRoom,
+          userRooms: syncRoomInList(prev.userRooms, nextRoom),
+        };
+      });
     } catch (err: any) {
       console.error('Ошибка при обновлении категории:', err);
     }
@@ -209,9 +331,13 @@ export const useRoomStore = create<RoomStoreState>((set, get) => ({
     try {
       const categories = await deleteCategoryById(roomId, room.categories, categoryId);
 
-      set((prev) => ({
-        room: prev.room ? { ...prev.room, categories: categories } : prev.room,
-      }));
+      set((prev) => {
+        const nextRoom = prev.room ? { ...prev.room, categories } : prev.room;
+        return {
+          room: nextRoom,
+          userRooms: syncRoomInList(prev.userRooms, nextRoom),
+        };
+      });
     } catch (err: any) {
       console.error('Ошибка при удалении категории:', err);
     }
@@ -301,14 +427,16 @@ export const useRoomStore = create<RoomStoreState>((set, get) => ({
 
     try {
       const data = await joinUserToRoom(userId, room);
+      const nextRoom = {
+        ...room,
+        members: { ...(data?.members || room.members) },
+        notifications: data?.notifications,
+      };
 
-      set({
-        room: {
-          ...room,
-          members: { ...(data?.members || room.members) },
-          notifications: data?.notifications,
-        },
-      });
+      set((state) => ({
+        room: nextRoom,
+        userRooms: syncRoomInList(state.userRooms, nextRoom),
+      }));
 
       notificationManager.add(
         {
@@ -336,13 +464,16 @@ export const useRoomStore = create<RoomStoreState>((set, get) => ({
     try {
       const data = await deleteUserFromRoom(userId, room);
 
-      set({
-        room: {
-          ...room,
-          members: { ...(data?.members || room.members) },
-          notifications: data?.notifications,
-        },
-      });
+      const nextRoom = {
+        ...room,
+        members: { ...(data?.members || room.members) },
+        notifications: data?.notifications,
+      };
+
+      set((state) => ({
+        room: nextRoom,
+        userRooms: syncRoomInList(state.userRooms, nextRoom),
+      }));
 
       notificationManager.add(
         {
@@ -368,10 +499,12 @@ export const useRoomStore = create<RoomStoreState>((set, get) => ({
 
     try {
       const notifications = await removeNotificationRoom(userId, room);
+      const nextRoom = { ...room, notifications };
 
-      set({
-        room: { ...room, notifications: notifications },
-      });
+      set((state) => ({
+        room: nextRoom,
+        userRooms: syncRoomInList(state.userRooms, nextRoom),
+      }));
     } catch (err: any) {
       console.error('Ошибка при удалении уведомления:', err);
     }

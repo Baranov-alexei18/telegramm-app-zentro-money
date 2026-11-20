@@ -1,45 +1,65 @@
-import { useEffect, useState } from 'react';
+import { CSSProperties, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router';
+import { Icon } from '@iconify/react';
+import { motion } from 'framer-motion';
 
 import Logo from '@/assets/images/logo.png';
-import { OfflineBanner } from '@/components/offline-banner';
+import { CreateRoomForm } from '@/components/forms/create-room-form';
+import { BottomSheet } from '@/components/shared/bottom-sheet';
+import { LinkButton } from '@/components/shared/link-button';
+import { LogoLoader } from '@/components/shared/logo-loader';
+import { notificationManager } from '@/components/shared/toast/utils';
 import { ROUTE_PATHS } from '@/constants/route-path';
-import { getUserRooms } from '@/services/firebase/getUserRooms';
+import { getUserGreetingName } from '@/lib/get-user-greeting-name';
+import { useRoomStore } from '@/store/roomStore';
 import { useUserStore } from '@/store/userStore';
-import { RoomType } from '@/types/room';
+
+import { GREETING_CHAR_VARIANTS, GREETING_CONTAINER_VARIANTS, HOME_STEPS } from './constants';
+import { HomeRoomCard } from './home-room-card';
+import { QuickTransactionPanel } from './quick-transaction-panel';
 
 import styles from './styles.module.css';
 
-const steps = [
-  { icon: '🏠', title: 'Создайте комнату' },
-  { icon: '👥', title: 'Пригласите участников' },
-  { icon: '💳', title: 'Ведите общий бюджет' },
-  { icon: '📊', title: 'Анализируйте статистику' },
-];
-
 export const HomePage = () => {
   const { user } = useUserStore();
-
-  const [rooms, setRooms] = useState<RoomType[]>([]);
-
+  const { userRooms, isUserRoomsLoading, hasLoadedUserRooms, loadedRoomsUserId, fetchUserRooms } =
+    useRoomStore();
   const navigate = useNavigate();
 
+  const greetingName = getUserGreetingName(user);
+  const greetingPrefix = greetingName ? 'Привет, ' : 'Привет!';
+  const greetingText = greetingName ? `${greetingPrefix}${greetingName}!` : greetingPrefix;
+
+  const greetingChars = useMemo(
+    () =>
+      Array.from(greetingText).map((char, index) => ({
+        id: `${index}-${char}`,
+        index,
+        char: char === ' ' ? '\u00A0' : char,
+      })),
+    [greetingText]
+  );
+
   useEffect(() => {
-    const getRoomsData = async () => {
-      if (!user) {
-        return;
-      }
-      try {
-        const data = await getUserRooms(user?.id);
+    if (!user?.id) {
+      return;
+    }
 
-        setRooms(data);
-      } catch (e) {
-        console.error(e);
-      }
-    };
+    if (hasLoadedUserRooms && loadedRoomsUserId === user.id) {
+      return;
+    }
 
-    getRoomsData();
-  }, [user]);
+    fetchUserRooms(user.id).catch(() => {
+      notificationManager.add(
+        { title: 'Не удалось загрузить комнаты', type: 'error' },
+        { timeout: 1500 }
+      );
+    });
+  }, [fetchUserRooms, hasLoadedUserRooms, loadedRoomsUserId, user?.id]);
+
+  const isRoomsPending = Boolean(
+    user && (isUserRoomsLoading || !hasLoadedUserRooms || loadedRoomsUserId !== user.id)
+  );
 
   const handleToRoom = (id: string) => {
     navigate(`${ROUTE_PATHS.room}/${id}`);
@@ -47,43 +67,126 @@ export const HomePage = () => {
 
   return (
     <div className={styles.wrapper}>
-      <OfflineBanner />
       <div className={styles.headerSection}>
-        <img src={Logo} alt="Logo" className={styles.logoWrapper} />
+        <img src={Logo} alt="Zentro" className={styles.logoWrapper} />
+
+        {user && (
+          <motion.h2
+            key={greetingText}
+            aria-label={greetingText}
+            className={styles.greeting}
+            variants={GREETING_CONTAINER_VARIANTS}
+            initial="hidden"
+            animate="visible"
+          >
+            {greetingChars.map((item) => (
+              <motion.span
+                key={item.id}
+                aria-hidden="true"
+                variants={GREETING_CHAR_VARIANTS}
+                className={styles.greetingChar}
+                style={{ '--char-index': item.index } as CSSProperties}
+              >
+                {item.char}
+              </motion.span>
+            ))}
+          </motion.h2>
+        )}
+
         <p className={styles.description}>
           Управляйте общими расходами, создавайте комнаты, приглашайте участников и отслеживайте
           совместный бюджет.
         </p>
       </div>
 
-      <div className={styles.stepsGrid}>
-        {steps.map((step) => (
-          <div className={styles.stepCard} key={step.title}>
-            <div className={styles.stepIcon}>{step.icon}</div>
-            <div className={styles.stepTitle}>{step.title}</div>
+      {isRoomsPending ? (
+        <div className={styles.loaderStage} aria-busy="true">
+          <div className={styles.blurredLoaderWrapper}>
+            <div className={styles.blurredQuickPanel}>
+              <div className={styles.blurredHeaderRow}>
+                <span className={styles.blurredTitlePill} />
+                <span className={styles.blurredBadgePill} />
+              </div>
+              <div className={styles.blurredActionsGrid}>
+                <div className={styles.blurredExpenseBtn} />
+                <div className={styles.blurredIncomeBtn} />
+              </div>
+            </div>
+
+            <div className={styles.blurredRoomsSection}>
+              <div className={styles.blurredHeaderRow}>
+                <span className={styles.blurredTitlePill} />
+                <span className={styles.blurredSmallPill} />
+              </div>
+              <div className={styles.roomsGrid}>
+                {[0, 1].map((item) => (
+                  <div key={item} className={styles.blurredRoomCard}>
+                    <div className={styles.blurredCardTop} />
+                    <div className={styles.blurredCardTitle} />
+                    <div className={styles.blurredCardSub} />
+                    <div className={styles.blurredCardFooter} />
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
-        ))}
-      </div>
 
-      {rooms?.length > 0 && (
-        <div>
-          <h3 className={styles.roomsCarouselTitle}>Ваши комнаты</h3>
+          <div className={styles.centerLogoOverlay}>
+            <LogoLoader size={68} />
+          </div>
+        </div>
+      ) : userRooms.length > 0 ? (
+        <div className={styles.dashboardContent}>
+          <QuickTransactionPanel rooms={userRooms} />
 
-          <div className={styles.roomsCarousel}>
-            {rooms.map((room) => (
-              <div
-                key={room.roomId}
-                className={styles.roomCard}
-                onClick={() => handleToRoom(room.roomId)}
+          <section>
+            <div className={styles.roomsHeader}>
+              <h3 className={styles.roomsSectionTitle}>Ваши комнаты</h3>
+              <LinkButton href={ROUTE_PATHS.rooms} className={styles.allRoomsLink}>
+                Все комнаты
+              </LinkButton>
+            </div>
+
+            <div className={styles.roomsGrid}>
+              {userRooms.map((room) => (
+                <HomeRoomCard key={room.roomId} room={room} onOpen={handleToRoom} />
+              ))}
+            </div>
+          </section>
+        </div>
+      ) : (
+        <>
+          <section className={styles.emptyCard}>
+            <p className={styles.emptyText}>
+              У вас пока нет комнат. Создайте свою первую комнату или присоединитесь к существующей
+              по ID.
+            </p>
+            <div className={styles.emptyActions}>
+              <BottomSheet
+                id="home-create-room"
+                classNameWrapperTrigger={styles.ctaSheetTrigger}
+                triggerComponent={<div className={styles.primaryCta}>Создать комнату</div>}
               >
-                <div className={styles.roomName}>{room.name}</div>
-                <div className={styles.roomMeta}>
-                  {Object.keys(room.members || {}).length} участника
+                <CreateRoomForm />
+              </BottomSheet>
+
+              <LinkButton href={ROUTE_PATHS.rooms} className={styles.secondaryCta}>
+                Войти по ID комнаты
+              </LinkButton>
+            </div>
+          </section>
+
+          <div className={styles.stepsGrid}>
+            {HOME_STEPS.map((step) => (
+              <div className={styles.stepCard} key={step.title}>
+                <div className={styles.stepIcon}>
+                  <Icon icon={step.icon} width={26} height={26} />
                 </div>
+                <div className={styles.stepTitle}>{step.title}</div>
               </div>
             ))}
           </div>
-        </div>
+        </>
       )}
     </div>
   );
