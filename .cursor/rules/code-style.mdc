@@ -1,0 +1,42 @@
+---
+description: Zentro-money project code style, naming, typing, and file organization rules
+alwaysApply: true
+---
+
+# Zentro-money Code Style Rules
+
+Full reference: [`docs/code-style.md`](docs/code-style.md). Always follow SOLID & KISS and explicit flow (`UI -> Hook / Store -> Service / Lib -> Firebase / IndexedDB`).
+
+## Components
+
+Before creating a component:
+
+1. Search ``@components`.
+2. Search the current feature.
+3. Check whether an existing component can be composed.
+4. Only create a new component if there is no suitable abstraction.
+
+Do not duplicate:
+
+- buttons
+- modals
+- inputs
+- tables
+- dropdowns
+- loading states
+- empty states
+
+## Imports, Exports & Naming
+
+- **Imports**: Always use `@/...` for cross-module imports and `./...` **only** for colocated files in the same folder. Never use `../` or secondary aliases (`@components/*`, `@store/*`). Sort in 4 blank-line-separated groups: external/react -> `@/...` -> `./...` -> `.css`.
+- **Exports**: Named exports only (`export const`, `export type`, `export enum`). Never use `export default` inside `src/`.
+- **Utilities (`src/lib/`)**: Place **all new utilities** in `src/lib/` (never in legacy `src/utils/`), name files in **`kebab-case.ts`**, and always create a colocated **`<name>.test.ts`** Vitest unit test with `it('должен ...')` cases in Russian.
+- **Services (`src/services/`)**: `camelCase.ts`, **1 file = 1 operation**. Never call `firebase/firestore` or `firebase/auth` SDK methods outside `src/services/`. Import collection names from `@/constants/db`.
+- **Folders & Files**: Components/pages in `kebab-case/index.tsx` + `styles.module.css`; stores in `src/store/*Store.ts`; hooks in `src/hooks/use*.ts`; constants in `src/constants/<kebab-case>.ts`.
+
+## TypeScript, React & CSS
+
+- **Types**: Always use `type` (never `interface`). Use unexported `type Props = { ... }` for local component props, `*Type` suffix for domain models in `src/types/` (`UserType`, `RoomType`, `CategoryType`), and `export enum` for fixed sets.
+- **Components**: Arrow functions (`export const MyComponent = ({ ... }: Props) => ...`), never `React.FC`. Props callbacks: `on*`; internal handlers: `handle*`; booleans: `is*`/`can*`/`has*`.
+- **UI & Feedback**: Reuse `@/components/shared/*`, `react-hook-form` (`useForm` + `Controller`), `<BottomSheet>`, `@iconify/react` (`<Icon />`), and `notificationManager.add(...)` (never `alert()`). All UI/validation/toast strings in **Russian**.
+- **CSS Modules**: `camelCase` class names (`.formWrapper`, `.transactionItem`), `cn` (`classnames`) for conditionals, and CSS tokens from `src/global.css` (`var(--color-*)`, `var(--border-radius-main)`).
