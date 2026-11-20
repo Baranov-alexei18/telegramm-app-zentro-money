@@ -5,14 +5,14 @@ import { RoomType } from '@/types/room';
 
 import { db } from './config';
 
-export const getUserRooms = async (userId: string) => {
+export const getUserRooms = async (userId: string): Promise<RoomType[]> => {
   try {
     const userDoc = await getDoc(doc(db, COLLECTION_USER, userId));
 
     if (!userDoc.exists()) return [];
 
     const userData = userDoc.data();
-    const roomIds = userData.rooms || [];
+    const roomIds: string[] = userData.rooms || [];
 
     if (!roomIds.length) return [];
 
@@ -20,14 +20,14 @@ export const getUserRooms = async (userId: string) => {
 
     const querySnapshot = await getDocs(roomsQuery);
 
-    const rooms = querySnapshot.docs.map((doc) => ({
-      roomId: doc.id,
-      ...doc.data(),
+    const rooms = querySnapshot.docs.map((roomDoc) => ({
+      roomId: roomDoc.id,
+      ...roomDoc.data(),
     })) as RoomType[];
 
     return rooms;
   } catch (error) {
     console.error('Ошибка при получении комнат:', error);
-    return [];
+    throw error;
   }
 };

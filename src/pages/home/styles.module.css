@@ -4,24 +4,96 @@
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: 24px;
 }
 
 .headerSection {
   text-align: center;
-  margin-top: 16px;
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .logoWrapper {
-  width: 250px;
+  width: 220px;
+}
+
+.greeting {
+  margin: 10px 0 2px;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.3;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.greetingChar {
+  display: inline-block;
+  background: linear-gradient(
+    90deg,
+    var(--color-text) 0%,
+    var(--color-indigo-secondary) 55%,
+    var(--color-primary) 100%
+  );
+  background-size: 300% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: greetingFlow 3.5s ease-in-out infinite alternate;
+  animation-delay: calc(var(--char-index, 0) * -80ms);
+  will-change: transform, opacity, filter;
+}
+
+@keyframes greetingFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
 }
 
 .description {
-  margin: 0;
-  margin-top: 8px;
+  margin: 6px 0 0;
   font-size: 15px;
-  color: var(--text-secondary);
+  color: var(--color-muted);
   line-height: 1.5;
+}
+
+.dashboardContent {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.roomsHeader {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.roomsSectionTitle {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.allRoomsLink {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-indigo);
+  padding: 0;
+}
+
+.roomsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  width: 100%;
 }
 
 .stepsGrid {
@@ -34,68 +106,225 @@
   background: var(--color-surface);
   border-radius: var(--border-radius-main);
   border: 1px solid var(--color-border);
-  padding: 20px 16px;
+  padding: 18px 14px;
   text-align: center;
-  transition:
-    background 0.2s ease,
-    transform 0.2s ease;
-  min-height: 110px;
-}
-
-.stepCard:hover {
-  background: var(--color-surface-hover);
-  transform: translateY(-2px);
+  min-height: 104px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 .stepIcon {
-  font-size: 26px;
-  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-indigo);
 }
 
 .stepTitle {
   font-size: 14px;
   font-weight: 600;
-  color: var(--text-main);
+  color: var(--color-text);
 }
 
-.roomsCarouselTitle {
-  font-size: 18px;
-  font-weight: 600;
-  margin-bottom: 12px;
-  color: var(--text-main);
-}
-
-.roomsCarousel {
+.emptyCard {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-main);
+  padding: 20px 16px;
   display: flex;
-  gap: 12px;
-  overflow-x: auto;
-  padding-bottom: 10px;
-  scroll-snap-type: x mandatory;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 16px;
 }
 
-.roomCard {
-  min-width: 160px;
+.emptyText {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--color-text);
+}
+
+.emptyActions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.ctaSheetTrigger {
+  width: 100%;
+}
+
+.primaryCta {
+  width: 100%;
+  background: var(--color-indigo);
+  color: var(--color-surface);
+  padding: 10px 16px;
+  border-radius: var(--border-radius-main);
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.primaryCta:hover {
+  opacity: 0.9;
+}
+
+.secondaryCta {
+  width: 100%;
+  padding: 10px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-main);
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-size: 14px;
+  font-weight: 500;
+  text-align: center;
+}
+
+.loaderStage {
+  position: relative;
+}
+
+.centerLogoOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.blurredLoaderWrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  filter: blur(9px);
+  opacity: 0.78;
+  pointer-events: none;
+  user-select: none;
+  animation: blurPulse 1.5s ease-in-out infinite;
+}
+
+.blurredQuickPanel {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--border-radius-main);
   padding: 16px;
-  scroll-snap-align: start;
-  flex-shrink: 0;
-  transition: background 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-.roomCard:hover {
-  background: var(--color-surface-hover);
+.blurredHeaderRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
-.roomName {
-  font-size: 15px;
-  font-weight: 500;
-  margin-bottom: 6px;
-  color: var(--text-main);
+.blurredTitlePill {
+  width: 124px;
+  height: 18px;
+  border-radius: var(--border-radius-main);
+  background: var(--color-muted);
 }
 
-.roomMeta {
-  font-size: 13px;
-  color: var(--text-secondary);
+.blurredBadgePill {
+  width: 96px;
+  height: 24px;
+  border-radius: var(--border-radius-main);
+  background: var(--color-indigo);
+}
+
+.blurredSmallPill {
+  width: 78px;
+  height: 14px;
+  border-radius: var(--border-radius-main);
+  background: var(--color-indigo);
+}
+
+.blurredActionsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.blurredExpenseBtn {
+  height: 44px;
+  border-radius: var(--border-radius-main);
+  background: rgba(239, 68, 68, 0.28);
+  border: 1px solid var(--color-danger);
+}
+
+.blurredIncomeBtn {
+  height: 44px;
+  border-radius: var(--border-radius-main);
+  background: rgba(34, 197, 94, 0.28);
+  border: 1px solid var(--color-success);
+}
+
+.blurredRoomsSection {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.blurredRoomCard {
+  background: var(--color-surface);
+  border: 1px solid var(--color-indigo);
+  border-radius: 14px;
+  padding: 14px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 132px;
+}
+
+.blurredCardTop {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: var(--color-indigo);
+}
+
+.blurredCardTitle {
+  width: 75%;
+  height: 15px;
+  border-radius: 4px;
+  background: var(--color-text);
+}
+
+.blurredCardSub {
+  width: 55%;
+  height: 11px;
+  border-radius: 4px;
+  background: var(--color-muted);
+}
+
+.blurredCardFooter {
+  margin-top: auto;
+  width: 100%;
+  height: 16px;
+  border-radius: 4px;
+  background: var(--color-border);
+}
+
+@keyframes blurPulse {
+  0%,
+  100% {
+    opacity: 0.58;
+    filter: blur(10px);
+  }
+  50% {
+    opacity: 0.88;
+    filter: blur(7px);
+  }
 }

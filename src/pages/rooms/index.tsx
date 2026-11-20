@@ -1,4 +1,4 @@
-import { Fragment, SetStateAction, useEffect, useState } from 'react';
+import { ChangeEvent, Fragment, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 
 import { BackButton } from '@/components/back-button';
@@ -10,36 +10,27 @@ import { Button } from '@/components/shared/button';
 import { Input } from '@/components/shared/input';
 import { notificationManager } from '@/components/shared/toast/utils';
 import { ROUTE_PATHS } from '@/constants/route-path';
-import { getUserRooms } from '@/services/firebase/getUserRooms';
 import { sendJoinRoomRequest } from '@/services/firebase/sendJoinRoomRequest';
+import { useRoomStore } from '@/store/roomStore';
 import { useUserStore } from '@/store/userStore';
-import { RoomType } from '@/types/room';
 
 import styles from './styles.module.css';
 
 export const RoomsPage = () => {
   const { user } = useUserStore();
+  const { userRooms, hasLoadedUserRooms, loadedRoomsUserId, fetchUserRooms } = useRoomStore();
   const [roomId, setRoomId] = useState('');
-  const [rooms, setRooms] = useState<RoomType[]>([]);
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    const getRoomsData = async () => {
-      if (!user) {
-        return;
-      }
-      try {
-        const data = await getUserRooms(user?.id);
+    if (!user?.id) return;
+    if (hasLoadedUserRooms && loadedRoomsUserId === user.id) return;
 
-        setRooms(data);
-      } catch (e) {
-        console.error(e);
-      }
-    };
-
-    getRoomsData();
-  }, [user]);
+    fetchUserRooms(user.id).catch((error) => {
+      console.error(error);
+    });
+  }, [fetchUserRooms, hasLoadedUserRooms, loadedRoomsUserId, user?.id]);
 
   const handleToRoom = (id: string) => {
     navigate(`${ROUTE_PATHS.room}/${id}`);
@@ -73,8 +64,8 @@ export const RoomsPage = () => {
     }
   };
 
-  const changeRoomId = (e: { target: { value: SetStateAction<string> } }) =>
-    setRoomId(e.target.value);
+  const handleRoomIdChange = (e: ChangeEvent<HTMLInputElement>) => setRoomId(e.target.value);
+
   return (
     <Fragment>
       <Header className={styles.headerWrapper}>
@@ -91,14 +82,14 @@ export const RoomsPage = () => {
       </Header>
       <div className={styles.wrapper}>
         <div className={styles.connectRoom}>
-          <Input onChange={changeRoomId} value={roomId} placeholder="Введите id комнаты" />
+          <Input onChange={handleRoomIdChange} value={roomId} placeholder="Введите id комнаты" />
           <Button onClick={handleConnectToRoom}>
             <ArrowRightIcon />
           </Button>
         </div>
 
         <div className={styles.roomsGrid}>
-          {rooms.map((room) => (
+          {userRooms.map((room) => (
             <div
               key={room.roomId}
               className={styles.roomCard}

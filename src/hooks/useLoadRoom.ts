@@ -1,35 +1,59 @@
 import { useEffect } from 'react';
 import { useParams } from 'react-router';
 
-import { getUserRooms } from '@/services/firebase/getUserRooms';
 import { useRoomStore } from '@/store/roomStore';
 import { useUserStore } from '@/store/userStore';
 
 export const useLoadRoom = () => {
   const { user } = useUserStore();
-  const { room, setRoom, fetchTransactions } = useRoomStore();
+  const {
+    room,
+    loadedTransactionsRoomId,
+    setRoom,
+    fetchUserRooms,
+    fetchTransactions,
+    hydrateTransactionsFromQueue,
+  } = useRoomStore();
 
   const params = useParams<{ id: string }>();
 
   useEffect(() => {
     const fetchRoomData = async () => {
-      if (!user || room?.roomId === params.id) return;
+      const targetRoomId = params.id;
+      if (!user?.id || !targetRoomId) return;
 
       try {
-        const rooms = await getUserRooms(user.id);
-        const currentRoom = rooms.find((r) => r.roomId === params.id);
+        let activeRoom = room?.roomId === targetRoomId ? room : null;
 
-        if (!currentRoom?.roomId) return;
+        if (!activeRoom) {
+          const rooms = await fetchUserRooms(user.id);
+          activeRoom = rooms.find((item) => item.roomId === targetRoomId) ?? null;
 
-        fetchTransactions(currentRoom.roomId);
-        setRoom(currentRoom);
+          if (!activeRoom?.roomId) return;
+
+          setRoom(activeRoom);
+        }
+
+        if (loadedTransactionsRoomId !== targetRoomId) {
+          await fetchTransactions(targetRoomId);
+          await hydrateTransactionsFromQueue();
+        }
       } catch (error) {
         console.error(error);
       }
     };
 
     fetchRoomData();
-  }, [user, room?.roomId, params.id, setRoom, fetchTransactions]);
+  }, [
+    fetchTransactions,
+    fetchUserRooms,
+    hydrateTransactionsFromQueue,
+    loadedTransactionsRoomId,
+    params.id,
+    room,
+    setRoom,
+    user?.id,
+  ]);
 
   return {
     room,

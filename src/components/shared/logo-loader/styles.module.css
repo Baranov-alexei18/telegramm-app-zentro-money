@@ -1,0 +1,33 @@
+.container {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-top: 64px;
+}
+
+.bounceStage {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transform-origin: center bottom;
+  will-change: transform;
+}
+
+.logoImage {
+  display: block;
+  object-fit: contain;
+  border-radius: 50%;
+  user-select: none;
+  pointer-events: none;
+  filter: drop-shadow(0 6px 14px rgba(59, 130, 246, 0.28));
+  will-change: transform;
+}
+
+.shadow {
+  height: 8px;
+  margin-top: 6px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(99, 102, 241, 0.55) 0%, transparent 72%);
+  will-change: transform, opacity;
+}
