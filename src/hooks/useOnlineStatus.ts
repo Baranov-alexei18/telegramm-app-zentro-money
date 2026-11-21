@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
-import { syncQueuedTransactions } from '@/lib/syncTransactions';
+import { syncQueuedTransactions } from '@/lib/sync-transactions';
+import { useRoomStore } from '@/store/roomStore';
 
 export const useOnlineStatus = () => {
   const [isOnline, setIsOnline] = useState<boolean>(navigator.onLine);
@@ -12,7 +13,11 @@ export const useOnlineStatus = () => {
 
     try {
       isSyncingRef.current = true;
-      await syncQueuedTransactions();
+      await syncQueuedTransactions({
+        onTransactionSynced: (transactionId) => {
+          useRoomStore.getState().markTransactionsSynced([transactionId]);
+        },
+      });
     } finally {
       isSyncingRef.current = false;
     }

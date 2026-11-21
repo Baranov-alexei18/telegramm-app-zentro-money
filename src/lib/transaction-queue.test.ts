@@ -12,7 +12,7 @@ vi.mock('./offline-db', () => ({
   }),
 }));
 
-import { normalizeQueuedTransaction } from './transaction-queue';
+import { normalizeQueuedTransaction, restoreTimestamp } from './transaction-queue';
 
 const createMockTransaction = (overrides: Partial<TransactionProps> = {}): TransactionProps => ({
   transactionId: 'tx-1',
@@ -32,11 +32,60 @@ const createMockTransaction = (overrides: Partial<TransactionProps> = {}): Trans
   ...overrides,
 });
 
+describe('restoreTimestamp', () => {
+  it('должен возвращать экземпляр Timestamp без изменений', () => {
+    const ts = Timestamp.fromMillis(1_700_000_000_000);
+
+    expect(restoreTimestamp(ts)).toBe(ts);
+  });
+
+  it('должен восстанавливать Timestamp из десериализованного объекта { seconds, nanoseconds }', () => {
+    const restored = restoreTimestamp({ seconds: 1_700_000_000, nanoseconds: 500_000_000 });
+
+    expect(restored).toBeInstanceOf(Timestamp);
+    expect(restored?.seconds).toBe(1_700_000_000);
+    expect(restored?.nanoseconds).toBe(500_000_000);
+    expect(typeof restored?.toDate).toBe('function');
+  });
+
+  it('должен конвертировать валидный Date и ISO-строку в Timestamp', () => {
+    const fromDate = restoreTimestamp(new Date('2026-05-10T12:00:00.000Z'));
+    const fromString = restoreTimestamp('2026-05-10T12:00:00.000Z');
+
+    expect(fromDate).toBeInstanceOf(Timestamp);
+    expect(fromString).toBeInstanceOf(Timestamp);
+    expect(fromDate?.toMillis()).toBe(fromString?.toMillis());
+  });
+
+  it('должен возвращать undefined для пустых и невалидных значений', () => {
+    expect(restoreTimestamp(null)).toBeUndefined();
+    expect(restoreTimestamp(undefined)).toBeUndefined();
+    expect(restoreTimestamp('not-a-date')).toBeUndefined();
+    expect(restoreTimestamp(new Date('invalid'))).toBeUndefined();
+  });
+});
+
 describe('normalizeQueuedTransaction', () => {
   it('должен возвращать транзакцию, если запись сохранена напрямую как TransactionProps', () => {
     const tx = createMockTransaction();
 
     expect(normalizeQueuedTransaction(tx)).toEqual(tx);
+  });
+
+  it('должен восстанавливать прототип Timestamp для поля date после чтения из IndexedDB и ставить статус PENDING', () => {
+    const serializedRecord = {
+      ...createMockTransaction({ syncStatus: undefined }),
+      date: { seconds: 1_700_000_000, nanoseconds: 0 },
+      createdAt: { seconds: 1_700_000_100, nanoseconds: 0 },
+    };
+
+    const normalized = normalizeQueuedTransaction(serializedRecord);
+
+    expect(normalized).not.toBeNull();
+    expect(normalized?.date).toBeInstanceOf(Timestamp);
+    expect(normalized?.createdAt).toBeInstanceOf(Timestamp);
+    expect(normalized?.date.toDate().getTime()).toBe(1_700_000_000_000);
+    expect(normalized?.syncStatus).toBe(SyncStatus.PENDING);
   });
 
   it('должен корректно извлекать транзакцию из обёртки { roomId, transaction }', () => {

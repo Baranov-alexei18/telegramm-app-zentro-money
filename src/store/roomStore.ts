@@ -27,6 +27,7 @@ import { CategoryType } from '@/types/category';
 import { RoomType } from '@/types/room';
 import { SyncStatus, TransactionProps } from '@/types/transaction';
 import { UserWithRoleRoom } from '@/types/user';
+import { convertToDate } from '@/utils/convertToDate';
 
 type FetchUserRoomsOptions = {
   force?: boolean;
@@ -67,6 +68,31 @@ type RoomStoreState = {
   removeUserFromRoom: (userId: string) => Promise<void>;
   removeNotification: (userId: string) => Promise<void>;
   hydrateTransactionsFromQueue: () => Promise<void>;
+  markTransactionsSynced: (transactionIds: string[]) => void;
+};
+
+const updateRoomTransactionsSyncStatus = (
+  targetRoom: RoomType | null,
+  syncedSet: Set<string>
+): RoomType | null => {
+  if (!targetRoom?.transactions?.length) {
+    return targetRoom;
+  }
+
+  const hasUpdates = targetRoom.transactions.some(
+    (tx) => syncedSet.has(tx.transactionId) && tx.syncStatus !== SyncStatus.SYNCED
+  );
+
+  if (!hasUpdates) {
+    return targetRoom;
+  }
+
+  return {
+    ...targetRoom,
+    transactions: targetRoom.transactions.map((tx) =>
+      syncedSet.has(tx.transactionId) ? { ...tx, syncStatus: SyncStatus.SYNCED } : tx
+    ),
+  };
 };
 
 let inFlightRoomsRequest: { userId: string; promise: Promise<RoomType[]> } | null = null;
@@ -195,8 +221,18 @@ export const useRoomStore = create<RoomStoreState>((set, get) => ({
       })) as unknown as TransactionProps[];
 
       set((state) => {
+        const fetchedIds = new Set(transactions.map((tx) => tx.transactionId));
+        const pendingLocal =
+          state.room?.roomId === roomId
+            ? (state.room.transactions || []).filter(
+                (tx) => tx.syncStatus === SyncStatus.PENDING && !fetchedIds.has(tx.transactionId)
+              )
+            : [];
+        const mergedTransactions = [...transactions, ...pendingLocal];
         const nextRoom =
-          state.room && state.room.roomId === roomId ? { ...state.room, transactions } : state.room;
+          state.room && state.room.roomId === roomId
+            ? { ...state.room, transactions: mergedTransactions }
+            : state.room;
         return {
           room: nextRoom,
           loadedTransactionsRoomId: roomId,
@@ -225,45 +261,83 @@ export const useRoomStore = create<RoomStoreState>((set, get) => ({
   addTransaction: async (roomId, transaction) => {
     const id = crypto.randomUUID();
 
-    const optimisticTx = {
+    const optimisticTx: TransactionProps = {
       ...transaction,
+      roomId: transaction.roomId || roomId,
       transactionId: id,
       syncStatus: SyncStatus.PENDING,
     };
 
-    set((state) => ({
-      room: state.room
-        ? {
-            ...state.room,
-            transactions: [...(state.room.transactions || []), optimisticTx],
-          }
-        : state.room,
-    }));
+    set((state) => {
+      const nextActiveRoom =
+        state.room && state.room.roomId === roomId
+          ? {
+              ...state.room,
+              transactions: [...(state.room.transactions || []), optimisticTx],
+            }
+          : state.room;
+
+      const nextUserRooms = state.userRooms.map((item) =>
+        item.roomId === roomId
+          ? {
+              ...item,
+              transactions: [...(item.transactions || []), optimisticTx],
+            }
+          : item
+      );
+
+      return {
+        room: nextActiveRoom,
+        userRooms: nextUserRooms,
+      };
+    });
 
     await queueTransaction({
       roomId,
       transaction: optimisticTx,
     });
 
-    try {
-      await createTransaction(roomId, id, transaction);
+    const isOnline = typeof navigator === 'undefined' ? true : navigator.onLine;
 
-      await removeQueuedTransaction(id);
-
-      set((state) => ({
-        room: state.room
-          ? {
-              ...state.room,
-              transactions:
-                state.room.transactions?.map((t) =>
-                  t.transactionId === id ? { ...t, syncStatus: SyncStatus.SYNCED } : t
-                ) || [],
-            }
-          : state.room,
-      }));
-    } catch (e) {
-      console.warn('offline, queued transaction');
+    if (!isOnline) {
+      return;
     }
+
+    void createTransaction(roomId, id, transaction)
+      .then(async () => {
+        const latestTx = get().room?.transactions?.find((t) => t.transactionId === id);
+        const wasEditedWhilePending =
+          latestTx &&
+          (latestTx.amount !== optimisticTx.amount ||
+            latestTx.description !== optimisticTx.description ||
+            latestTx.category.id !== optimisticTx.category.id ||
+            latestTx.date?.seconds !== optimisticTx.date?.seconds);
+
+        if (wasEditedWhilePending) {
+          await createTransaction(roomId, id, latestTx);
+        }
+
+        await removeQueuedTransaction(id);
+        get().markTransactionsSynced([id]);
+      })
+      .catch(() => {
+        console.warn('Не удалось сразу отправить транзакцию, она осталась в офлайн-очереди');
+      });
+  },
+
+  markTransactionsSynced: (transactionIds) => {
+    if (!transactionIds.length) {
+      return;
+    }
+
+    const syncedSet = new Set(transactionIds);
+
+    set((state) => ({
+      room: updateRoomTransactionsSyncStatus(state.room, syncedSet),
+      userRooms: state.userRooms.map(
+        (item) => updateRoomTransactionsSyncStatus(item, syncedSet) ?? item
+      ),
+    }));
   },
 
   hydrateTransactionsFromQueue: async () => {
@@ -286,9 +360,13 @@ export const useRoomStore = create<RoomStoreState>((set, get) => ({
         return;
       }
 
-      const existingIds = new Set(currentRoom.transactions?.map((t) => t.transactionId));
+      const syncedExistingIds = new Set(
+        currentRoom.transactions
+          ?.filter((t) => t.syncStatus !== SyncStatus.PENDING)
+          .map((t) => t.transactionId)
+      );
       const alreadySyncedIds = roomQueuedList
-        .filter((tx) => existingIds.has(tx.transactionId))
+        .filter((tx) => syncedExistingIds.has(tx.transactionId))
         .map((tx) => tx.transactionId);
 
       if (alreadySyncedIds.length) {
@@ -393,17 +471,21 @@ export const useRoomStore = create<RoomStoreState>((set, get) => ({
 
     if (!room || !period) return [];
 
+    const start = period.start.toDate('UTC');
+    const end = period.end.toDate('UTC');
+    end.setUTCHours(23, 59, 59, 999);
+
     return (
       room.transactions?.filter((t) => {
         if (t.type !== viewType) return false;
 
-        const date = t.date?.toDate() ? t.date.toDate() : t.createdAt;
+        const rawDate = t.date ?? t.createdAt;
 
-        if (!date) return false;
+        if (!rawDate) return false;
 
-        const start = period.start.toDate('UTC');
-        const end = period.end.toDate('UTC');
-        end.setUTCHours(23, 59, 59, 999);
+        const date = convertToDate(rawDate);
+
+        if (Number.isNaN(date.getTime())) return false;
 
         return date >= start && date <= end;
       }) || []
@@ -413,26 +495,104 @@ export const useRoomStore = create<RoomStoreState>((set, get) => ({
   updateTransaction: async (data: TransactionProps) => {
     const { room } = get();
 
-    const roomId = room?.roomId;
+    const roomId = data.roomId || room?.roomId;
 
     if (!roomId) throw new Error('roomId не найден');
+
+    const existingTx = room?.transactions?.find((t) => t.transactionId === data.transactionId);
+    const isPendingOfflineTx =
+      existingTx?.syncStatus === SyncStatus.PENDING || data.syncStatus === SyncStatus.PENDING;
+
+    if (isPendingOfflineTx) {
+      const updatedPendingTx: TransactionProps = {
+        ...existingTx,
+        ...data,
+        roomId,
+        syncStatus: SyncStatus.PENDING,
+      };
+
+      set((prev) => {
+        const nextRoom =
+          prev.room && prev.room.roomId === roomId
+            ? {
+                ...prev.room,
+                transactions:
+                  prev.room.transactions?.map((t) =>
+                    t.transactionId === updatedPendingTx.transactionId ? updatedPendingTx : t
+                  ) || [],
+              }
+            : prev.room;
+
+        const nextUserRooms = prev.userRooms.map((item) =>
+          item.roomId === roomId
+            ? {
+                ...item,
+                transactions:
+                  item.transactions?.map((t) =>
+                    t.transactionId === updatedPendingTx.transactionId ? updatedPendingTx : t
+                  ) || [],
+              }
+            : item
+        );
+
+        return {
+          room: nextRoom,
+          userRooms: nextUserRooms,
+        };
+      });
+
+      await queueTransaction({
+        roomId,
+        transaction: updatedPendingTx,
+      });
+
+      const isOnline = typeof navigator === 'undefined' ? true : navigator.onLine;
+
+      if (isOnline) {
+        void createTransaction(roomId, updatedPendingTx.transactionId, updatedPendingTx)
+          .then(async () => {
+            await removeQueuedTransaction(updatedPendingTx.transactionId);
+            get().markTransactionsSynced([updatedPendingTx.transactionId]);
+          })
+          .catch(() => {
+            console.warn(
+              'Не удалось сразу синхронизировать изменённую транзакцию, она обновлена в очереди'
+            );
+          });
+      }
+
+      return;
+    }
 
     try {
       await updateTransaction(roomId, data.transactionId, data);
 
-      set((prev) => ({
-        room: prev.room
+      const syncedTx: TransactionProps = {
+        ...existingTx,
+        ...data,
+        roomId,
+        syncStatus: SyncStatus.SYNCED,
+      };
+
+      set((prev) => {
+        const nextRoom = prev.room
           ? {
               ...prev.room,
               transactions:
                 prev.room.transactions?.map((t) =>
-                  t.transactionId === data.transactionId ? data : t
+                  t.transactionId === syncedTx.transactionId ? syncedTx : t
                 ) || [],
             }
-          : prev.room,
-      }));
+          : prev.room;
+
+        return {
+          room: nextRoom,
+          userRooms: syncRoomInList(prev.userRooms, nextRoom),
+        };
+      });
     } catch (err: any) {
-      console.error('Ошибка при обновлении категории:', err);
+      console.error('Ошибка при обновлении транзакции:', err);
+      throw err;
     }
   },
 

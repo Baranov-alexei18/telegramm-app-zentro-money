@@ -25,7 +25,11 @@
 }
 
 .transactionAmount {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .expense {
@@ -61,4 +65,18 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+}
+
+@keyframes softBounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+.animateBounceShort {
+  animation: softBounce 1s ease infinite;
 }

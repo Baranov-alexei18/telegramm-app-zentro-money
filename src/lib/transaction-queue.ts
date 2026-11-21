@@ -1,11 +1,68 @@
+import { Timestamp } from 'firebase/firestore';
+
 import { SUB_COLLECTION_TRANSACTIONS } from '@/constants/db';
-import { TransactionProps } from '@/types/transaction';
+import { SyncStatus, TransactionProps } from '@/types/transaction';
 
 import { dbPromise } from './offline-db';
 
 type LegacyQueuedTransactionRecord = {
   roomId?: string;
-  transaction?: TransactionProps;
+  transaction?: Partial<TransactionProps>;
+};
+
+type SerializedTimestampRecord = {
+  seconds?: unknown;
+  nanoseconds?: unknown;
+  _seconds?: unknown;
+  _nanoseconds?: unknown;
+};
+
+export const restoreTimestamp = (value: unknown): Timestamp | undefined => {
+  if (!value) {
+    return undefined;
+  }
+
+  if (value instanceof Timestamp) {
+    return value;
+  }
+
+  if (value instanceof Date) {
+    return Number.isNaN(value.getTime()) ? undefined : Timestamp.fromDate(value);
+  }
+
+  if (typeof value === 'object') {
+    const candidate = value as SerializedTimestampRecord;
+    const rawSeconds =
+      typeof candidate.seconds === 'number'
+        ? candidate.seconds
+        : typeof candidate._seconds === 'number'
+          ? candidate._seconds
+          : undefined;
+
+    if (rawSeconds !== undefined && Number.isFinite(rawSeconds)) {
+      const rawNanoseconds =
+        typeof candidate.nanoseconds === 'number'
+          ? candidate.nanoseconds
+          : typeof candidate._nanoseconds === 'number'
+            ? candidate._nanoseconds
+            : 0;
+
+      return new Timestamp(rawSeconds, Number.isFinite(rawNanoseconds) ? rawNanoseconds : 0);
+    }
+  }
+
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    return Timestamp.fromMillis(value);
+  }
+
+  if (typeof value === 'string' && value.trim()) {
+    const parsedDate = new Date(value);
+    if (!Number.isNaN(parsedDate.getTime())) {
+      return Timestamp.fromDate(parsedDate);
+    }
+  }
+
+  return undefined;
 };
 
 export const normalizeQueuedTransaction = (record: unknown): TransactionProps | null => {
@@ -13,27 +70,31 @@ export const normalizeQueuedTransaction = (record: unknown): TransactionProps | 
     return null;
   }
 
+  let rawTx: Partial<TransactionProps> | undefined;
+  let fallbackRoomId = '';
+
   if ('transaction' in record) {
     const legacy = record as LegacyQueuedTransactionRecord;
-    const nestedTx = legacy.transaction;
-
-    if (!nestedTx || typeof nestedTx !== 'object' || typeof nestedTx.transactionId !== 'string') {
-      return null;
-    }
-
-    return {
-      ...nestedTx,
-      roomId: nestedTx.roomId || legacy.roomId || '',
-    };
+    rawTx = legacy.transaction;
+    fallbackRoomId = legacy.roomId || '';
+  } else {
+    rawTx = record as Partial<TransactionProps>;
   }
 
-  const directTx = record as Partial<TransactionProps>;
-
-  if (typeof directTx.transactionId !== 'string') {
+  if (!rawTx || typeof rawTx !== 'object' || typeof rawTx.transactionId !== 'string') {
     return null;
   }
 
-  return directTx as TransactionProps;
+  const restoredDate = restoreTimestamp(rawTx.date);
+  const restoredCreatedAt = restoreTimestamp(rawTx.createdAt);
+
+  return {
+    ...(rawTx as TransactionProps),
+    roomId: rawTx.roomId || fallbackRoomId,
+    ...(restoredDate ? { date: restoredDate } : {}),
+    ...(restoredCreatedAt ? { createdAt: restoredCreatedAt } : {}),
+    syncStatus: SyncStatus.PENDING,
+  };
 };
 
 export const queueTransaction = async (tx: { roomId: string; transaction: TransactionProps }) => {

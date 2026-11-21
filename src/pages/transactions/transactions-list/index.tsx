@@ -1,15 +1,16 @@
 import { useMemo, useState } from 'react';
+import { Icon } from '@iconify/react';
 import cn from 'classnames';
 
 import { TransactionForm } from '@/components/forms/transaction-form';
 import { BottomSheet } from '@/components/shared/bottom-sheet';
 import { Button } from '@/components/shared/button';
+import { notificationManager } from '@/components/shared/toast/utils';
 import { TRANSACTION_TYPE } from '@/constants/transaction-type';
 import { useRoomAccess } from '@/hooks/useRoomAccess';
-import { useAppStore } from '@/store/appStore';
 import { useRoomStore } from '@/store/roomStore';
 import { useUserStore } from '@/store/userStore';
-import { TransactionFormValues, TransactionProps } from '@/types/transaction';
+import { SyncStatus, TransactionFormValues, TransactionProps } from '@/types/transaction';
 import { convertToDate } from '@/utils/convertToDate';
 import { getSortedTransactionsByDate } from '@/utils/get-sorted-transactions-by-date';
 
@@ -21,7 +22,6 @@ type Props = {
 };
 
 export const TransactionsList = ({ transactions, viewType }: Props) => {
-  const { closeTopBottomSheet } = useAppStore();
   const { canModifyTransaction, canDeleteTransaction } = useRoomAccess();
   const { user } = useUserStore();
   const { room, deleteTransaction, updateTransaction } = useRoomStore();
@@ -32,21 +32,27 @@ export const TransactionsList = ({ transactions, viewType }: Props) => {
     return getSortedTransactionsByDate(transactions);
   }, [transactions]);
 
-  const handleTransitionSubmit = async (data: TransactionFormValues, type: TRANSACTION_TYPE) => {
+  const handleTransitionSubmit = async (
+    targetTx: TransactionProps,
+    data: TransactionFormValues,
+    type: TRANSACTION_TYPE
+  ) => {
     if (!user || !room) return;
 
-    const transactionData = {
-      type: type,
+    const transactionData: TransactionProps = {
+      ...targetTx,
       ...data,
-    } as TransactionProps;
+      type,
+    };
 
     try {
       await updateTransaction(transactionData);
-    } catch (e) {
-      alert(e);
+    } catch {
+      notificationManager.add(
+        { title: 'Не удалось обновить транзакцию', type: 'error' },
+        { timeout: 1500 }
+      );
     }
-
-    closeTopBottomSheet();
   };
 
   const handleDeleteTransaction = async (id: string) => {
@@ -95,6 +101,15 @@ export const TransactionsList = ({ transactions, viewType }: Props) => {
               >
                 {t.type === TRANSACTION_TYPE.EXPENSE ? '-' : '+'}
                 {t.amount}
+                {t.syncStatus === SyncStatus.PENDING && (
+                  <Icon
+                    icon="tdesign:time"
+                    height={16}
+                    width={16}
+                    color="grey"
+                    className={styles.animateBounceShort}
+                  />
+                )}
               </span>
             </div>
 
@@ -107,7 +122,7 @@ export const TransactionsList = ({ transactions, viewType }: Props) => {
                   <TransactionForm
                     values={t}
                     type={viewType}
-                    onSubmit={(data) => handleTransitionSubmit(data, viewType)}
+                    onSubmit={(data) => handleTransitionSubmit(t, data, viewType)}
                     categories={filterCategories}
                   />
                 </BottomSheet>

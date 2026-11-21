@@ -12,9 +12,11 @@ export const createTransaction = async (
 ) => {
   try {
     const ref = doc(db, COLLECTION_ROOM, roomId, SUB_COLLECTION_TRANSACTIONS, transactionId);
+    const persistedTransaction = { ...transaction };
+    delete persistedTransaction.syncStatus;
 
     await setDoc(ref, {
-      ...transaction,
+      ...persistedTransaction,
       transactionId,
       createdAt: serverTimestamp(),
     });

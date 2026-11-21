@@ -7,7 +7,6 @@ import { BottomSheet } from '@/components/shared/bottom-sheet';
 import { notificationManager } from '@/components/shared/toast/utils';
 import { TRANSACTION_TYPE } from '@/constants/transaction-type';
 import { useRoomAccess } from '@/hooks/useRoomAccess';
-import { useAppStore } from '@/store/appStore';
 import { useRoomStore } from '@/store/roomStore';
 import { useUserStore } from '@/store/userStore';
 import { SyncStatus, TransactionFormValues, TransactionProps } from '@/types/transaction';
@@ -52,24 +51,25 @@ const TransactionCardItem = ({ transaction, onClick }: Props) => {
 
 export const TransactionCard = ({ transaction }: Props) => {
   const { user } = useUserStore();
-  const { closeTopBottomSheet } = useAppStore();
   const { room, updateTransaction } = useRoomStore();
   const { canModifyTransaction } = useRoomAccess();
 
   const handleTransitionSubmit = async (data: TransactionFormValues, type: TRANSACTION_TYPE) => {
     if (!user || !room) return;
 
-    const transactionData = {
-      type: type,
+    const transactionData: TransactionProps = {
+      ...transaction,
       ...data,
-    } as TransactionProps;
+      type,
+    };
 
     try {
       await updateTransaction(transactionData);
-    } catch (e) {
-      alert(e);
-    } finally {
-      closeTopBottomSheet();
+    } catch {
+      notificationManager.add(
+        { title: 'Не удалось обновить транзакцию', type: 'error' },
+        { timeout: 1500 }
+      );
     }
   };
 
