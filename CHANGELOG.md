@@ -1,3 +1,16 @@
+# [1.40.0](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/compare/v1.39.0...v1.40.0) (2026-11-21)
+
+
+### Bug Fixes
+
+* improve offline transaction queue, pending edits, and online sync ([22f941e](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/commit/22f941ec79b5616e2db7fa9dd365ce73f7f2f8ac))
+
+
+### Features
+
+* add blurred room loader, enforce explicit JSX booleans, and fix offline queue ([6140b9b](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/commit/6140b9bc828b4bfe154e27eb5c59804b73c77094))
+* implement transactional outbox v2 with coalescing, adapters, and docs ([c227190](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/commit/c227190a1bfe4f503df1bf13894d322d124e06cf))
+
 # [1.39.0](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/compare/v1.38.1...v1.39.0) (2026-11-20)
 
 
