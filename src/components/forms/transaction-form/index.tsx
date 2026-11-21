@@ -57,7 +57,9 @@ export const TransactionForm = ({ type, categories, onSubmit, values }: Transact
     } finally {
       setIsLoading(false);
       closeTopBottomSheet();
-      reset();
+      if (!values) {
+        reset();
+      }
     }
   };
 

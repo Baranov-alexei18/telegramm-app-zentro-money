@@ -1,0 +1,107 @@
+.fallbackWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.headerBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.titleBar {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.descriptionBar {
+  font-size: 15px;
+  color: var(--color-muted);
+}
+
+.membersPill {
+  width: 140px;
+  height: 34px;
+  border-radius: var(--border-radius-main);
+  background: var(--color-indigo);
+  opacity: 0.45;
+}
+
+.summaryCard {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.summaryHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.summaryTitle {
+  width: 96px;
+  height: 18px;
+  border-radius: 4px;
+  background: var(--color-text);
+  opacity: 0.35;
+}
+
+.summaryPlus {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--color-indigo);
+  opacity: 0.5;
+}
+
+.summaryRows {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.summaryRow {
+  width: 100%;
+  height: 14px;
+  border-radius: 4px;
+  background: var(--color-border);
+}
+
+.summaryBtn {
+  width: 100%;
+  height: 36px;
+  border-radius: var(--border-radius-main);
+  background: var(--color-indigo);
+  opacity: 0.65;
+}
+
+.transactionsBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sectionTitle {
+  width: 180px;
+  height: 18px;
+  margin: 0 auto;
+  border-radius: 4px;
+  background: var(--color-text);
+  opacity: 0.3;
+}
+
+.transactionRow {
+  width: 100%;
+  height: 40px;
+  border-radius: 8px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+}

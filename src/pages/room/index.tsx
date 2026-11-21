@@ -1,15 +1,16 @@
-import { Fragment, useEffect } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { Icon } from '@iconify/react';
+import cn from 'classnames';
 
+import { AppLoader } from '@/components/app-loader';
 import { BackButton } from '@/components/back-button';
 import { Header } from '@/components/header';
-import { StatisticsIcon } from '@/components/icons/statistics-icon';
 import { LinkButton } from '@/components/shared/link-button';
+import { notificationManager } from '@/components/shared/toast/utils';
 import { ROUTE_PATHS } from '@/constants/route-path';
 import { TRANSACTION_TYPE } from '@/constants/transaction-type';
 import { useRoomAccess } from '@/hooks/useRoomAccess';
-import { getUserRooms } from '@/services/firebase/getUserRooms';
 import { useRoomStore } from '@/store/roomStore';
 import { useUserStore } from '@/store/userStore';
 
@@ -17,6 +18,7 @@ import { CardInfo } from './card-info';
 import { ChatPanel } from './chat-panel';
 import { MembersPanel } from './members-panel';
 import { NotificationPanel } from './notification-panel';
+import { RoomBlurredFallback } from './room-blurred-fallback';
 import { TransactionCard } from './transaction-card';
 import { filterMembersByRoom, getLastTransactions } from './utils';
 
@@ -25,40 +27,91 @@ import styles from './styles.module.css';
 export const RoomPage = () => {
   const { user } = useUserStore();
   const { canViewNotifications } = useRoomAccess();
-  const { room, setRoom, fetchTransactions, fetchMembers, hydrateTransactionsFromQueue, members } =
+  const { room, userRooms, loadedTransactionsRoomId, loadedMembersRoomId, members } =
     useRoomStore();
 
   const { id } = useParams<{ id: string }>();
 
+  const isRoomHydrated = Boolean(
+    id && room?.roomId === id && loadedTransactionsRoomId === id && loadedMembersRoomId === id
+  );
+
+  const [settledRoomId, setSettledRoomId] = useState<string | null>(() =>
+    isRoomHydrated ? (id ?? null) : null
+  );
+
   useEffect(() => {
-    const fetchRoom = async () => {
-      if (!user) return;
+    let isCancelled = false;
+
+    const loadRoomData = async () => {
+      if (!user?.id || !id) {
+        setSettledRoomId(id ?? null);
+        return;
+      }
+
+      const storeState = useRoomStore.getState();
+      const alreadyHydrated =
+        storeState.room?.roomId === id &&
+        storeState.loadedTransactionsRoomId === id &&
+        storeState.loadedMembersRoomId === id;
+
+      if (alreadyHydrated) {
+        setSettledRoomId(id);
+        return;
+      }
 
       try {
-        const rooms = await getUserRooms(user.id);
+        let targetRoom =
+          (storeState.room?.roomId === id ? storeState.room : null) ??
+          storeState.userRooms.find((item) => item.roomId === id) ??
+          null;
 
-        const currentRoom = rooms.find((r) => r.roomId === id) || null;
+        if (!targetRoom) {
+          const fetchedRooms = await storeState.fetchUserRooms(user.id);
+          targetRoom = fetchedRooms.find((item) => item.roomId === id) ?? null;
+        }
 
-        if (!currentRoom?.roomId) return;
+        if (isCancelled) return;
 
-        setRoom(currentRoom);
+        if (!targetRoom?.roomId) {
+          return;
+        }
 
-        await Promise.all([fetchTransactions(currentRoom.roomId), fetchMembers(currentRoom)]);
+        storeState.setRoom(targetRoom);
 
-        await hydrateTransactionsFromQueue();
-      } catch (e) {
-        console.error('Ошибка при загрузке комнаты или участников:', e);
+        await Promise.all([
+          storeState.fetchTransactions(targetRoom.roomId),
+          storeState.fetchMembers(targetRoom),
+        ]);
+        await storeState.hydrateTransactionsFromQueue();
+      } catch {
+        if (!isCancelled) {
+          notificationManager.add(
+            { title: 'Ошибка при загрузке данных комнаты', type: 'error' },
+            { timeout: 1500 }
+          );
+        }
+      } finally {
+        if (!isCancelled) {
+          setSettledRoomId(id);
+        }
       }
     };
 
-    fetchRoom();
-  }, [id]);
+    loadRoomData();
 
-  const lastTransactions = getLastTransactions(room?.transactions);
+    return () => {
+      isCancelled = true;
+    };
+  }, [id, user?.id]);
 
-  if (!room) {
-    return <div className={styles.loader}>Загрузка...</div>;
-  }
+  const isInitialLoading = Boolean(user?.id && id && !isRoomHydrated && settledRoomId !== id);
+  const activeRoom = room?.roomId === id ? room : null;
+  const previewRoom = activeRoom ?? userRooms.find((item) => item.roomId === id) ?? null;
+  const lastTransactions = getLastTransactions(activeRoom?.transactions);
+  const statisticsHref = id
+    ? `${ROUTE_PATHS.room}/${id}${ROUTE_PATHS.statistics}`
+    : ROUTE_PATHS.rooms;
 
   return (
     <Fragment>
@@ -68,41 +121,57 @@ export const RoomPage = () => {
         <h2 className={styles.title}>Комната</h2>
 
         <div className={styles.headerIconWrapper}>
-          <LinkButton
-            href={`${location.pathname}${ROUTE_PATHS.statistics}`}
-            className={styles.statisticIcon}
-          >
+          <LinkButton href={statisticsHref} className={styles.statisticIcon}>
             <Icon icon="glyphs:chart-pie-slice-bold" height={28} width={28} />
           </LinkButton>
           <ChatPanel />
         </div>
       </Header>
-      <div className={styles.wrapper}>
-        <div className={styles.header}>
-          <h1 className={styles.subTitle}>{room.name}</h1>
-          <p className={styles.description}>{room.description}</p>
 
-          <MembersPanel members={filterMembersByRoom(members, room.members)} />
-        </div>
+      <div className={styles.bodyStage} aria-busy={isInitialLoading}>
+        <div
+          className={cn(styles.wrapper, {
+            [styles.wrapperBlurred]: isInitialLoading,
+          })}
+        >
+          {activeRoom ? (
+            <>
+              <div className={styles.header}>
+                <h1 className={styles.subTitle}>{activeRoom.name}</h1>
+                <p className={styles.description}>{activeRoom.description}</p>
 
-        {canViewNotifications() && <NotificationPanel notifications={room.notifications} />}
+                <MembersPanel members={filterMembersByRoom(members, activeRoom.members)} />
+              </div>
 
-        <CardInfo type={TRANSACTION_TYPE.INCOME} />
+              {canViewNotifications() && (
+                <NotificationPanel notifications={activeRoom.notifications} />
+              )}
 
-        <CardInfo type={TRANSACTION_TYPE.EXPENSE} />
+              <CardInfo type={TRANSACTION_TYPE.INCOME} />
 
-        <div>
-          <h3 className={styles.subTitle}>Последние транзакции</h3>
-          {lastTransactions.length ? (
-            <ul className={styles.transactionsList}>
-              {lastTransactions.map((t) => (
-                <TransactionCard key={t.transactionId} transaction={t} />
-              ))}
-            </ul>
+              <CardInfo type={TRANSACTION_TYPE.EXPENSE} />
+
+              <div>
+                <h3 className={styles.subTitle}>Последние транзакции</h3>
+                {lastTransactions.length ? (
+                  <ul className={styles.transactionsList}>
+                    {lastTransactions.map((t) => (
+                      <TransactionCard key={t.transactionId} transaction={t} />
+                    ))}
+                  </ul>
+                ) : (
+                  <p className={styles.empty}>Транзакций пока нет</p>
+                )}
+              </div>
+            </>
+          ) : isInitialLoading ? (
+            <RoomBlurredFallback previewRoom={previewRoom} />
           ) : (
-            <p className={styles.empty}>Транзакций пока нет</p>
+            <p className={styles.empty}>Комната не найдена</p>
           )}
         </div>
+
+        {isInitialLoading && <AppLoader overlay={true} />}
       </div>
     </Fragment>
   );

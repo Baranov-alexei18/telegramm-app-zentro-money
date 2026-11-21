@@ -30,7 +30,7 @@ export const ChartExplorer = ({ data, labels, hasData }: Props) => {
         />
 
         <VictoryAxis
-          dependentAxis
+          dependentAxis={true}
           style={{
             grid: {
               stroke: 'rgba(0,0,0,0.06)',

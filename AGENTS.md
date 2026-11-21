@@ -9,6 +9,7 @@
 - **SOLID & KISS**: Keep modules small, focused on a single responsibility, and free of premature abstractions.
 - Prefer composition, pure utility functions, and explicit data flow (`UI -> Store / Hook -> Service -> Firebase / IndexedDB`).
 - **Code Style Guide**: See [`docs/code-style.md`](docs/code-style.md) for the complete project code style (naming conventions, `type` vs `interface`, component patterns, `src/lib/` testing rules, and CSS Modules standards).
+- **Offline Transactions & Outbox Sync**: See [`docs/offline-transactions.md`](docs/offline-transactions.md) for the Outbox v2 architecture, command coalescing rules, Lie-Fi timeout handling, and adapter extension guide.
 - **Architecture & Entity Map**: See [`docs/knowledge-graph.md`](docs/knowledge-graph.md) for the complete visual knowledge graph (layered architecture, Firestore/IndexedDB ER diagram, route-to-component tree, store-to-service dependencies, and end-to-end runtime sequences).
 
 ---
@@ -137,8 +138,8 @@ Always reference collection names from `@/constants/db` (`COLLECTION_USER`, `COL
 ### Offline-First & Sync Strategy
 
 - Firestore is initialized with `persistentLocalCache` and `persistentMultipleTabManager`.
-- Creating a transaction in `useRoomStore.addTransaction` performs an **optimistic UI update** (`SyncStatus.PENDING`), persists the payload to IndexedDB (`zentro-offline-db` via `@/lib/transaction-queue`), attempts immediate Firestore write, and removes the item from IndexedDB on success.
-- `useOnlineStatus` listens to browser `online`/`offline` events (rendered in `<OfflineBanner />`) and triggers `syncQueuedTransactions()` (`@/lib/syncTransactions`) when connectivity returns.
+- Transaction mutations (`addTransaction`, `updateTransaction`, `deleteTransaction`) in `useRoomStore` perform **optimistic UI updates** (`SyncStatus.PENDING`) and delegate persistence to `transactionRepository` (`@/lib/transaction-repository`), which coalesces operations in `IndexedDB` (`zentro-offline-db` v2 -> `transaction_outbox`).
+- `OutboxFlusher` (`@/lib/outbox-flusher`) drains queued entries through `RemoteTransactionGatewayType` (`@/lib/firestore-transaction-gateway`) with a `6000ms` Lie-Fi timeout and `updatedAt` concurrency guard, triggered immediately on write and by `useOnlineStatus` (`online` + `visibilitychange`). See [`docs/offline-transactions.md`](docs/offline-transactions.md).
 
 ---
 
@@ -164,6 +165,7 @@ Always reference collection names from `@/constants/db` (`COLLECTION_USER`, `COL
 
 - **Component Layout**: Place each component in a `kebab-case` directory with `index.tsx` and colocated `styles.module.css` (plus optional `utils.ts` and `constants.ts`). Use named functional arrow component exports (`export const MyComponent = ({ ... }: Props) => ...`) — never `export default` or `React.FC`.
 - **Types & Props**: Always use `type` (never `interface`). Declare local component props as unexported `type Props = { ... };`, suffix shared domain models in `src/types/` with `*Type` (`UserType`, `RoomType`, `CategoryType`), and use `export enum` for fixed domain sets.
+- **Explicit JSX Boolean Props**: Always specify `{true}` or `{false}` explicitly for boolean props in JSX (`<AppLoader overlay={true} />` — never `<AppLoader overlay />`), enforced by ESLint (`react/jsx-boolean-value`).
 - **Shared UI Kit**: Always build UI using primitives from `@/components/shared/*` (`Button`, `Input`, `Select`, `DatePicker`, `Tabs`, `BottomSheet`, `LinkButton`) rather than raw HTML inputs/buttons or custom modal implementations.
 - **Forms**: Build all new forms with `react-hook-form` (`useForm` + `Controller`) integrated with `@/components/shared/*` controls.
 - **Bottom Sheets**: Use `<BottomSheet id="unique-id" triggerComponent={...}>` for drawers/modals and close programmatically via `useAppStore().closeTopBottomSheet()`.
