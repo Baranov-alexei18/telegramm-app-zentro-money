@@ -5,13 +5,17 @@ import { getQueuedTransactions, removeQueuedTransaction } from './transaction-qu
 export const syncQueuedTransactions = async () => {
   const queued = await getQueuedTransactions();
 
-  for (const item of queued) {
-    try {
-      await createTransaction(item.roomId, item.transaction.transactionId, item.transaction);
+  for (const tx of queued) {
+    if (!tx.roomId || !tx.transactionId) {
+      continue;
+    }
 
-      await removeQueuedTransaction(item.transaction.transactionId);
-    } catch (e) {
-      console.error('sync failed', e);
+    try {
+      await createTransaction(tx.roomId, tx.transactionId, tx);
+
+      await removeQueuedTransaction(tx.transactionId);
+    } catch (error) {
+      console.error('Ошибка синхронизации офлайн-транзакции:', error);
     }
   }
 };

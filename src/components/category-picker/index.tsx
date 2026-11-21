@@ -67,7 +67,7 @@ export const CategoryPicker: React.FC<Props> = ({
                 <Input
                   value={editValue}
                   onChange={(e) => setEditValue(e.target.value)}
-                  autoFocus
+                  autoFocus={true}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') handleEditSave(category.id);
                     if (e.key === 'Escape') setEditingId(null);

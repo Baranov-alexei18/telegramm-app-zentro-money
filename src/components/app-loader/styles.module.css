@@ -9,9 +9,21 @@
   color: var(--color-text);
 }
 
+.overlayWrapper {
+  position: fixed;
+  top: 56px;
+  right: 0;
+  bottom: 72px;
+  left: 0;
+  z-index: 15;
+  height: auto;
+  background: transparent;
+  pointer-events: none;
+}
+
 .caption {
   margin: 0;
   font-size: 14px;
-  font-weight: 500;
-  color: var(--color-muted);
+  font-weight: 600;
+  color: var(--color-text);
 }

@@ -158,5 +158,6 @@ describe('useRoomStore — кэширование комнат и сохране
     expect(state.hasLoadedUserRooms).toBe(false);
     expect(state.loadedRoomsUserId).toBeNull();
     expect(state.loadedTransactionsRoomId).toBeNull();
+    expect(state.loadedMembersRoomId).toBeNull();
   });
 });

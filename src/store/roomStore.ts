@@ -36,6 +36,7 @@ type FetchUserRoomsOptions = {
 type RoomStoreState = {
   room: RoomType | null;
   loadedTransactionsRoomId: string | null;
+  loadedMembersRoomId: string | null;
   userRooms: RoomType[];
   isUserRoomsLoading: boolean;
   hasLoadedUserRooms: boolean;
@@ -73,6 +74,7 @@ let inFlightRoomsRequest: { userId: string; promise: Promise<RoomType[]> } | nul
 export const useRoomStore = create<RoomStoreState>((set, get) => ({
   room: null,
   loadedTransactionsRoomId: null,
+  loadedMembersRoomId: null,
   userRooms: [],
   isUserRoomsLoading: false,
   hasLoadedUserRooms: false,
@@ -90,10 +92,20 @@ export const useRoomStore = create<RoomStoreState>((set, get) => ({
           mergedRoom && state.loadedTransactionsRoomId === mergedRoom.roomId
             ? state.loadedTransactionsRoomId
             : null,
+        loadedMembersRoomId:
+          mergedRoom && state.loadedMembersRoomId === mergedRoom.roomId
+            ? state.loadedMembersRoomId
+            : null,
         userRooms: syncRoomInList(state.userRooms, mergedRoom),
       };
     }),
-  clearRoom: () => set({ room: null, loadedTransactionsRoomId: null, error: null }),
+  clearRoom: () =>
+    set({
+      room: null,
+      loadedTransactionsRoomId: null,
+      loadedMembersRoomId: null,
+      error: null,
+    }),
 
   fetchUserRooms: async (userId, options) => {
     const { hasLoadedUserRooms, loadedRoomsUserId, userRooms } = get();
@@ -162,6 +174,7 @@ export const useRoomStore = create<RoomStoreState>((set, get) => ({
     set({
       room: null,
       loadedTransactionsRoomId: null,
+      loadedMembersRoomId: null,
       userRooms: [],
       isUserRoomsLoading: false,
       hasLoadedUserRooms: false,
@@ -202,6 +215,7 @@ export const useRoomStore = create<RoomStoreState>((set, get) => ({
       set((state) => ({
         ...state,
         members: users,
+        loadedMembersRoomId: room.roomId,
       }));
     } catch (e) {
       console.error('Ошибка при загрузке участников:', e);
@@ -253,28 +267,59 @@ export const useRoomStore = create<RoomStoreState>((set, get) => ({
   },
 
   hydrateTransactionsFromQueue: async () => {
-    const queuedList = await getQueuedTransactions();
+    try {
+      const queuedList = await getQueuedTransactions();
 
-    if (!queuedList.length) {
-      return;
-    }
+      if (!queuedList.length) {
+        return;
+      }
 
-    set((state) => {
-      if (!state.room) return state;
+      const currentRoom = get().room;
 
-      const existingIds = new Set(state.room.transactions?.map((t) => t.transactionId));
+      if (!currentRoom) {
+        return;
+      }
 
-      const pendingTxs = queuedList
-        .map((item) => item.transaction)
-        .filter((tx) => !existingIds.has(tx.transactionId));
+      const roomQueuedList = queuedList.filter((tx) => tx.roomId === currentRoom.roomId);
 
-      return {
-        room: {
+      if (!roomQueuedList.length) {
+        return;
+      }
+
+      const existingIds = new Set(currentRoom.transactions?.map((t) => t.transactionId));
+      const alreadySyncedIds = roomQueuedList
+        .filter((tx) => existingIds.has(tx.transactionId))
+        .map((tx) => tx.transactionId);
+
+      if (alreadySyncedIds.length) {
+        await Promise.allSettled(alreadySyncedIds.map((txId) => removeQueuedTransaction(txId)));
+      }
+
+      set((state) => {
+        if (!state.room) return state;
+
+        const stateExistingIds = new Set(state.room.transactions?.map((t) => t.transactionId));
+        const pendingTxs = queuedList.filter(
+          (tx) => tx.roomId === state.room?.roomId && !stateExistingIds.has(tx.transactionId)
+        );
+
+        if (!pendingTxs.length) {
+          return state;
+        }
+
+        const nextRoom = {
           ...state.room,
           transactions: [...(state.room.transactions || []), ...pendingTxs],
-        },
-      };
-    });
+        };
+
+        return {
+          room: nextRoom,
+          userRooms: syncRoomInList(state.userRooms, nextRoom),
+        };
+      });
+    } catch (error) {
+      console.error('Ошибка при чтении офлайн-очереди транзакций:', error);
+    }
   },
 
   addCategory: async (category: { name: string; type: TRANSACTION_TYPE }) => {

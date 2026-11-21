@@ -38,5 +38,6 @@ Do not duplicate:
 
 - **Types**: Always use `type` (never `interface`). Use unexported `type Props = { ... }` for local component props, `*Type` suffix for domain models in `src/types/` (`UserType`, `RoomType`, `CategoryType`), and `export enum` for fixed sets.
 - **Components**: Arrow functions (`export const MyComponent = ({ ... }: Props) => ...`), never `React.FC`. Props callbacks: `on*`; internal handlers: `handle*`; booleans: `is*`/`can*`/`has*`.
+- **JSX Boolean Props**: Always pass explicit `{true}` or `{false}` values for boolean props (`<AppLoader overlay={true} />`), **never** shorthand boolean attributes (`<AppLoader overlay />`). Enforced by ESLint (`react/jsx-boolean-value: ['error', 'always']`).
 - **UI & Feedback**: Reuse `@/components/shared/*`, `react-hook-form` (`useForm` + `Controller`), `<BottomSheet>`, `@iconify/react` (`<Icon />`), and `notificationManager.add(...)` (never `alert()`). All UI/validation/toast strings in **Russian**.
 - **CSS Modules**: `camelCase` class names (`.formWrapper`, `.transactionItem`), `cn` (`classnames`) for conditionals, and CSS tokens from `src/global.css` (`var(--color-*)`, `var(--border-radius-main)`).

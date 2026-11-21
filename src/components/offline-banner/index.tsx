@@ -73,7 +73,7 @@ export const OfflineBanner = () => {
             animate="animate"
             exit="exit"
             transition={{ duration: 0.22, ease: 'easeOut' }}
-            drag
+            drag={true}
             dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
             dragElastic={{ left: 0.75, right: 0.75, top: 0.75, bottom: 0.08 }}
             onDragEnd={handleDragEnd}

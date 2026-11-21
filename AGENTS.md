@@ -164,6 +164,7 @@ Always reference collection names from `@/constants/db` (`COLLECTION_USER`, `COL
 
 - **Component Layout**: Place each component in a `kebab-case` directory with `index.tsx` and colocated `styles.module.css` (plus optional `utils.ts` and `constants.ts`). Use named functional arrow component exports (`export const MyComponent = ({ ... }: Props) => ...`) — never `export default` or `React.FC`.
 - **Types & Props**: Always use `type` (never `interface`). Declare local component props as unexported `type Props = { ... };`, suffix shared domain models in `src/types/` with `*Type` (`UserType`, `RoomType`, `CategoryType`), and use `export enum` for fixed domain sets.
+- **Explicit JSX Boolean Props**: Always specify `{true}` or `{false}` explicitly for boolean props in JSX (`<AppLoader overlay={true} />` — never `<AppLoader overlay />`), enforced by ESLint (`react/jsx-boolean-value`).
 - **Shared UI Kit**: Always build UI using primitives from `@/components/shared/*` (`Button`, `Input`, `Select`, `DatePicker`, `Tabs`, `BottomSheet`, `LinkButton`) rather than raw HTML inputs/buttons or custom modal implementations.
 - **Forms**: Build all new forms with `react-hook-form` (`useForm` + `Controller`) integrated with `@/components/shared/*` controls.
 - **Bottom Sheets**: Use `<BottomSheet id="unique-id" triggerComponent={...}>` for drawers/modals and close programmatically via `useAppStore().closeTopBottomSheet()`.

@@ -1,5 +1,6 @@
 import js from '@eslint/js';
 import globals from 'globals';
+import reactPlugin from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
 import tsPlugin from '@typescript-eslint/eslint-plugin';
@@ -25,6 +26,7 @@ export default [
     },
     plugins: {
       '@typescript-eslint': tsPlugin,
+      react: reactPlugin,
       'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
       prettier,
@@ -33,6 +35,7 @@ export default [
     rules: {
       ...tsPlugin.configs.recommended.rules,
       ...reactHooks.configs.recommended.rules,
+      'react/jsx-boolean-value': ['error', 'always'],
       'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
       'prettier/prettier': 'error',
       'simple-import-sort/imports': [

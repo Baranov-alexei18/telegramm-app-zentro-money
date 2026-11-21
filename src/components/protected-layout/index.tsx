@@ -11,7 +11,7 @@ type Props = {
 export const ProtectedLayout: FC<Props> = ({ children }) => {
   const { user } = useUserStore();
 
-  if (!user) return <Navigate to={ROUTE_PATHS.auth} replace />;
+  if (!user) return <Navigate to={ROUTE_PATHS.auth} replace={true} />;
 
   return children;
 };

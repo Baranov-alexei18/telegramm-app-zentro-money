@@ -180,6 +180,17 @@ export const CategoryCard = ({ title, isDisabled = false, onSelect }: Props) => 
 - **Callback props**: `on*` (`onClick`, `onSubmit`, `onSelectCategory`, `onDeleteCategory`).
 - **Internal handlers**: `handle*` (`handleClick`, `handleFormSubmit`, `handleUpdateCategory`).
 - **Booleans**: `is*`, `can*`, `has*` (`isLoading`, `isOpen`, `canModifyTransaction`).
+- **Explicit JSX Boolean Values**: Always pass explicit `{true}` or `{false}` values when passing boolean props in JSX (enforced via ESLint `'react/jsx-boolean-value': ['error', 'always']`). Never use shorthand boolean attributes:
+
+```tsx
+// GOOD
+<AppLoader overlay={true} />
+<Button loading={false} isDisabled={true} />
+
+// BAD
+<AppLoader overlay />
+<Button isDisabled />
+```
 
 ### UI Kit, Forms, Modals & Icons
 
