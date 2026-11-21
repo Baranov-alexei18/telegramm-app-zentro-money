@@ -9,6 +9,7 @@
 - **SOLID & KISS**: Keep modules small, focused on a single responsibility, and free of premature abstractions.
 - Prefer composition, pure utility functions, and explicit data flow (`UI -> Store / Hook -> Service -> Firebase / IndexedDB`).
 - **Code Style Guide**: See [`docs/code-style.md`](docs/code-style.md) for the complete project code style (naming conventions, `type` vs `interface`, component patterns, `src/lib/` testing rules, and CSS Modules standards).
+- **Offline Transactions & Outbox Sync**: See [`docs/offline-transactions.md`](docs/offline-transactions.md) for the Outbox v2 architecture, command coalescing rules, Lie-Fi timeout handling, and adapter extension guide.
 - **Architecture & Entity Map**: See [`docs/knowledge-graph.md`](docs/knowledge-graph.md) for the complete visual knowledge graph (layered architecture, Firestore/IndexedDB ER diagram, route-to-component tree, store-to-service dependencies, and end-to-end runtime sequences).
 
 ---
@@ -137,8 +138,8 @@ Always reference collection names from `@/constants/db` (`COLLECTION_USER`, `COL
 ### Offline-First & Sync Strategy
 
 - Firestore is initialized with `persistentLocalCache` and `persistentMultipleTabManager`.
-- Creating a transaction in `useRoomStore.addTransaction` performs an **optimistic UI update** (`SyncStatus.PENDING`), persists the payload to IndexedDB (`zentro-offline-db` via `@/lib/transaction-queue`), attempts immediate Firestore write, and removes the item from IndexedDB on success.
-- `useOnlineStatus` listens to browser `online`/`offline` events (rendered in `<OfflineBanner />`) and triggers `syncQueuedTransactions()` (`@/lib/syncTransactions`) when connectivity returns.
+- Transaction mutations (`addTransaction`, `updateTransaction`, `deleteTransaction`) in `useRoomStore` perform **optimistic UI updates** (`SyncStatus.PENDING`) and delegate persistence to `transactionRepository` (`@/lib/transaction-repository`), which coalesces operations in `IndexedDB` (`zentro-offline-db` v2 -> `transaction_outbox`).
+- `OutboxFlusher` (`@/lib/outbox-flusher`) drains queued entries through `RemoteTransactionGatewayType` (`@/lib/firestore-transaction-gateway`) with a `6000ms` Lie-Fi timeout and `updatedAt` concurrency guard, triggered immediately on write and by `useOnlineStatus` (`online` + `visibilitychange`). See [`docs/offline-transactions.md`](docs/offline-transactions.md).
 
 ---
 

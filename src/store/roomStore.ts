@@ -6,24 +6,18 @@ import { notificationManager } from '@/components/shared/toast/utils';
 import { COLLECTION_ROOM, SUB_COLLECTION_TRANSACTIONS } from '@/constants/db';
 import { TRANSACTION_TYPE } from '@/constants/transaction-type';
 import { mergeRoomPreservingTransactions, syncRoomInList } from '@/lib/merge-room-data';
-import {
-  getQueuedTransactions,
-  queueTransaction,
-  removeQueuedTransaction,
-} from '@/lib/transaction-queue';
+import { transactionRepository } from '@/lib/transaction-repository';
 import { db } from '@/services/firebase/config';
 import { createCategory } from '@/services/firebase/createCategory';
-import { createTransaction } from '@/services/firebase/createTransaction';
 import { deleteCategoryById } from '@/services/firebase/deleteCategoryById';
-import { deleteTransactionById } from '@/services/firebase/deleteTransactionById';
 import { deleteUserFromRoom } from '@/services/firebase/deleteUserFromRoom';
 import { getRoomUsers } from '@/services/firebase/getRoomUsers';
 import { getUserRooms } from '@/services/firebase/getUserRooms';
 import { joinUserToRoom } from '@/services/firebase/joinUserToRoom';
 import { removeNotificationRoom } from '@/services/firebase/removeNotificationRoom';
 import { updateCategory } from '@/services/firebase/updateCategory';
-import { updateTransaction } from '@/services/firebase/updateTransaction';
 import { CategoryType } from '@/types/category';
+import { OutboxOperation } from '@/types/outbox';
 import { RoomType } from '@/types/room';
 import { SyncStatus, TransactionProps } from '@/types/transaction';
 import { UserWithRoleRoom } from '@/types/user';
@@ -220,18 +214,15 @@ export const useRoomStore = create<RoomStoreState>((set, get) => ({
         ...doc.data(),
       })) as unknown as TransactionProps[];
 
+      const projectedTransactions = await transactionRepository.hydrateRoomTransactions(
+        roomId,
+        transactions
+      );
+
       set((state) => {
-        const fetchedIds = new Set(transactions.map((tx) => tx.transactionId));
-        const pendingLocal =
-          state.room?.roomId === roomId
-            ? (state.room.transactions || []).filter(
-                (tx) => tx.syncStatus === SyncStatus.PENDING && !fetchedIds.has(tx.transactionId)
-              )
-            : [];
-        const mergedTransactions = [...transactions, ...pendingLocal];
         const nextRoom =
           state.room && state.room.roomId === roomId
-            ? { ...state.room, transactions: mergedTransactions }
+            ? { ...state.room, transactions: projectedTransactions }
             : state.room;
         return {
           room: nextRoom,
@@ -292,37 +283,7 @@ export const useRoomStore = create<RoomStoreState>((set, get) => ({
       };
     });
 
-    await queueTransaction({
-      roomId,
-      transaction: optimisticTx,
-    });
-
-    const isOnline = typeof navigator === 'undefined' ? true : navigator.onLine;
-
-    if (!isOnline) {
-      return;
-    }
-
-    void createTransaction(roomId, id, transaction)
-      .then(async () => {
-        const latestTx = get().room?.transactions?.find((t) => t.transactionId === id);
-        const wasEditedWhilePending =
-          latestTx &&
-          (latestTx.amount !== optimisticTx.amount ||
-            latestTx.description !== optimisticTx.description ||
-            latestTx.category.id !== optimisticTx.category.id ||
-            latestTx.date?.seconds !== optimisticTx.date?.seconds);
-
-        if (wasEditedWhilePending) {
-          await createTransaction(roomId, id, latestTx);
-        }
-
-        await removeQueuedTransaction(id);
-        get().markTransactionsSynced([id]);
-      })
-      .catch(() => {
-        console.warn('Не удалось сразу отправить транзакцию, она осталась в офлайн-очереди');
-      });
+    await transactionRepository.enqueueCreate(roomId, optimisticTx);
   },
 
   markTransactionsSynced: (transactionIds) => {
@@ -342,52 +303,25 @@ export const useRoomStore = create<RoomStoreState>((set, get) => ({
 
   hydrateTransactionsFromQueue: async () => {
     try {
-      const queuedList = await getQueuedTransactions();
-
-      if (!queuedList.length) {
-        return;
-      }
-
       const currentRoom = get().room;
 
       if (!currentRoom) {
         return;
       }
 
-      const roomQueuedList = queuedList.filter((tx) => tx.roomId === currentRoom.roomId);
-
-      if (!roomQueuedList.length) {
-        return;
-      }
-
-      const syncedExistingIds = new Set(
-        currentRoom.transactions
-          ?.filter((t) => t.syncStatus !== SyncStatus.PENDING)
-          .map((t) => t.transactionId)
+      const projectedTransactions = await transactionRepository.hydrateRoomTransactions(
+        currentRoom.roomId,
+        currentRoom.transactions || []
       );
-      const alreadySyncedIds = roomQueuedList
-        .filter((tx) => syncedExistingIds.has(tx.transactionId))
-        .map((tx) => tx.transactionId);
-
-      if (alreadySyncedIds.length) {
-        await Promise.allSettled(alreadySyncedIds.map((txId) => removeQueuedTransaction(txId)));
-      }
 
       set((state) => {
-        if (!state.room) return state;
-
-        const stateExistingIds = new Set(state.room.transactions?.map((t) => t.transactionId));
-        const pendingTxs = queuedList.filter(
-          (tx) => tx.roomId === state.room?.roomId && !stateExistingIds.has(tx.transactionId)
-        );
-
-        if (!pendingTxs.length) {
+        if (!state.room || state.room.roomId !== currentRoom.roomId) {
           return state;
         }
 
         const nextRoom = {
           ...state.room,
-          transactions: [...(state.room.transactions || []), ...pendingTxs],
+          transactions: projectedTransactions,
         };
 
         return {
@@ -500,100 +434,44 @@ export const useRoomStore = create<RoomStoreState>((set, get) => ({
     if (!roomId) throw new Error('roomId не найден');
 
     const existingTx = room?.transactions?.find((t) => t.transactionId === data.transactionId);
-    const isPendingOfflineTx =
-      existingTx?.syncStatus === SyncStatus.PENDING || data.syncStatus === SyncStatus.PENDING;
+    const optimisticTx: TransactionProps = {
+      ...existingTx,
+      ...data,
+      roomId,
+      syncStatus: SyncStatus.PENDING,
+    };
 
-    if (isPendingOfflineTx) {
-      const updatedPendingTx: TransactionProps = {
-        ...existingTx,
-        ...data,
-        roomId,
-        syncStatus: SyncStatus.PENDING,
-      };
-
-      set((prev) => {
-        const nextRoom =
-          prev.room && prev.room.roomId === roomId
-            ? {
-                ...prev.room,
-                transactions:
-                  prev.room.transactions?.map((t) =>
-                    t.transactionId === updatedPendingTx.transactionId ? updatedPendingTx : t
-                  ) || [],
-              }
-            : prev.room;
-
-        const nextUserRooms = prev.userRooms.map((item) =>
-          item.roomId === roomId
-            ? {
-                ...item,
-                transactions:
-                  item.transactions?.map((t) =>
-                    t.transactionId === updatedPendingTx.transactionId ? updatedPendingTx : t
-                  ) || [],
-              }
-            : item
-        );
-
-        return {
-          room: nextRoom,
-          userRooms: nextUserRooms,
-        };
-      });
-
-      await queueTransaction({
-        roomId,
-        transaction: updatedPendingTx,
-      });
-
-      const isOnline = typeof navigator === 'undefined' ? true : navigator.onLine;
-
-      if (isOnline) {
-        void createTransaction(roomId, updatedPendingTx.transactionId, updatedPendingTx)
-          .then(async () => {
-            await removeQueuedTransaction(updatedPendingTx.transactionId);
-            get().markTransactionsSynced([updatedPendingTx.transactionId]);
-          })
-          .catch(() => {
-            console.warn(
-              'Не удалось сразу синхронизировать изменённую транзакцию, она обновлена в очереди'
-            );
-          });
-      }
-
-      return;
-    }
-
-    try {
-      await updateTransaction(roomId, data.transactionId, data);
-
-      const syncedTx: TransactionProps = {
-        ...existingTx,
-        ...data,
-        roomId,
-        syncStatus: SyncStatus.SYNCED,
-      };
-
-      set((prev) => {
-        const nextRoom = prev.room
+    set((prev) => {
+      const nextRoom =
+        prev.room && prev.room.roomId === roomId
           ? {
               ...prev.room,
               transactions:
                 prev.room.transactions?.map((t) =>
-                  t.transactionId === syncedTx.transactionId ? syncedTx : t
+                  t.transactionId === optimisticTx.transactionId ? optimisticTx : t
                 ) || [],
             }
           : prev.room;
 
-        return {
-          room: nextRoom,
-          userRooms: syncRoomInList(prev.userRooms, nextRoom),
-        };
-      });
-    } catch (err: any) {
-      console.error('Ошибка при обновлении транзакции:', err);
-      throw err;
-    }
+      const nextUserRooms = prev.userRooms.map((item) =>
+        item.roomId === roomId
+          ? {
+              ...item,
+              transactions:
+                item.transactions?.map((t) =>
+                  t.transactionId === optimisticTx.transactionId ? optimisticTx : t
+                ) || [],
+            }
+          : item
+      );
+
+      return {
+        room: nextRoom,
+        userRooms: nextUserRooms,
+      };
+    });
+
+    await transactionRepository.enqueueUpdate(roomId, optimisticTx);
   },
 
   deleteTransaction: async (transactionId: string) => {
@@ -603,22 +481,33 @@ export const useRoomStore = create<RoomStoreState>((set, get) => ({
 
     if (!roomId) throw new Error('roomId не найден');
 
-    try {
-      await deleteTransactionById(roomId, transactionId);
-
-      set((prev) => ({
-        room: prev.room
+    set((prev) => {
+      const nextRoom =
+        prev.room && prev.room.roomId === roomId
           ? {
               ...prev.room,
               transactions: prev.room.transactions?.filter(
                 (t) => t.transactionId !== transactionId
               ),
             }
-          : prev.room,
-      }));
-    } catch (err: any) {
-      console.error('Ошибка при удалении транзакции:', err);
-    }
+          : prev.room;
+
+      const nextUserRooms = prev.userRooms.map((item) =>
+        item.roomId === roomId
+          ? {
+              ...item,
+              transactions: item.transactions?.filter((t) => t.transactionId !== transactionId),
+            }
+          : item
+      );
+
+      return {
+        room: nextRoom,
+        userRooms: nextUserRooms,
+      };
+    });
+
+    await transactionRepository.enqueueDelete(roomId, transactionId);
   },
 
   addUserToRoom: async (userId) => {
@@ -715,3 +604,9 @@ export const useRoomStore = create<RoomStoreState>((set, get) => ({
     }
   },
 }));
+
+transactionRepository.subscribeSynced((entry) => {
+  if (entry.op !== OutboxOperation.DELETE) {
+    useRoomStore.getState().markTransactionsSynced([entry.transactionId]);
+  }
+});

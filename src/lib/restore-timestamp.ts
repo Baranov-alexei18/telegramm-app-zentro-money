@@ -1,9 +1,6 @@
 import { Timestamp } from 'firebase/firestore';
 
-import { SUB_COLLECTION_TRANSACTIONS } from '@/constants/db';
 import { SyncStatus, TransactionProps } from '@/types/transaction';
-
-import { dbPromise } from './offline-db';
 
 type LegacyQueuedTransactionRecord = {
   roomId?: string;
@@ -22,7 +19,7 @@ export const restoreTimestamp = (value: unknown): Timestamp | undefined => {
     return undefined;
   }
 
-  if (value instanceof Timestamp) {
+  if (typeof Timestamp === 'function' && value instanceof Timestamp) {
     return value;
   }
 
@@ -47,7 +44,13 @@ export const restoreTimestamp = (value: unknown): Timestamp | undefined => {
             ? candidate._nanoseconds
             : 0;
 
-      return new Timestamp(rawSeconds, Number.isFinite(rawNanoseconds) ? rawNanoseconds : 0);
+      const safeNanoseconds = Number.isFinite(rawNanoseconds) ? rawNanoseconds : 0;
+
+      if (typeof Timestamp === 'function') {
+        return new Timestamp(rawSeconds, safeNanoseconds);
+      }
+
+      return { seconds: rawSeconds, nanoseconds: safeNanoseconds } as unknown as Timestamp;
     }
   }
 
@@ -65,7 +68,18 @@ export const restoreTimestamp = (value: unknown): Timestamp | undefined => {
   return undefined;
 };
 
-export const normalizeQueuedTransaction = (record: unknown): TransactionProps | null => {
+export const normalizeTransactionTimestamps = (tx: TransactionProps): TransactionProps => {
+  const restoredDate = restoreTimestamp(tx.date);
+  const restoredCreatedAt = restoreTimestamp(tx.createdAt);
+
+  return {
+    ...tx,
+    ...(restoredDate ? { date: restoredDate } : {}),
+    ...(restoredCreatedAt ? { createdAt: restoredCreatedAt } : {}),
+  };
+};
+
+export const normalizeLegacyTransactionRecord = (record: unknown): TransactionProps | null => {
   if (!record || typeof record !== 'object') {
     return null;
   }
@@ -85,36 +99,14 @@ export const normalizeQueuedTransaction = (record: unknown): TransactionProps | 
     return null;
   }
 
-  const restoredDate = restoreTimestamp(rawTx.date);
-  const restoredCreatedAt = restoreTimestamp(rawTx.createdAt);
+  const resolvedRoomId = rawTx.roomId || fallbackRoomId;
+  if (!resolvedRoomId || !rawTx.transactionId) {
+    return null;
+  }
 
-  return {
+  return normalizeTransactionTimestamps({
     ...(rawTx as TransactionProps),
-    roomId: rawTx.roomId || fallbackRoomId,
-    ...(restoredDate ? { date: restoredDate } : {}),
-    ...(restoredCreatedAt ? { createdAt: restoredCreatedAt } : {}),
+    roomId: resolvedRoomId,
     syncStatus: SyncStatus.PENDING,
-  };
-};
-
-export const queueTransaction = async (tx: { roomId: string; transaction: TransactionProps }) => {
-  const db = await dbPromise;
-  await db.put(SUB_COLLECTION_TRANSACTIONS, {
-    ...tx.transaction,
-    roomId: tx.transaction.roomId || tx.roomId,
   });
-};
-
-export const getQueuedTransactions = async (): Promise<TransactionProps[]> => {
-  const db = await dbPromise;
-  const rawRecords = await db.getAll(SUB_COLLECTION_TRANSACTIONS);
-
-  return rawRecords
-    .map((record) => normalizeQueuedTransaction(record))
-    .filter((tx): tx is TransactionProps => tx !== null);
-};
-
-export const removeQueuedTransaction = async (id: string) => {
-  const db = await dbPromise;
-  await db.delete(SUB_COLLECTION_TRANSACTIONS, id);
 };
