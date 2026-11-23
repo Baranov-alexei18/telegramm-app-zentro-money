@@ -3,14 +3,25 @@
   justify-content: center;
   text-align: center;
   align-items: center;
-  margin-top: 8px;
-  color: var(--color-muted);
+  gap: 8px;
+  width: 100%;
+  margin-top: 4px;
+  padding: 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-size: 13px;
+  font-weight: 600;
   cursor: pointer;
-  transition: color 0.2s ease;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .membersTrigger:hover {
-  color: black;
+  color: var(--color-indigo-secondary);
+  border-color: var(--color-indigo);
 }
 
 .membersTitle {

@@ -5,22 +5,29 @@ import { create } from 'zustand';
 import { notificationManager } from '@/components/shared/toast/utils';
 import { COLLECTION_ROOM, SUB_COLLECTION_TRANSACTIONS } from '@/constants/db';
 import { TRANSACTION_TYPE } from '@/constants/transaction-type';
+import { canSwitchRoomKind, ROOM_KIND_SWITCH_BLOCKED_MESSAGE } from '@/lib/can-switch-room-kind';
+import { getRoomJoinLimitError } from '@/lib/get-room-join-limit-error';
 import { mergeRoomPreservingTransactions, syncRoomInList } from '@/lib/merge-room-data';
+import { resolveRoomKind } from '@/lib/resolve-room-kind';
 import { transactionRepository } from '@/lib/transaction-repository';
 import { db } from '@/services/firebase/config';
 import { createCategory } from '@/services/firebase/createCategory';
 import { deleteCategoryById } from '@/services/firebase/deleteCategoryById';
 import { deleteUserFromRoom } from '@/services/firebase/deleteUserFromRoom';
+import { ensureRoomKind as persistMissingRoomKind } from '@/services/firebase/ensureRoomKind';
 import { getRoomUsers } from '@/services/firebase/getRoomUsers';
 import { getUserRooms } from '@/services/firebase/getUserRooms';
 import { joinUserToRoom } from '@/services/firebase/joinUserToRoom';
 import { removeNotificationRoom } from '@/services/firebase/removeNotificationRoom';
 import { updateCategory } from '@/services/firebase/updateCategory';
+import { updateRoom, UpdateRoomPatch } from '@/services/firebase/updateRoom';
+import { useUserStore } from '@/store/userStore';
 import { CategoryType } from '@/types/category';
 import { OutboxOperation } from '@/types/outbox';
-import { RoomType } from '@/types/room';
+import { PermissionRoom, RoomType } from '@/types/room';
 import { SyncStatus, TransactionProps } from '@/types/transaction';
 import { UserWithRoleRoom } from '@/types/user';
+import { canInRoom } from '@/utils/canInRoom';
 import { convertToDate } from '@/utils/convertToDate';
 
 type FetchUserRoomsOptions = {
@@ -61,6 +68,8 @@ type RoomStoreState = {
   addUserToRoom: (userId: string) => Promise<void>;
   removeUserFromRoom: (userId: string) => Promise<void>;
   removeNotification: (userId: string) => Promise<void>;
+  updateRoomMeta: (patch: UpdateRoomPatch) => Promise<void>;
+  ensureRoomKind: (room: RoomType) => Promise<RoomType>;
   hydrateTransactionsFromQueue: () => Promise<void>;
   markTransactionsSynced: (transactionIds: string[]) => void;
 };
@@ -510,13 +519,86 @@ export const useRoomStore = create<RoomStoreState>((set, get) => ({
     await transactionRepository.enqueueDelete(roomId, transactionId);
   },
 
+  updateRoomMeta: async (patch) => {
+    const { room } = get();
+
+    if (!room) {
+      throw new Error('Комната не найдена');
+    }
+
+    const userId = useUserStore.getState().user?.id;
+    const role = userId ? room.members?.[userId]?.role : undefined;
+    if (!canInRoom(role, PermissionRoom.ROOM_UPDATE)) {
+      notificationManager.add({ title: 'Недостаточно прав', type: 'error' }, { timeout: 1500 });
+      throw new Error('Недостаточно прав');
+    }
+
+    if (patch.kind) {
+      const membersCount = Object.keys(room.members ?? {}).length;
+      if (!canSwitchRoomKind(resolveRoomKind(room), patch.kind, membersCount)) {
+        notificationManager.add(
+          { title: ROOM_KIND_SWITCH_BLOCKED_MESSAGE, type: 'error' },
+          { timeout: 2000 }
+        );
+        throw new Error(ROOM_KIND_SWITCH_BLOCKED_MESSAGE);
+      }
+    }
+
+    if (patch.name !== undefined && patch.name.trim().length < 3) {
+      throw new Error('Минимум 3 символа');
+    }
+
+    const previousRoom = room;
+    const nextRoom = { ...room, ...patch };
+
+    set((state) => ({
+      room: nextRoom,
+      userRooms: syncRoomInList(state.userRooms, nextRoom),
+    }));
+
+    try {
+      const savedPatch = await updateRoom(room.roomId, patch);
+      const savedRoom = { ...nextRoom, ...savedPatch };
+
+      set((state) => ({
+        room:
+          state.room?.roomId === savedRoom.roomId ? { ...state.room, ...savedPatch } : state.room,
+        userRooms: syncRoomInList(state.userRooms, savedRoom),
+      }));
+    } catch (error) {
+      set((state) => ({
+        room: previousRoom,
+        userRooms: syncRoomInList(state.userRooms, previousRoom),
+      }));
+      const message = error instanceof Error ? error.message : 'Не удалось сохранить комнату';
+      notificationManager.add({ title: message, type: 'error' }, { timeout: 1500 });
+      throw error;
+    }
+  },
+
+  ensureRoomKind: async (room) => {
+    const nextRoom = await persistMissingRoomKind(room);
+
+    set((state) => ({
+      room:
+        state.room?.roomId === nextRoom.roomId
+          ? { ...state.room, kind: nextRoom.kind }
+          : state.room,
+      userRooms: syncRoomInList(state.userRooms, nextRoom),
+    }));
+
+    return nextRoom;
+  },
+
   addUserToRoom: async (userId) => {
     const { room } = get();
 
     if (!room) throw new Error('Комната не найдена');
 
-    if (Object.keys(room.members).length >= 5) {
-      throw new Error('В комнате максимальное количество людей - 5');
+    const joinLimitError = getRoomJoinLimitError(room);
+    if (joinLimitError) {
+      notificationManager.add({ title: joinLimitError, type: 'error' }, { timeout: 1500 });
+      return;
     }
 
     try {

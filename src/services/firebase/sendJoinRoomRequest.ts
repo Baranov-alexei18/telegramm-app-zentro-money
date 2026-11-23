@@ -2,6 +2,7 @@ import { arrayUnion, doc, getDoc, updateDoc } from 'firebase/firestore';
 
 import { notificationManager } from '@/components/shared/toast/utils';
 import { COLLECTION_ROOM } from '@/constants/db';
+import { getRoomJoinLimitError } from '@/lib/get-room-join-limit-error';
 import { UserType } from '@/types/user';
 
 import { db } from './config';
@@ -21,6 +22,15 @@ export const sendJoinRoomRequest = async (roomId: string, user: UserType) => {
 
     if (members[user.id]) {
       throw new Error('Вы уже участник этой комнаты ⚠️');
+    }
+
+    const joinLimitError = getRoomJoinLimitError({
+      kind: roomData.kind,
+      members,
+    });
+
+    if (joinLimitError) {
+      throw new Error(joinLimitError);
     }
 
     const notifications = roomData.notifications || [];

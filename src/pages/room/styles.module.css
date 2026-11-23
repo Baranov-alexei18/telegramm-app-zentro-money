@@ -5,10 +5,11 @@
 .wrapper {
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  padding: 24px;
+  gap: 8px;
+  padding: 10px 12px 8px;
   max-width: 600px;
   margin: 0 auto;
+  min-height: calc(100dvh - 132px);
   transition:
     filter 0.3s ease,
     opacity 0.3s ease;
@@ -58,10 +59,23 @@
 }
 
 .subTitle {
-  text-align: center;
-  font-size: 18px;
-  font-weight: 500;
-  margin: 0 0 8px;
+  text-align: left;
+  font-size: 13px;
+  font-weight: 600;
+  margin: 0 0 6px;
+}
+
+.financeGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.transactionsBlock {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .transactionsList {
@@ -69,11 +83,11 @@
   flex-direction: column;
   padding: 0;
   margin: 0;
-  gap: 8px;
+  gap: 6px;
 }
 
 .empty {
   text-align: center;
   color: var(--color-muted);
-  margin: 12px 0;
+  margin: 8px 0;
 }

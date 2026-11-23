@@ -1,12 +1,16 @@
-import { Fragment } from 'react/jsx-runtime';
+import { Fragment, ReactNode } from 'react';
 import { Icon } from '@iconify/react';
 
 import { AvatarCircle } from '@/components/avatar-circle';
 import { BottomSheet } from '@/components/shared/bottom-sheet';
 import { Button } from '@/components/shared/button';
 import { notificationManager } from '@/components/shared/toast/utils';
+import { RoomKind } from '@/constants/room-kind';
 import { RoomUserRole } from '@/constants/room-roles';
 import { useRoomAccess } from '@/hooks/useRoomAccess';
+import { getRoomJoinLimitError } from '@/lib/get-room-join-limit-error';
+import { getRoomMemberLimit } from '@/lib/get-room-member-limit';
+import { resolveRoomKind } from '@/lib/resolve-room-kind';
 import { useRoomStore } from '@/store/roomStore';
 import { useUserStore } from '@/store/userStore';
 import { UserWithRoleRoom } from '@/types/user';
@@ -16,15 +20,37 @@ import styles from './styles.module.css';
 
 type Props = {
   members: UserWithRoleRoom[];
+  triggerComponent?: ReactNode;
+  classNameWrapperTrigger?: string;
 };
 
-export const MembersPanel = ({ members = [] }: Props) => {
+export const MembersPanel = ({
+  members = [],
+  triggerComponent,
+  classNameWrapperTrigger,
+}: Props) => {
   const { room, removeUserFromRoom } = useRoomStore();
   const { user } = useUserStore();
-  const { canDeleteUser } = useRoomAccess();
-  const isAdmin = true;
+  const { canDeleteUser, canUpdateRoom } = useRoomAccess();
+  const canManageMembers = canUpdateRoom();
+  const kind = room ? resolveRoomKind(room) : RoomKind.SHARED_EXPENSES;
+  const memberLimit = getRoomMemberLimit(kind);
+  const roomMembers = Object.keys(room?.members || {});
+  const joinLimitError = room ? getRoomJoinLimitError(room) : null;
+  const canInvite = canManageMembers && kind === RoomKind.SHARED_EXPENSES && !joinLimitError;
 
   const handleCopyIdRoom = async () => {
+    if (!canInvite) {
+      notificationManager.add(
+        {
+          title: joinLimitError || 'Нельзя добавить участников в эту комнату',
+          type: 'warn',
+        },
+        { timeout: 1500 }
+      );
+      return;
+    }
+
     try {
       await navigator.clipboard.writeText(room?.roomId || '');
     } catch {
@@ -40,32 +66,36 @@ export const MembersPanel = ({ members = [] }: Props) => {
   };
 
   const handleRemove = (id: string) => {
-    if (!isAdmin) return;
-
     removeUserFromRoom(id);
-
-    notificationManager.add({ title: 'Пользователь удалён', type: 'ok' }, { timeout: 1200 });
   };
-
-  const roomMembers = Object.keys(room?.members || {});
 
   return (
     <BottomSheet
       id="room-members"
+      classNameWrapperTrigger={classNameWrapperTrigger}
       triggerComponent={
-        <div className={styles.membersTrigger}>
-          <Icon icon="glyphs:users-1-bold" height={20} width={20} />
-          {roomMembers.length} участник
-          {roomMembers.length > 1 ? 'ов' : ''}
-        </div>
+        triggerComponent ?? (
+          <div className={styles.membersTrigger}>
+            <Icon icon="glyphs:users-1-bold" height={20} width={20} />
+            {canManageMembers
+              ? `Участники · ${roomMembers.length} из ${memberLimit}`
+              : `Участники · ${roomMembers.length}`}
+          </div>
+        )
       }
     >
       <Fragment>
-        <h4 className={styles.membersTitle}>Участники комнаты ({roomMembers.length} из 5)</h4>
+        <h4 className={styles.membersTitle}>
+          {canManageMembers
+            ? `Участники комнаты (${roomMembers.length} из ${memberLimit})`
+            : `Участники комнаты (${roomMembers.length})`}
+        </h4>
 
-        <Button onClick={handleCopyIdRoom} className={styles.addButton}>
-          Добавить нового участника
-        </Button>
+        {canManageMembers && kind === RoomKind.SHARED_EXPENSES && (
+          <Button onClick={handleCopyIdRoom} isDisabled={!canInvite} className={styles.addButton}>
+            {canInvite ? 'Добавить нового участника' : 'Комната заполнена'}
+          </Button>
+        )}
 
         <ul className={styles.membersListWrapper}>
           {members.map((member) => (

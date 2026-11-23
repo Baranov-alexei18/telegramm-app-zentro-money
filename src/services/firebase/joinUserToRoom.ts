@@ -3,6 +3,7 @@ import { arrayUnion, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { notificationManager } from '@/components/shared/toast/utils';
 import { COLLECTION_ROOM, COLLECTION_USER } from '@/constants/db';
 import { RoomUserRole } from '@/constants/room-roles';
+import { getRoomJoinLimitError } from '@/lib/get-room-join-limit-error';
 import { RoomType } from '@/types/room';
 
 import { db } from './config';
@@ -16,6 +17,9 @@ export const joinUserToRoom = async (userId: string, room: RoomType) => {
   const alreadyInRoom = !!room.members?.[userId];
 
   if (alreadyInRoom) throw new Error('Пользователь уже в комнате');
+
+  const joinLimitError = getRoomJoinLimitError(room);
+  if (joinLimitError) throw new Error(joinLimitError);
 
   try {
     const updatedMembers: RoomType['members'] = {

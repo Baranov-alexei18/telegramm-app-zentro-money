@@ -1,0 +1,54 @@
+.wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.option {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: 12px 14px;
+  text-align: left;
+  color: var(--color-text);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  box-shadow: none;
+}
+
+.option:hover {
+  opacity: 1;
+  border-color: var(--color-indigo);
+}
+
+.optionSelected {
+  border-color: var(--color-indigo-secondary);
+  background: #eef2ff;
+  box-shadow: 0 0 0 1px var(--color-indigo-secondary);
+}
+
+.optionBlocked {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.optionTitle {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.optionHint {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--color-muted);
+}

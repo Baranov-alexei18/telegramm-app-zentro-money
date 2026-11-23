@@ -1,3 +1,4 @@
+import { RoomKind } from '@/constants/room-kind';
 import { RoomUserRole } from '@/constants/room-roles';
 
 import { CategoryType } from './category';
@@ -15,6 +16,7 @@ export enum PermissionRoom {
   CATEGORY_DELETE = 'CATEGORY_DELETE',
 
   REMOVE_USER = 'REMOVE_USER',
+  ROOM_UPDATE = 'ROOM_UPDATE',
 }
 
 export type NotificationRoomType = {
@@ -27,6 +29,10 @@ export type NotificationRoomType = {
 export type RoomType = {
   roomId: string;
   name: string;
+  kind?: RoomKind;
+  coverGradientId?: string;
+  iconId?: string;
+  iconColorId?: string;
   members: Record<
     string,
     {

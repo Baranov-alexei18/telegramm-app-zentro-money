@@ -8,17 +8,19 @@ import { BackButton } from '@/components/back-button';
 import { Header } from '@/components/header';
 import { LinkButton } from '@/components/shared/link-button';
 import { notificationManager } from '@/components/shared/toast/utils';
+import { RoomKind } from '@/constants/room-kind';
 import { ROUTE_PATHS } from '@/constants/route-path';
 import { TRANSACTION_TYPE } from '@/constants/transaction-type';
 import { useRoomAccess } from '@/hooks/useRoomAccess';
+import { hasPersistedRoomKind, resolveRoomKind } from '@/lib/resolve-room-kind';
 import { useRoomStore } from '@/store/roomStore';
 import { useUserStore } from '@/store/userStore';
 
 import { CardInfo } from './card-info';
 import { ChatPanel } from './chat-panel';
-import { MembersPanel } from './members-panel';
 import { NotificationPanel } from './notification-panel';
 import { RoomBlurredFallback } from './room-blurred-fallback';
+import { RoomSummaryDashboard } from './room-summary-dashboard';
 import { TransactionCard } from './transaction-card';
 import { filterMembersByRoom, getLastTransactions } from './utils';
 
@@ -56,6 +58,9 @@ export const RoomPage = () => {
         storeState.loadedMembersRoomId === id;
 
       if (alreadyHydrated) {
+        if (storeState.room && !hasPersistedRoomKind(storeState.room.kind)) {
+          await storeState.ensureRoomKind(storeState.room);
+        }
         setSettledRoomId(id);
         return;
       }
@@ -77,6 +82,7 @@ export const RoomPage = () => {
           return;
         }
 
+        targetRoom = await storeState.ensureRoomKind(targetRoom);
         storeState.setRoom(targetRoom);
 
         await Promise.all([
@@ -136,23 +142,23 @@ export const RoomPage = () => {
         >
           {activeRoom ? (
             <>
-              <div className={styles.header}>
-                <h1 className={styles.subTitle}>{activeRoom.name}</h1>
-                <p className={styles.description}>{activeRoom.description}</p>
+              <RoomSummaryDashboard
+                room={activeRoom}
+                members={filterMembersByRoom(members, activeRoom.members)}
+              />
 
-                <MembersPanel members={filterMembersByRoom(members, activeRoom.members)} />
+              {canViewNotifications() &&
+                resolveRoomKind(activeRoom) === RoomKind.SHARED_EXPENSES && (
+                  <NotificationPanel notifications={activeRoom.notifications} />
+                )}
+
+              <div className={styles.financeGrid}>
+                <CardInfo type={TRANSACTION_TYPE.INCOME} />
+                <CardInfo type={TRANSACTION_TYPE.EXPENSE} />
               </div>
 
-              {canViewNotifications() && (
-                <NotificationPanel notifications={activeRoom.notifications} />
-              )}
-
-              <CardInfo type={TRANSACTION_TYPE.INCOME} />
-
-              <CardInfo type={TRANSACTION_TYPE.EXPENSE} />
-
-              <div>
-                <h3 className={styles.subTitle}>Последние транзакции</h3>
+              <div className={styles.transactionsBlock}>
+                <h3 className={styles.subTitle}>Последние операции</h3>
                 {lastTransactions.length ? (
                   <ul className={styles.transactionsList}>
                     {lastTransactions.map((t) => (
