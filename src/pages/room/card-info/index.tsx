@@ -1,4 +1,5 @@
 import { useLocation, useNavigate } from 'react-router';
+import cn from 'classnames';
 
 import { TransactionForm } from '@/components/forms/transaction-form';
 import { AroundPlusIcon } from '@/components/icons/around-plus-icon';
@@ -65,7 +66,12 @@ export const CardInfo = ({ type }: Props) => {
   };
 
   return (
-    <div className={styles.card}>
+    <div
+      className={cn(styles.card, {
+        [styles.income]: type === TRANSACTION_TYPE.INCOME,
+        [styles.expense]: type === TRANSACTION_TYPE.EXPENSE,
+      })}
+    >
       <div className={styles.cardHeader}>
         <h4>{CardInfoMapper[type].title}</h4>
 

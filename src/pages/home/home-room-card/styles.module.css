@@ -29,33 +29,22 @@
 }
 
 .accentBar {
+  --cover-gradient: linear-gradient(145deg, #818cf8 0%, #6366f1 48%, #1e1b4b 100%);
+
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   height: 4px;
-  background: linear-gradient(90deg, var(--color-indigo) 0%, var(--color-indigo-secondary) 100%);
+  background-image: var(--cover-gradient);
 }
 
 .cardTop {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 8px;
   margin-top: 2px;
-}
-
-.iconBadge {
-  width: 32px;
-  height: 32px;
-  border-radius: 10px;
-  background: var(--color-bg);
-  border: 1px solid var(--color-border);
-  color: var(--color-indigo-secondary);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
 }
 
 .topRight {
@@ -92,13 +81,6 @@
   color: var(--color-indigo-secondary);
 }
 
-.cardBody {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  min-width: 0;
-}
-
 .roomName {
   font-size: 15px;
   font-weight: 700;
@@ -109,8 +91,10 @@
 }
 
 .roomDescription {
+  height: 18px;
   font-size: 12px;
   font-weight: 400;
+  line-height: 18px;
   color: var(--color-muted);
   overflow: hidden;
   text-overflow: ellipsis;

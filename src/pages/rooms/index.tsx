@@ -1,5 +1,6 @@
 import { ChangeEvent, Fragment, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
+import { Icon } from '@iconify/react';
 
 import { BackButton } from '@/components/back-button';
 import { CreateRoomForm } from '@/components/forms/create-room-form';
@@ -14,14 +15,23 @@ import { sendJoinRoomRequest } from '@/services/firebase/sendJoinRoomRequest';
 import { useRoomStore } from '@/store/roomStore';
 import { useUserStore } from '@/store/userStore';
 
+import { RoomCard } from './room-card';
+
 import styles from './styles.module.css';
+
+const SKELETON_CARDS = [0, 1, 2];
 
 export const RoomsPage = () => {
   const { user } = useUserStore();
-  const { userRooms, hasLoadedUserRooms, loadedRoomsUserId, fetchUserRooms } = useRoomStore();
+  const { userRooms, isUserRoomsLoading, hasLoadedUserRooms, loadedRoomsUserId, fetchUserRooms } =
+    useRoomStore();
   const [roomId, setRoomId] = useState('');
 
   const navigate = useNavigate();
+
+  const isRoomsPending = Boolean(
+    user && (isUserRoomsLoading || !hasLoadedUserRooms || loadedRoomsUserId !== user.id)
+  );
 
   useEffect(() => {
     if (!user?.id) return;
@@ -74,7 +84,12 @@ export const RoomsPage = () => {
         <h2 className={styles.title}>Мои комнаты</h2>
 
         <BottomSheet
-          triggerComponent={<div className={styles.create}>Создать комнату</div>}
+          triggerComponent={
+            <div className={styles.create}>
+              <Icon icon="solar:home-add-bold" width={16} height={16} />
+              Создать комнату
+            </div>
+          }
           id="create-room"
         >
           <CreateRoomForm />
@@ -82,26 +97,49 @@ export const RoomsPage = () => {
       </Header>
       <div className={styles.wrapper}>
         <div className={styles.connectRoom}>
-          <Input onChange={handleRoomIdChange} value={roomId} placeholder="Введите id комнаты" />
+          <div className={styles.connectField}>
+            <Input onChange={handleRoomIdChange} value={roomId} placeholder="Введите id комнаты" />
+          </div>
           <Button onClick={handleConnectToRoom}>
             <ArrowRightIcon />
           </Button>
         </div>
 
-        <div className={styles.roomsGrid}>
-          {userRooms.map((room) => (
-            <div
-              key={room.roomId}
-              className={styles.roomCard}
-              onClick={() => handleToRoom(room.roomId)}
-            >
-              <div className={styles.roomHeader}>
-                <h2 className={styles.roomName}>{room.name}</h2>
+        {isRoomsPending ? (
+          <div className={styles.roomsGrid} aria-busy={true} aria-live="polite">
+            {SKELETON_CARDS.map((item) => (
+              <div key={item} className={styles.skeletonCard}>
+                <div className={styles.skeletonCover} />
+                <div className={styles.skeletonBody}>
+                  <span className={styles.skeletonTitle} />
+                  <span className={styles.skeletonText} />
+                  <div className={styles.skeletonMeta}>
+                    <span />
+                    <span />
+                  </div>
+                </div>
               </div>
-              {room.description && <p className={styles.roomDescription}>{room.description}</p>}
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : userRooms.length > 0 ? (
+          <div className={styles.roomsGrid}>
+            {userRooms.map((room) => (
+              <RoomCard
+                key={room.roomId}
+                room={room}
+                currentUserId={user?.id}
+                onOpen={handleToRoom}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className={styles.emptyState}>
+            <p className={styles.emptyTitle}>Комнат пока нет</p>
+            <p className={styles.emptyText}>
+              Создайте свою первую комнату или присоединитесь по идентификатору.
+            </p>
+          </div>
+        )}
       </div>
     </Fragment>
   );

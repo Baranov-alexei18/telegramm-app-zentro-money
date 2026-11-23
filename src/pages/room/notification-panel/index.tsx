@@ -1,4 +1,5 @@
 import { BottomSheet } from '@/components/shared/bottom-sheet';
+import { getRoomJoinLimitError } from '@/lib/get-room-join-limit-error';
 import { useRoomStore } from '@/store/roomStore';
 import { NotificationRoomType } from '@/types/room';
 
@@ -9,9 +10,10 @@ type Props = {
 };
 
 export const NotificationPanel = ({ notifications = [] }: Props) => {
-  const { removeNotification, addUserToRoom } = useRoomStore();
+  const { room, removeNotification, addUserToRoom } = useRoomStore();
 
   const hasNotifications = notifications.length > 0;
+  const joinLimitError = room ? getRoomJoinLimitError(room) : null;
 
   return (
     <div className={styles.panel}>
@@ -35,6 +37,8 @@ export const NotificationPanel = ({ notifications = [] }: Props) => {
                   <button
                     className={styles.acceptBtn}
                     onClick={() => addUserToRoom(notification.userId)}
+                    disabled={Boolean(joinLimitError)}
+                    title={joinLimitError ?? undefined}
                   >
                     Принять
                   </button>

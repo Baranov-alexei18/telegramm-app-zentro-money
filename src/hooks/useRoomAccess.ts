@@ -24,6 +24,7 @@ export const useRoomAccess = () => {
       canDeleteCategory: () => false,
 
       canDeleteUser: () => false,
+      canUpdateRoom: () => false,
     };
   }
 
@@ -55,5 +56,6 @@ export const useRoomAccess = () => {
     canDeleteCategory: () => canInRoom(role, PermissionRoom.CATEGORY_DELETE),
 
     canDeleteUser: () => canInRoom(role, PermissionRoom.REMOVE_USER),
+    canUpdateRoom: () => canInRoom(role, PermissionRoom.ROOM_UPDATE),
   };
 };

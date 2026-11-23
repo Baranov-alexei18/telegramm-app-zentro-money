@@ -1,18 +1,31 @@
 .card {
-  background: #f7f7f7;
-  border-radius: 12px;
-  padding: 16px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  padding: 10px;
+  box-shadow: 0 2px 8px rgba(17, 24, 39, 0.06);
+  min-width: 0;
+}
+
+.income {
+  background: color-mix(in srgb, var(--color-success) 10%, var(--color-surface));
+  border-color: color-mix(in srgb, var(--color-success) 12%, var(--color-border));
+}
+
+.expense {
+  background: color-mix(in srgb, var(--color-danger) 8%, var(--color-surface));
+  border-color: color-mix(in srgb, var(--color-danger) 10%, var(--color-border));
 }
 
 .cardHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
 
   h4 {
-    margin: 0 0 8px 0;
+    margin: 0;
+    font-size: 14px;
   }
 }
 
@@ -22,20 +35,22 @@
 }
 
 .statsTable {
-  margin-top: 8px;
-  margin-bottom: 12px;
-  padding: 8px 0;
+  margin-top: 4px;
+  margin-bottom: 8px;
+  padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
 }
 
 .row {
   display: flex;
   justify-content: space-between;
-  font-size: 14px;
+  font-size: 12px;
 }
 
 .button {
   width: 100%;
+  padding: 6px 8px;
+  font-size: 12px;
 }

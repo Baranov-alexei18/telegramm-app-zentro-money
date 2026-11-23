@@ -1,0 +1,56 @@
+.wrapper {
+  width: 100%;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(9, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.swatch {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  aspect-ratio: 1;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.12);
+  background-size: cover;
+  color: var(--color-surface);
+}
+
+.swatch:hover {
+  opacity: 1;
+  transform: translateY(-1px);
+}
+
+.swatchSelected {
+  border-color: var(--color-text);
+  box-shadow:
+    0 0 0 2px var(--color-surface),
+    0 0 0 4px var(--color-indigo-secondary);
+}
+
+.matchIcon {
+  filter: drop-shadow(0 1px 2px rgba(15, 23, 42, 0.45));
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 420px) {
+  .grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}

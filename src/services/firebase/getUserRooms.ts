@@ -4,6 +4,7 @@ import { COLLECTION_ROOM, COLLECTION_USER } from '@/constants/db';
 import { RoomType } from '@/types/room';
 
 import { db } from './config';
+import { ensureRoomKind } from './ensureRoomKind';
 
 export const getUserRooms = async (userId: string): Promise<RoomType[]> => {
   try {
@@ -25,7 +26,7 @@ export const getUserRooms = async (userId: string): Promise<RoomType[]> => {
       ...roomDoc.data(),
     })) as RoomType[];
 
-    return rooms;
+    return Promise.all(rooms.map((room) => ensureRoomKind(room)));
   } catch (error) {
     console.error('Ошибка при получении комнат:', error);
     throw error;

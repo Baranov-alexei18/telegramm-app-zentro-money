@@ -1,0 +1,44 @@
+.display {
+  width: 100%;
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: default;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.truncate {
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.editable {
+  cursor: pointer;
+}
+
+.placeholder {
+  color: var(--color-muted);
+}
+
+.editIcon {
+  flex-shrink: 0;
+  color: var(--color-muted);
+}
+
+.input {
+  text-align: left;
+}

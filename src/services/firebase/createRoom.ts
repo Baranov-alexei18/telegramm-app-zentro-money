@@ -9,6 +9,16 @@ import {
 
 import { BASE_CATEGORIES } from '@/constants/category';
 import { COLLECTION_ROOM, COLLECTION_USER } from '@/constants/db';
+import {
+  DEFAULT_ROOM_COVER_GRADIENT_ID,
+  RoomCoverGradientId,
+} from '@/constants/room-cover-gradients';
+import {
+  DEFAULT_ROOM_ICON_COLOR_ID,
+  DEFAULT_ROOM_ICON_ID,
+  RoomIconId,
+} from '@/constants/room-icons';
+import { RoomKind } from '@/constants/room-kind';
 import { RoomUserRole } from '@/constants/room-roles';
 
 import { db } from './config';
@@ -17,9 +27,21 @@ type CreateRoomParams = {
   userId: string;
   name: string;
   description?: string;
+  coverGradientId?: RoomCoverGradientId | string;
+  iconId?: RoomIconId | string;
+  iconColorId?: string;
+  kind?: RoomKind;
 };
 
-export const createRoom = async ({ userId, name, description }: CreateRoomParams) => {
+export const createRoom = async ({
+  userId,
+  name,
+  description,
+  coverGradientId,
+  iconId,
+  iconColorId,
+  kind,
+}: CreateRoomParams) => {
   try {
     const roomCollectionRef = collection(db, COLLECTION_ROOM);
     const roomRef = doc(roomCollectionRef);
@@ -29,6 +51,10 @@ export const createRoom = async ({ userId, name, description }: CreateRoomParams
       roomId: roomId,
       name,
       description: description || '',
+      coverGradientId: coverGradientId || DEFAULT_ROOM_COVER_GRADIENT_ID,
+      iconId: iconId || DEFAULT_ROOM_ICON_ID,
+      iconColorId: iconColorId || DEFAULT_ROOM_ICON_COLOR_ID,
+      kind: kind || RoomKind.SHARED_EXPENSES,
       createdAt: serverTimestamp(),
       categories: BASE_CATEGORIES,
       members: {

@@ -6,9 +6,10 @@
 
 .notificationsBtn {
   position: relative;
-  padding: 10px 16px;
+  padding: 6px 10px;
   border: 1px solid var(--color-border);
-  border-radius: var(--border-radius-main);
+  border-radius: 10px;
+  font-size: 12px;
   font-weight: 500;
   cursor: pointer;
 }
