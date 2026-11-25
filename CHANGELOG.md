@@ -1,3 +1,12 @@
+# [1.41.0](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/compare/v1.40.0...v1.41.0) (2026-11-25)
+
+
+### Features
+
+* let the current admin transfer their role instantly ([85c1db7](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/commit/85c1db781dc9fd731c52fb93d15d680de1018de2))
+* play the home greeting only on the first visit ([2547959](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/commit/25479596b7f3947d22a446a151f33f306fe519ac))
+* update agents.md and ignores files ([e0d5dfd](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/commit/e0d5dfdbbe3213b0b11c6ca02dffe25d68a0b5b5))
+
 # [1.40.0](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/compare/v1.39.0...v1.40.0) (2026-11-21)
 
 
