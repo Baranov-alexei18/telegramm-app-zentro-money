@@ -75,6 +75,24 @@
   font-size: 12px;
 }
 
+.memberActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.transferBtn {
+  background: var(--color-bg);
+  border: 1px solid var(--color-indigo);
+  color: var(--color-indigo);
+  border-radius: var(--border-radius-main);
+  padding: 6px 8px;
+  font-size: 12px;
+  line-height: 1.2;
+  cursor: pointer;
+}
+
 .removeBtn {
   border: 1px solid var(--color-border-dark);
   color: var(--color-danger);

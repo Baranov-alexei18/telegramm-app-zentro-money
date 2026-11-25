@@ -11,7 +11,7 @@ There are two roles (`RoomUserRole`):
 - `admin` — room administrator.
 - `base_user` — member.
 
-The room creator is stored as `admin`. A person accepted from a join request is stored as `base_user`. The role cannot be changed in the UI: there is no way to appoint or remove an administrator. Several `admin` values are possible only if that role is already stored on the document.
+The room creator is stored as `admin`. A person accepted from a join request is stored as `base_user`. The current admin can instantly transfer their own admin role to one other participant and become `base_user` in the same write. There is no confirmation or acceptance step. Several `admin` values can stay on the document: a transfer changes only the caller and the chosen participant.
 
 Checks go through `ROLE_ROOM_MATRIX` and `canInRoom`. In the room UI this is `useRoomAccess`. To edit room metadata, the store also calls `canInRoom(..., ROOM_UPDATE)`. There are no Firestore rules in the repository: the restriction is client-side.
 
@@ -32,17 +32,18 @@ In addition to everything a member can do:
 - Changes the name, description, room kind, cover, icon, and icon color.
 - Creates, edits, and deletes categories.
 - Edits and deletes any transaction in the room, not only their own.
+- Transfers their own admin role to one other participant whose role is `base_user` (`transferRoomAdmin`). The caller becomes `base_user`. The button is in the members panel. It is hidden from non-admins, hidden on the caller's own row, and hidden next to anyone who is already `admin`. A room with one member has nobody to receive the role. Other admins on the document are left as they are. The target does not confirm, and no join notification is created.
 
 ## Member
 
 - Creates transactions.
 - Edits and deletes only their own transactions (`transaction.userId` matches their id).
 - Reads the roster, transactions, and statistics.
-- Writes in the room chat. Deleting someone else's or their own messages is not possible: that operation does not exist.
-- Does not see requests, does not invite, does not remove people, and does not edit the room or categories.
+- Writes in the room chat. Deleting someone else's or their own messages is not possible: that operation does not exist. An admin transfer does not add or remove chat access.
+- Does not see requests, does not invite, does not remove people, does not edit the room or categories, and does not transfer the admin role.
 
 If the user is not in `members` or the role is empty, `useRoomAccess` closes all of the actions listed above.
 
 ## What does not exist
 
-There is no ban, mute, kick that blocks return, chat moderation, transfer of the administrator role, or separate “owner” and “member” permissions beyond `admin` and `base_user`.
+There is no ban, mute, kick that blocks return, chat moderation, acceptance step for an admin transfer, way to appoint an extra administrator without giving up your own role, way to remove admin from someone else, or separate “owner” and “member” permissions beyond `admin` and `base_user`.

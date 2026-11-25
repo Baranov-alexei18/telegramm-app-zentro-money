@@ -88,7 +88,7 @@ export const TransactionCard = ({ transaction }: Props) => {
     [room?.categories, transaction.type]
   );
 
-  if (user?.id === transaction.userId && canModifyTransaction(transaction)) {
+  if (canModifyTransaction(transaction)) {
     return (
       <BottomSheet
         id={`update-transactions-${transaction.transactionId}`}
