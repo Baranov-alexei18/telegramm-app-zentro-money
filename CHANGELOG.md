@@ -1,3 +1,10 @@
+# [1.42.0](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/compare/v1.41.0...v1.42.0) (2026-11-25)
+
+
+### Features
+
+* open member admin actions from a three-dot popover ([5761157](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/commit/576115776ebfea44c489d8851d7310fc9a1ea5af))
+
 # [1.41.0](https://github.com/Baranov-alexei18/telegramm-app-zentro-money/compare/v1.40.0...v1.41.0) (2026-11-25)
 
 
