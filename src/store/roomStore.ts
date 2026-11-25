@@ -4,12 +4,14 @@ import { create } from 'zustand';
 
 import { notificationManager } from '@/components/shared/toast/utils';
 import { COLLECTION_ROOM, SUB_COLLECTION_TRANSACTIONS } from '@/constants/db';
+import { RoomUserRole } from '@/constants/room-roles';
 import { TRANSACTION_TYPE } from '@/constants/transaction-type';
 import { canSwitchRoomKind, ROOM_KIND_SWITCH_BLOCKED_MESSAGE } from '@/lib/can-switch-room-kind';
 import { getRoomJoinLimitError } from '@/lib/get-room-join-limit-error';
 import { mergeRoomPreservingTransactions, syncRoomInList } from '@/lib/merge-room-data';
 import { resolveRoomKind } from '@/lib/resolve-room-kind';
 import { transactionRepository } from '@/lib/transaction-repository';
+import { applyRoomAdminTransfer } from '@/lib/transfer-room-admin-members';
 import { db } from '@/services/firebase/config';
 import { createCategory } from '@/services/firebase/createCategory';
 import { deleteCategoryById } from '@/services/firebase/deleteCategoryById';
@@ -19,6 +21,7 @@ import { getRoomUsers } from '@/services/firebase/getRoomUsers';
 import { getUserRooms } from '@/services/firebase/getUserRooms';
 import { joinUserToRoom } from '@/services/firebase/joinUserToRoom';
 import { removeNotificationRoom } from '@/services/firebase/removeNotificationRoom';
+import { transferRoomAdmin as persistRoomAdminTransfer } from '@/services/firebase/transferRoomAdmin';
 import { updateCategory } from '@/services/firebase/updateCategory';
 import { updateRoom, UpdateRoomPatch } from '@/services/firebase/updateRoom';
 import { useUserStore } from '@/store/userStore';
@@ -67,6 +70,7 @@ type RoomStoreState = {
   deleteTransaction: (transactionId: string) => Promise<void>;
   addUserToRoom: (userId: string) => Promise<void>;
   removeUserFromRoom: (userId: string) => Promise<void>;
+  transferRoomAdmin: (targetUserId: string) => Promise<void>;
   removeNotification: (userId: string) => Promise<void>;
   updateRoomMeta: (patch: UpdateRoomPatch) => Promise<void>;
   ensureRoomKind: (room: RoomType) => Promise<RoomType>;
@@ -629,6 +633,68 @@ export const useRoomStore = create<RoomStoreState>((set, get) => ({
         },
         { timeout: 1500 }
       );
+    }
+  },
+
+  transferRoomAdmin: async (targetUserId) => {
+    const { room, members } = get();
+    const callerId = useUserStore.getState().user?.id;
+
+    if (!room) {
+      throw new Error('Комната не найдена');
+    }
+
+    if (!callerId || room.members?.[callerId]?.role !== RoomUserRole.ADMIN) {
+      notificationManager.add({ title: 'Недостаточно прав', type: 'error' }, { timeout: 1500 });
+      throw new Error('Недостаточно прав');
+    }
+
+    let nextMemberMap: RoomType['members'];
+
+    try {
+      nextMemberMap = applyRoomAdminTransfer(room.members, callerId, targetUserId);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Не удалось передать права';
+      notificationManager.add({ title: message, type: 'error' }, { timeout: 1500 });
+      throw error;
+    }
+
+    const previousRoom = room;
+    const previousMembers = members;
+    const nextRoom = { ...room, members: nextMemberMap };
+    const nextMembers = members.map((member) => {
+      if (member.id === callerId) {
+        return { ...member, role: RoomUserRole.USER };
+      }
+
+      if (member.id === targetUserId) {
+        return { ...member, role: RoomUserRole.ADMIN };
+      }
+
+      return member;
+    });
+
+    set((state) => ({
+      room: state.room?.roomId === room.roomId ? nextRoom : state.room,
+      members: state.room?.roomId === room.roomId ? nextMembers : state.members,
+      userRooms: syncRoomInList(state.userRooms, nextRoom),
+    }));
+
+    try {
+      await persistRoomAdminTransfer(room.roomId, callerId, targetUserId);
+      notificationManager.add(
+        { title: 'Права администратора переданы', type: 'ok' },
+        { timeout: 1500 }
+      );
+    } catch (error) {
+      set((state) => ({
+        room: state.room?.roomId === room.roomId ? previousRoom : state.room,
+        members: state.room?.roomId === room.roomId ? previousMembers : state.members,
+        userRooms: syncRoomInList(state.userRooms, previousRoom),
+      }));
+      const message = error instanceof Error ? error.message : 'Не удалось передать права';
+      notificationManager.add({ title: message, type: 'error' }, { timeout: 1500 });
+      throw error;
     }
   },
 

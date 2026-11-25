@@ -1,0 +1,34 @@
+# Environment & secrets (never expose to AI context)
+.env
+.env.*
+!.env.example
+
+# Package manager internals & lockfiles (large, noisy for indexing/search)
+.yarn/
+.pnp.*
+yarn.lock
+package-lock.json
+pnpm-lock.yaml
+
+# Dependencies & build artifacts
+node_modules/
+dist/
+dist-ssr/
+dev-dist/
+*.tsbuildinfo
+
+# Test coverage reports (@vitest/coverage-v8)
+coverage/
+.vitest/
+
+# Auto-generated release artifacts (@semantic-release/changelog)
+CHANGELOG.md
+
+# Logs & OS/IDE metadata
+logs/
+*.log
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json

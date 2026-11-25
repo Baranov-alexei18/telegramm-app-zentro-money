@@ -163,25 +163,6 @@ export const QuickTransactionPanel = ({ rooms }: Props) => {
 
       <div className={styles.actionsGrid}>
         <BottomSheet
-          id="home-quick-expense"
-          classNameWrapperTrigger={styles.sheetTrigger}
-          triggerComponent={
-            <div className={cn(styles.actionCard, styles.expenseAction)}>
-              <Icon icon="mingcute:arrow-up-circle-fill" width={22} height={22} />
-              <span>Расход</span>
-            </div>
-          }
-        >
-          <QuickTransactionSheetBody
-            activeRoom={activeRoom}
-            roomOptions={roomOptions}
-            type={TRANSACTION_TYPE.EXPENSE}
-            onSelectRoom={handleSelectRoom}
-            onSubmit={handleTransactionSubmit}
-          />
-        </BottomSheet>
-
-        <BottomSheet
           id="home-quick-income"
           classNameWrapperTrigger={styles.sheetTrigger}
           triggerComponent={
@@ -195,6 +176,25 @@ export const QuickTransactionPanel = ({ rooms }: Props) => {
             activeRoom={activeRoom}
             roomOptions={roomOptions}
             type={TRANSACTION_TYPE.INCOME}
+            onSelectRoom={handleSelectRoom}
+            onSubmit={handleTransactionSubmit}
+          />
+        </BottomSheet>
+
+        <BottomSheet
+          id="home-quick-expense"
+          classNameWrapperTrigger={styles.sheetTrigger}
+          triggerComponent={
+            <div className={cn(styles.actionCard, styles.expenseAction)}>
+              <Icon icon="mingcute:arrow-up-circle-fill" width={22} height={22} />
+              <span>Расход</span>
+            </div>
+          }
+        >
+          <QuickTransactionSheetBody
+            activeRoom={activeRoom}
+            roomOptions={roomOptions}
+            type={TRANSACTION_TYPE.EXPENSE}
             onSelectRoom={handleSelectRoom}
             onSubmit={handleTransactionSubmit}
           />

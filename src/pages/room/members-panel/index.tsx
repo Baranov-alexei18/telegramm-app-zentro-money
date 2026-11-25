@@ -29,10 +29,11 @@ export const MembersPanel = ({
   triggerComponent,
   classNameWrapperTrigger,
 }: Props) => {
-  const { room, removeUserFromRoom } = useRoomStore();
+  const { room, removeUserFromRoom, transferRoomAdmin } = useRoomStore();
   const { user } = useUserStore();
   const { canDeleteUser, canUpdateRoom } = useRoomAccess();
   const canManageMembers = canUpdateRoom();
+  const isCurrentAdmin = Boolean(user?.id && room?.members?.[user.id]?.role === RoomUserRole.ADMIN);
   const kind = room ? resolveRoomKind(room) : RoomKind.SHARED_EXPENSES;
   const memberLimit = getRoomMemberLimit(kind);
   const roomMembers = Object.keys(room?.members || {});
@@ -69,6 +70,14 @@ export const MembersPanel = ({
     removeUserFromRoom(id);
   };
 
+  const handleTransferAdmin = async (targetUserId: string) => {
+    try {
+      await transferRoomAdmin(targetUserId);
+    } catch {
+      // Тост показывает store.
+    }
+  };
+
   return (
     <BottomSheet
       id="room-members"
@@ -98,28 +107,46 @@ export const MembersPanel = ({
         )}
 
         <ul className={styles.membersListWrapper}>
-          {members.map((member) => (
-            <li key={member.id} className={styles.memberItem}>
-              <div className={styles.memberLeft}>
-                <AvatarCircle id={member.id} height={36} width={36} />
+          {members.map((member) => {
+            const canTransferToMember =
+              isCurrentAdmin && member.role === RoomUserRole.USER && member.id !== user?.id;
+            const canRemoveMember = canDeleteUser() && member.id !== user?.id;
 
-                <div className={styles.memberInfo}>
-                  <p className={styles.memberName}>
-                    {getUsername(member)}
-                    {member.role === RoomUserRole.ADMIN && (
-                      <span className={styles.adminBadge}>Админ</span>
-                    )}
-                  </p>
+            return (
+              <li key={member.id} className={styles.memberItem}>
+                <div className={styles.memberLeft}>
+                  <AvatarCircle id={member.id} height={36} width={36} />
+
+                  <div className={styles.memberInfo}>
+                    <p className={styles.memberName}>
+                      {getUsername(member)}
+                      {member.role === RoomUserRole.ADMIN && (
+                        <span className={styles.adminBadge}>Админ</span>
+                      )}
+                    </p>
+                  </div>
                 </div>
-              </div>
 
-              {canDeleteUser() && member.id !== user?.id && (
-                <Button className={styles.removeBtn} onClick={() => handleRemove(member.id)}>
-                  🗑️
-                </Button>
-              )}
-            </li>
-          ))}
+                {(canTransferToMember || canRemoveMember) && (
+                  <div className={styles.memberActions}>
+                    {canTransferToMember && (
+                      <Button
+                        className={styles.transferBtn}
+                        onClick={() => handleTransferAdmin(member.id)}
+                      >
+                        Передать админку
+                      </Button>
+                    )}
+                    {canRemoveMember && (
+                      <Button className={styles.removeBtn} onClick={() => handleRemove(member.id)}>
+                        🗑️
+                      </Button>
+                    )}
+                  </div>
+                )}
+              </li>
+            );
+          })}
         </ul>
       </Fragment>
     </BottomSheet>

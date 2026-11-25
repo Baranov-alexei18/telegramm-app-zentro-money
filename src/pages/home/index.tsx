@@ -1,4 +1,4 @@
-import { CSSProperties, useEffect, useMemo } from 'react';
+import { CSSProperties, useEffect, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router';
 import { Icon } from '@iconify/react';
 import { motion } from 'framer-motion';
@@ -20,6 +20,14 @@ import { QuickTransactionPanel } from './quick-transaction-panel';
 
 import styles from './styles.module.css';
 
+let hasPlayedHomeGreeting = false;
+
+const markHomeGreetingPlayed = (node: HTMLHeadingElement | null) => {
+  if (node) {
+    hasPlayedHomeGreeting = true;
+  }
+};
+
 export const HomePage = () => {
   const { user } = useUserStore();
   const { userRooms, isUserRoomsLoading, hasLoadedUserRooms, loadedRoomsUserId, fetchUserRooms } =
@@ -39,6 +47,7 @@ export const HomePage = () => {
       })),
     [greetingText]
   );
+  const shouldAnimateGreeting = useRef(!hasPlayedHomeGreeting).current;
 
   useEffect(() => {
     if (!user?.id) {
@@ -72,11 +81,12 @@ export const HomePage = () => {
 
         {user && (
           <motion.h2
+            ref={markHomeGreetingPlayed}
             key={greetingText}
             aria-label={greetingText}
             className={styles.greeting}
             variants={GREETING_CONTAINER_VARIANTS}
-            initial="hidden"
+            initial={shouldAnimateGreeting ? 'hidden' : false}
             animate="visible"
           >
             {greetingChars.map((item) => (
@@ -108,8 +118,8 @@ export const HomePage = () => {
                 <span className={styles.blurredBadgePill} />
               </div>
               <div className={styles.blurredActionsGrid}>
-                <div className={styles.blurredExpenseBtn} />
                 <div className={styles.blurredIncomeBtn} />
+                <div className={styles.blurredExpenseBtn} />
               </div>
             </div>
 

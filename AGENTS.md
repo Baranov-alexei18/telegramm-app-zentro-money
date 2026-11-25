@@ -1,3 +1,5 @@
+Project documentation, including skills in `.cursor/`, is written in English.
+
 # AGENTS.md
 
 ## Project Overview
@@ -125,8 +127,8 @@ Always reference collection names from `@/constants/db` (`COLLECTION_USER`, `COL
 
 - Roles (`RoomUserRole` in `@/constants/room-roles`): `ADMIN` (`'admin'`) and `USER` (`'base_user'`).
 - Permissions (`PermissionRoom` in `@/types/room`) are mapped in `ROLE_ROOM_MATRIX` (`@/constants/role-room-matrix`) and evaluated via `canInRoom()` / `useRoomAccess()`:
-  - **`ADMIN`**: Full access to room join notifications, category CRUD, removing members, and modifying/deleting any transaction.
-  - **`USER`**: Can create transactions and modify/delete **only their own** transactions (`transaction.userId === user.id`).
+  - **`ADMIN`**: Full access to room join notifications, category CRUD, removing members, and modifying/deleting any transaction. The current admin can instantly transfer their own admin role to one other `base_user` in the room (`transferRoomAdmin` in `useRoomStore` and `src/services/firebase/transferRoomAdmin.ts`). The caller becomes `base_user`. Other admins are unchanged. A non-admin cannot start the transfer. Chat access does not change.
+  - **`USER`**: Can create transactions and modify/delete **only their own** transactions (`transaction.userId === user.id`). Cannot transfer the admin role.
 
 ### Zustand Stores (`src/store/`)
 
