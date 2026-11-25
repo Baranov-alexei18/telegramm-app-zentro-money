@@ -1,4 +1,5 @@
-import { Fragment, ReactNode } from 'react';
+import { Fragment, PointerEvent, ReactNode } from 'react';
+import { Menu, MenuItem, MenuTrigger, Popover } from 'react-aria-components';
 import { Icon } from '@iconify/react';
 
 import { AvatarCircle } from '@/components/avatar-circle';
@@ -66,6 +67,10 @@ export const MembersPanel = ({
     notificationManager.add({ title: 'Ссылка скопирована', type: 'ok' }, { timeout: 1000 });
   };
 
+  const stopSheetDrag = (event: PointerEvent) => {
+    event.stopPropagation();
+  };
+
   const handleRemove = (id: string) => {
     removeUserFromRoom(id);
   };
@@ -108,9 +113,11 @@ export const MembersPanel = ({
 
         <ul className={styles.membersListWrapper}>
           {members.map((member) => {
-            const canTransferToMember =
-              isCurrentAdmin && member.role === RoomUserRole.USER && member.id !== user?.id;
-            const canRemoveMember = canDeleteUser() && member.id !== user?.id;
+            const canOpenMemberMenu =
+              isCurrentAdmin &&
+              canDeleteUser() &&
+              member.role === RoomUserRole.USER &&
+              member.id !== user?.id;
 
             return (
               <li key={member.id} className={styles.memberItem}>
@@ -127,21 +134,34 @@ export const MembersPanel = ({
                   </div>
                 </div>
 
-                {(canTransferToMember || canRemoveMember) && (
-                  <div className={styles.memberActions}>
-                    {canTransferToMember && (
-                      <Button
-                        className={styles.transferBtn}
-                        onClick={() => handleTransferAdmin(member.id)}
+                {canOpenMemberMenu && (
+                  <div className={styles.memberActions} onPointerDown={stopSheetDrag}>
+                    <MenuTrigger>
+                      <Button className={styles.menuButton} aria-label="Действия с участником">
+                        <Icon icon="mdi:dots-horizontal" width={20} height={20} />
+                      </Button>
+                      <Popover
+                        className={styles.menuPopover}
+                        placement="bottom end"
+                        offset={6}
+                        containerPadding={8}
                       >
-                        Передать админку
-                      </Button>
-                    )}
-                    {canRemoveMember && (
-                      <Button className={styles.removeBtn} onClick={() => handleRemove(member.id)}>
-                        🗑️
-                      </Button>
-                    )}
+                        <Menu className={styles.menu}>
+                          <MenuItem
+                            className={styles.menuItem}
+                            onAction={() => handleTransferAdmin(member.id)}
+                          >
+                            Передать админа
+                          </MenuItem>
+                          <MenuItem
+                            className={styles.menuItemDelete}
+                            onAction={() => handleRemove(member.id)}
+                          >
+                            Удалить пользователя
+                          </MenuItem>
+                        </Menu>
+                      </Popover>
+                    </MenuTrigger>
                   </div>
                 )}
               </li>

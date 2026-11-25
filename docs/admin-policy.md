@@ -28,11 +28,11 @@ In addition to everything a member can do:
 
 - Sees join requests and accepts or rejects them. The request panel exists only for shared expenses.
 - Copies the room id to invite someone, while the room is shared and the limit is not reached.
-- Removes another member from the room. This button cannot remove themselves. This is removal from the roster, not a ban: coming back is not blocked by a separate rule.
+- Removes a `base_user` from the room. The control is inside the member menu opened from the three-dot button on that person's row. The menu is not shown on the admin's own row or next to another admin. This is removal from the roster, not a ban: coming back is not blocked by a separate rule.
 - Changes the name, description, room kind, cover, icon, and icon color.
 - Creates, edits, and deletes categories.
 - Edits and deletes any transaction in the room, not only their own.
-- Transfers their own admin role to one other participant whose role is `base_user` (`transferRoomAdmin`). The caller becomes `base_user`. The button is in the members panel. It is hidden from non-admins, hidden on the caller's own row, and hidden next to anyone who is already `admin`. A room with one member has nobody to receive the role. Other admins on the document are left as they are. The target does not confirm, and no join notification is created.
+- Transfers their own admin role to one other participant whose role is `base_user` (`transferRoomAdmin`). The caller becomes `base_user`. The action is «Передать админа» in the same three-dot menu, next to «Удалить пользователя». The menu is hidden from non-admins, hidden on the caller's own row, and hidden next to anyone who is already `admin`. A room with one member has nobody to receive the role. Other admins on the document are left as they are. The target does not confirm, and no join notification is created. Chat access does not change.
 
 ## Member
 
