@@ -1,3 +1,5 @@
+Project documentation, including skills in `.cursor/`, is written in English.
+
 # AGENTS.md
 
 ## Project Overview
